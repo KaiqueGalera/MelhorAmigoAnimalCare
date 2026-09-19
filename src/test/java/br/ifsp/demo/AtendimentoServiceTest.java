@@ -6,7 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class AtendimentoServiceTest {
     private InMemoryAtendimentoRepository repository;
-    private AtendimentoService atendimentoService;
+    private AtendimentoService service;
 
     @Test
     void devoAbrirProntoAtendimentoComSucesso(){
