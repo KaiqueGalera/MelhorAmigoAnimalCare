@@ -9,20 +9,21 @@ public class Atendimento {
     private StatusAtendimento status;
     private final LocalDateTime dataHoraAtendimento;
 
-    public Atendimento(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId, LocalDateTime dataHoraAtendimento) {
-        this.id = id;
-        this.animalId = animalId;
-        this.agendamentoId = agendamentoId;
+    public Atendimento(LocalDateTime dataHoraAtendimento, StatusAtendimento status, AgendamentoId agendamentoId, AnimalId animalId, AtendimentoId id) {
         this.dataHoraAtendimento = dataHoraAtendimento;
+        this.status = status;
+        this.agendamentoId = agendamentoId;
+        this.animalId = animalId;
+        this.id = id;
     }
 
-    public static Atendimento abrirProntoAtendimento(){
+    public static Atendimento abrirProntoAtendimento(AnimalId animalId){
         return new Atendimento(
-                AtendimentoId.novo(),
-                animalId,
-                null,
+                LocalDateTime.now(),
                 StatusAtendimento.EM_ANDAMENTO,
-                LocalDateTime.now()
+                null,
+                animalId,
+                AtendimentoId.novo()
         );
     }
 
