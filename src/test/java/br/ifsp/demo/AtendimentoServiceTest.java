@@ -1,5 +1,10 @@
 package br.ifsp.demo;
 
+import br.ifsp.demo.model.abertura.AnimalId;
+import br.ifsp.demo.model.abertura.Atendimento;
+import br.ifsp.demo.model.abertura.StatusAtendimento;
+import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
+import br.ifsp.demo.service.abertura.AtendimentoService;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -15,7 +20,7 @@ class AtendimentoServiceTest {
         service = new AtendimentoService(repository);
         Atendimento atendimento = service.abrirProntoAtendimento;
 
-        assertThat(atendimento.getStatus().isEqualTo(StatusAtendimentos.EM_ANDAMENTO));
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
         assertThat(atendimento.getAgendamento()).isNull();
     }
 }
