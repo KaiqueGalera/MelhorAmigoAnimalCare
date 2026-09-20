@@ -18,9 +18,9 @@ class AtendimentoServiceTest {
         AnimalId animalId = AnimalId.novo();
         repository = new InMemoryAtendimentoRepository();
         service = new AtendimentoService(repository);
-        Atendimento atendimento = service.abrirProntoAtendimento;
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
 
         assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
-        assertThat(atendimento.getAgendamento()).isNull();
+        assertThat(atendimento.getAgendamentoId()).isNull();
     }
 }
