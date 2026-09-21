@@ -12,6 +12,10 @@ public class AtendimentoService {
     }
 
     public Atendimento abrirProntoAtendimento(AnimalId animalId){
+        if (repository.existeEmAndamentoParaAnimal(animalId)){
+            throw new IllegalStateException("Animal já está em atendimento!");
+        }
+
         Atendimento atendimento = Atendimento.abrirProntoAtendimento(animalId);
         repository.salvar(atendimento);
 
