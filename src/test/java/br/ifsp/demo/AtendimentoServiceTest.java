@@ -1,5 +1,6 @@
 package br.ifsp.demo;
 
+import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.StatusAtendimento;
@@ -38,6 +39,6 @@ class AtendimentoServiceTest {
         AnimalId animalId = AnimalId.novo();
         service.abrirProntoAtendimento(animalId);
 
-        assertThrows(IllegalStateException.class, ()-> service.abrirProntoAtendimento(animalId));
+        assertThrows(AnimalJaEmAtendimentoException.class, ()-> service.abrirProntoAtendimento(animalId));
     }
 }
