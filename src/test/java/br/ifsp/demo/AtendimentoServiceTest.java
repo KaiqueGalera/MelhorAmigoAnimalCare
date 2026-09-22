@@ -46,8 +46,9 @@ class AtendimentoServiceTest {
     @DisplayName("# C0103 Cancelar atendimento com justificativa com sucesso")
     void devoCancelarProntoAtendimentoComSucesso(){
         AnimalId animalId = AnimalId.novo();
+        String justificativa = "Animal estava muito inquieto e o dono optou por ir embora";
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        Atendimento cancelado = service.cancelarAtendimento(atendimento.getId());
+        Atendimento cancelado = service.cancelarAtendimento(atendimento.getId(), justificativa);
 
         assertThat(cancelado.getStatus()).isEqualTo(StatusAtendimento.CANCELADO);
         assertThat(cancelado.getJustificativa()).isEqualTo("Animal estava muito inquieto e o dono optou por ir embora");

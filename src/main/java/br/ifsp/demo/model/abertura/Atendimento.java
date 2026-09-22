@@ -8,6 +8,7 @@ public class Atendimento {
     private final AgendamentoId agendamentoId;
     private StatusAtendimento status;
     private final LocalDateTime dataHoraAtendimento;
+    private String justificativa;
 
     public Atendimento(LocalDateTime dataHoraAtendimento, StatusAtendimento status, AgendamentoId agendamentoId, AnimalId animalId, AtendimentoId id) {
         this.dataHoraAtendimento = dataHoraAtendimento;
@@ -15,6 +16,11 @@ public class Atendimento {
         this.agendamentoId = agendamentoId;
         this.animalId = animalId;
         this.id = id;
+    }
+
+    public void cancelar(String justificativa){
+        this.status = StatusAtendimento.CANCELADO;
+        this.justificativa = justificativa;
     }
 
     public static Atendimento abrirProntoAtendimento(AnimalId animalId){
@@ -25,6 +31,10 @@ public class Atendimento {
                 animalId,
                 AtendimentoId.novo()
         );
+    }
+
+    public String getJustificativa() {
+        return justificativa;
     }
 
     public AtendimentoId getId() {

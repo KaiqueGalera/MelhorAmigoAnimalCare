@@ -3,6 +3,7 @@ package br.ifsp.demo.service.abertura;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
+import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
 public class AtendimentoService {
@@ -18,6 +19,14 @@ public class AtendimentoService {
         }
 
         Atendimento atendimento = Atendimento.abrirProntoAtendimento(animalId);
+        repository.salvar(atendimento);
+
+        return atendimento;
+    }
+
+    public Atendimento cancelarAtendimento(AtendimentoId id, String justificativa){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.cancelar(justificativa);
         repository.salvar(atendimento);
 
         return atendimento;
