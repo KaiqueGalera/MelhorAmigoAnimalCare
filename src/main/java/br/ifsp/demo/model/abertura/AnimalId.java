@@ -10,10 +10,6 @@ public class AnimalId {
         this.id = id;
     }
 
-    public static AnimalId novo(){
-        return new AnimalId(UUID.randomUUID());
-    }
-
     public static AnimalId of(UUID uuid){
         return new AnimalId(uuid);
     }

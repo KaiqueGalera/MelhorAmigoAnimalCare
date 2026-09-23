@@ -26,7 +26,7 @@ class AtendimentoServiceTest {
     @Test
     @DisplayName("# C0101 Devo abrir pronto atendimento para animal sem agendamento prévio")
     void devoAbrirProntoAtendimentoComSucesso(){
-        AnimalId animalId = AnimalId.novo();
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
 
         assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
@@ -36,7 +36,7 @@ class AtendimentoServiceTest {
     @Test
     @DisplayName("# C0102 Não devo abrir pronto atendimento quando animal já estiver em atendimento")
     void naoDevoAbrirProntoAtendimento(){
-        AnimalId animalId = AnimalId.novo();
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
         service.abrirProntoAtendimento(animalId);
 
         assertThrows(AnimalJaEmAtendimentoException.class, ()-> service.abrirProntoAtendimento(animalId));
@@ -45,7 +45,7 @@ class AtendimentoServiceTest {
     @Test
     @DisplayName("# C0103 Cancelar atendimento com justificativa com sucesso")
     void devoCancelarProntoAtendimentoComSucesso(){
-        AnimalId animalId = AnimalId.novo();
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
         String justificativa = "Animal estava muito inquieto e o dono optou por ir embora";
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         Atendimento cancelado = service.cancelarAtendimento(atendimento.getId(), justificativa);
