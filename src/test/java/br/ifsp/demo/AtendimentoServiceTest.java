@@ -1,14 +1,14 @@
 package br.ifsp.demo;
 
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
-import br.ifsp.demo.model.abertura.AnimalId;
-import br.ifsp.demo.model.abertura.Atendimento;
-import br.ifsp.demo.model.abertura.StatusAtendimento;
+import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import br.ifsp.demo.service.abertura.AtendimentoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,6 +52,17 @@ class AtendimentoServiceTest {
 
         assertThat(cancelado.getStatus()).isEqualTo(StatusAtendimento.CANCELADO);
         assertThat(cancelado.getJustificativa()).isEqualTo("Animal estava muito inquieto e o dono optou por ir embora");
+    }
 
+    @Test
+    @DisplayName("# C0201 Devo abrir atendimento para animal dado agendamento")
+    void devoAbrirAtendimentoComAgendamento(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        AgendamentoId agendamentoId = AgendamentoId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirAtendimentoComAgendamento(animalId, agendamentoId);
+
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
+        assertThat(atendimento.getAgendamentoId()).isEqualTo(agendamentoId);
+        assertThat(atendimento.getAnimalId()).isEqualTo(animalId);
     }
 }
