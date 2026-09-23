@@ -1,6 +1,7 @@
 package br.ifsp.demo.model.abertura;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Atendimento {
     private final AtendimentoId id;
@@ -10,12 +11,12 @@ public class Atendimento {
     private final LocalDateTime dataHoraAtendimento;
     private String justificativa;
 
-    public Atendimento(LocalDateTime dataHoraAtendimento, StatusAtendimento status, AgendamentoId agendamentoId, AnimalId animalId, AtendimentoId id) {
-        this.dataHoraAtendimento = dataHoraAtendimento;
-        this.status = status;
+    public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
+        this.dataHoraAtendimento = LocalDateTime.now();
+        this.status = StatusAtendimento.EM_ANDAMENTO;
         this.agendamentoId = agendamentoId;
         this.animalId = animalId;
-        this.id = id;
+        this.id = AtendimentoId.novo();
     }
 
     public void cancelar(String justificativa){
@@ -24,13 +25,7 @@ public class Atendimento {
     }
 
     public static Atendimento abrirProntoAtendimento(AnimalId animalId){
-        return new Atendimento(
-                LocalDateTime.now(),
-                StatusAtendimento.EM_ANDAMENTO,
-                null,
-                animalId,
-                AtendimentoId.novo()
-        );
+        return new Atendimento(null, animalId);
     }
 
     public String getJustificativa() {

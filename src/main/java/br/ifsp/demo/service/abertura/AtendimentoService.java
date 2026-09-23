@@ -1,6 +1,7 @@
 package br.ifsp.demo.service.abertura;
 
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
+import br.ifsp.demo.model.abertura.AgendamentoId;
 import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AtendimentoId;
@@ -19,6 +20,13 @@ public class AtendimentoService {
         }
 
         Atendimento atendimento = Atendimento.abrirProntoAtendimento(animalId);
+        repository.salvar(atendimento);
+
+        return atendimento;
+    }
+
+    public Atendimento abrirAtendimentoComAgendamento(AnimalId animalId, AgendamentoId agendamentoId){
+        Atendimento atendimento = new Atendimento(agendamentoId, animalId);
         repository.salvar(atendimento);
 
         return atendimento;

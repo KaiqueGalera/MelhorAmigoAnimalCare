@@ -14,6 +14,10 @@ public class AnimalId {
         return new AnimalId(UUID.randomUUID());
     }
 
+    public static AnimalId of(UUID uuid){
+        return new AnimalId(uuid);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

@@ -10,6 +10,10 @@ public class AgendamentoId {
         this.id = id;
     }
 
+    public static AgendamentoId of(UUID uuid){
+        return new AgendamentoId(uuid);
+    }
+
     public UUID getId() {
         return id;
     }
