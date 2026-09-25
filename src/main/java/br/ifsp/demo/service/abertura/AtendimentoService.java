@@ -26,6 +26,10 @@ public class AtendimentoService {
     }
 
     public Atendimento abrirAtendimentoComAgendamento(AnimalId animalId, AgendamentoId agendamentoId){
+        if (repository.existeEmAndamentoParaAnimal(animalId)){
+            throw new AnimalJaEmAtendimentoException(animalId);
+        }
+
         Atendimento atendimento = new Atendimento(agendamentoId, animalId);
         repository.salvar(atendimento);
 
