@@ -65,4 +65,14 @@ class AtendimentoServiceTest {
         assertThat(atendimento.getAgendamentoId()).isEqualTo(agendamentoId);
         assertThat(atendimento.getAnimalId()).isEqualTo(animalId);
     }
+
+    @Test
+    @DisplayName("# C0202 Não devo abrir atendimento agendado dado animal em atendimento")
+    void naoDevoAbrirAtendimentoComAgendamento(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        AgendamentoId agendamentoId = AgendamentoId.of(UUID.randomUUID());
+        service.abrirProntoAtendimento(animalId);
+
+        assertThrows(AnimalJaEmAtendimentoException.class, ()-> service.abrirAtendimentoComAgendamento(animalId, agendamentoId));
+    }
 }
