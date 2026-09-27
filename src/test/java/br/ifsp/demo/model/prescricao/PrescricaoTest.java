@@ -64,4 +64,23 @@ class PrescricaoTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Emissão rejeitada: só é possível emitir uma prescrição com pelo menos um item.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1101 - deve editar itens de uma prescricao em aberta")
+    void deveEditarItensDeUmaPrescricaoEmAberta(){
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+
+        ItemPrescricao itemEditado = new ItemPrescricao(item.getId(), "Amoxicilina", 1000, "Não oral", "12 em 12 horas", 7);
+        prescricao.editarItem(item.getId(), itemEditado);
+
+        ItemPrescricao itemAtualizado = prescricao.getItens().getFirst();
+        assertEquals("Amoxicilina", itemAtualizado.getMedicamento());
+        assertEquals(1000, itemAtualizado.getDosagem());
+        assertEquals("Não oral", itemAtualizado.getVia());
+        assertEquals("12 em 12 horas", itemAtualizado.getFrequencia());
+        assertEquals(7, itemAtualizado.getDiasDuracao());
+    }
 }
