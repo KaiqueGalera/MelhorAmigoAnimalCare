@@ -34,6 +34,9 @@ public class Atendimento {
     }
 
     public Prescricao emitirPrescricao(List<ItemPrescricao> itens) {
+        if (status != StatusAtendimento.EM_ANDAMENTO) {
+            throw new IllegalStateException("Emissão rejeitada: só é possível emitir uma prescrição durante um atendimento em andamento.");
+        }
         Prescricao prescricao = new Prescricao(itens);
         prescricoes.add(prescricao);
         return prescricao;
