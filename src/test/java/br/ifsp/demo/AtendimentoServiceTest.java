@@ -97,4 +97,15 @@ class AtendimentoServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> service.cancelarAtendimento(atendimento.getId(), null));
     }
+
+    @Test
+    @DisplayName("#C0303 Não devo cancelar atendimento quando já cancelado")
+    void naoDevoCancelarAtendimentoJaCancelado(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        service.cancelarAtendimento(atendimento.getId(), "Motivo para cancelar 1");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.cancelarAtendimento(atendimento.getId(), "Outro motivo"));
+    }
 }
