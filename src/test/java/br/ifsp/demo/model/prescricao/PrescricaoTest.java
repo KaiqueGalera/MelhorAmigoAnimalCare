@@ -2,14 +2,10 @@ package br.ifsp.demo.model.prescricao;
 
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AnimalId;
-import br.ifsp.demo.model.abertura.AtendimentoId;
-import br.ifsp.demo.model.abertura.StatusAtendimento;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
