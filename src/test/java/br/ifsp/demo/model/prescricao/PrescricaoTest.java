@@ -105,14 +105,6 @@ class PrescricaoTest {
         assertThat(prescricao.getItens()).containsExactly(item);
     }
 
-    /*
-        Dado que a prescrição não está com status em "Aberta",
-        Quando o(a) veterinário(a) tentar editar ou remover um item existente
-        E o sistema validar a solicitação,
-        Então o sistema deve rejeitar
-        E uma mensagem de erro "Prescrição deve estar "Aberta" para ser alterada"
-         */
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("acoesInvalidasQuandoNaoAberta")
     @Tag("UnitTest")
