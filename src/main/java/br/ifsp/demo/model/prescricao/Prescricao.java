@@ -27,6 +27,7 @@ public class Prescricao {
     }
 
     public void finalizar() {
+        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException("A prescrição deve estar 'Aberta' para ser finalizada.");
         if (itens.isEmpty()) throw new IllegalStateException("A prescrição deve conter pelo menos um item para ser finalizada.");
         status = StatusPrescricao.FINALIZADA;
     }
