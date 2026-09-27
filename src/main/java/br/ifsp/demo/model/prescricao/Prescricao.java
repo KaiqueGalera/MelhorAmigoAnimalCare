@@ -8,6 +8,9 @@ public class Prescricao {
     private StatusPrescricao status;
 
     public Prescricao(List<ItemPrescricao> itens) {
+        if (itens.isEmpty())
+            throw new IllegalArgumentException("Emissão rejeitada: só é possível emitir uma prescrição com pelo menos um item.");
+
         this.itens = itens;
         this.status = StatusPrescricao.ABERTA;
     }
