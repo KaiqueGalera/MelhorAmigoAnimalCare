@@ -128,4 +128,15 @@ class PrescricaoTest {
                         (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.removerItem(item.getId()))
         );
     }
+    
+    @Test
+    @DisplayName("C1201 - deve finalizar prescricao aberta com pelo menos um item")
+    void deveFinalizarPrescricaoAbertaComPeloMenosUmItem(){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+
+        prescricao.finalizar();
+
+        assertEquals(StatusPrescricao.FINALIZADA, prescricao.getStatus());
+    }
 }
