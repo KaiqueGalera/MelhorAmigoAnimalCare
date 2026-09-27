@@ -5,9 +5,14 @@ import br.ifsp.demo.model.abertura.AnimalId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -95,8 +100,40 @@ class PrescricaoTest {
 
         Prescricao prescricao = new Prescricao(List.of(item, item2));
 
-        prescricao.excluirItem(item2.getId());
+        prescricao.removerItem(item2.getId());
 
         assertThat(prescricao.getItens()).containsExactly(item);
+    }
+
+    /*
+        Dado que a prescrição não está com status em "Aberta",
+        Quando o(a) veterinário(a) tentar editar ou remover um item existente
+        E o sistema validar a solicitação,
+        Então o sistema deve rejeitar
+        E uma mensagem de erro "Prescrição deve estar "Aberta" para ser alterada"
+         */
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("acoesInvalidasQuandoNaoAberta")
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1103 - deve retornar erro quando editar ou remover um item existente quando prescricao nao esta aberta")
+    void deveRetornarErroQuandoEditarOuRemoverUmItemExistenteQuandoPrescricaoNaoEstaAberta(String descricao, BiConsumer<Prescricao, ItemPrescricao> acao){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.finalizar();
+
+        assertThatThrownBy(() -> acao.accept(prescricao, item))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Prescrição deve estar 'Aberta' para ser alterada");
+    }
+
+    static Stream<Arguments> acoesInvalidasQuandoNaoAberta() {
+        return Stream.of(
+                Arguments.of("editar item",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.editarItem(item.getId(), item)),
+                Arguments.of("remover item",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.removerItem(item.getId()))
+        );
     }
 }
