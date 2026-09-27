@@ -20,6 +20,8 @@ public class Prescricao {
         itens.put(id, novoItem);
     }
 
+    public void excluirItem(ItemPrescricaoId id) { itens.remove(id); }
+
     public StatusPrescricao getStatus() {
         return status;
     }
