@@ -87,4 +87,14 @@ class AtendimentoServiceTest {
 
         assertThrows(AgendamentoJaComAtendimento.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
     }
+
+    @Test
+    @DisplayName("#C0302 Não devo cancelar atendimento sem informar justificativa")
+    void naoDevoCancelarAtendimentoSemJustificativa(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.cancelarAtendimento(atendimento.getId(), null));
+    }
 }
