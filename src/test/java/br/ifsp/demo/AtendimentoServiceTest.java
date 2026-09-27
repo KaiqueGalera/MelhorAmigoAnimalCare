@@ -75,4 +75,15 @@ class AtendimentoServiceTest {
 
         assertThrows(AnimalJaEmAtendimentoException.class, ()-> service.abrirAtendimentoComAgendamento(animalId, agendamentoId));
     }
+
+    @Test
+    @DisplayName("# C0203-A Devo rejeitar associar agendamento com atendimento caso já tenha atendimento")
+    void devoRejeitarAgendamentoJaUtilizado(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        AgendamentoId agendamentoId = AgendamentoId.of(UUID.randomUUID());
+        service.abrirAtendimentoComAgendamento(animalId, agendamentoId);
+        AnimalId outroAnimal = AnimalId.of(UUID.randomUUID());
+
+        assertThrows(IllegalStateException.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
+    }
 }
