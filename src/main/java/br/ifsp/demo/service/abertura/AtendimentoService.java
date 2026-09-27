@@ -30,6 +30,10 @@ public class AtendimentoService {
             throw new AnimalJaEmAtendimentoException(animalId);
         }
 
+        if (repository.existeAtendimentoParaAgendamento(agendamentoId)) {
+            throw new IllegalStateException("Agendamento já foi utilizado em outro atendimento");
+        }
+
         Atendimento atendimento = new Atendimento(agendamentoId, animalId);
         repository.salvar(atendimento);
 

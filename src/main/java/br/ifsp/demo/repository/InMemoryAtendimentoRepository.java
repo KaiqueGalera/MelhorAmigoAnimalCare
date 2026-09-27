@@ -1,9 +1,6 @@
 package br.ifsp.demo.repository;
 
-import br.ifsp.demo.model.abertura.AnimalId;
-import br.ifsp.demo.model.abertura.Atendimento;
-import br.ifsp.demo.model.abertura.AtendimentoId;
-import br.ifsp.demo.model.abertura.StatusAtendimento;
+import br.ifsp.demo.model.abertura.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +29,11 @@ public class InMemoryAtendimentoRepository {
                 .filter(atendimento -> atendimento.getId().equals(id))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public boolean existeAtendimentoParaAgendamento(AgendamentoId agendamentoId) {
+        return atendimentos.stream()
+                .anyMatch(a -> agendamentoId.equals(a.getAgendamentoId()));
     }
 
 }
