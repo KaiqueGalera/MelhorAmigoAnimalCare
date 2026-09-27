@@ -26,15 +26,16 @@ public class Prescricao {
         itens.remove(id);
     }
 
+    public void finalizar() {
+        if (itens.isEmpty()) throw new IllegalStateException("A prescrição deve conter pelo menos um item para ser finalizada.");
+        status = StatusPrescricao.FINALIZADA;
+    }
+
     public StatusPrescricao getStatus() {
         return status;
     }
 
     public List<ItemPrescricao> getItens() {
         return List.copyOf(itens.values());
-    }
-
-    public void finalizar() {
-        status = StatusPrescricao.FINALIZADA;
     }
 }
