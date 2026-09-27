@@ -130,6 +130,8 @@ class PrescricaoTest {
     }
     
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("C1201 - deve finalizar prescricao aberta com pelo menos um item")
     void deveFinalizarPrescricaoAbertaComPeloMenosUmItem(){
         ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
