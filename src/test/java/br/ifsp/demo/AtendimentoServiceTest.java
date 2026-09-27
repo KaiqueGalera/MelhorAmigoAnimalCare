@@ -105,7 +105,7 @@ class AtendimentoServiceTest {
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         service.cancelarAtendimento(atendimento.getId(), "Motivo para cancelar 1");
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalStateException.class,
                 () -> service.cancelarAtendimento(atendimento.getId(), "Outro motivo"));
     }
 }

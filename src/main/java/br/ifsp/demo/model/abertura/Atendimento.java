@@ -20,6 +20,9 @@ public class Atendimento {
     }
 
     public void cancelar(String justificativa){
+        if (status == StatusAtendimento.CANCELADO) {
+            throw new IllegalStateException("Atendimento cancelado não aceita alterações");
+        }
         if (justificativa == null) {
             throw new IllegalArgumentException("Justificativa é obrigatória para cancelar o atendimento");
         }
