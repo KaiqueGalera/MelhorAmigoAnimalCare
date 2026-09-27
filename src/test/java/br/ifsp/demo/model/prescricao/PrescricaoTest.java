@@ -5,6 +5,7 @@ import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.abertura.StatusAtendimento;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -18,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class PrescricaoTest {
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("C1001 - deve criar nova prescricao com status ABERTA")
     void deveCriarNovaPrescricaoComStatusAberta(){
         UUID animalId = UUID.randomUUID();
@@ -34,6 +37,8 @@ class PrescricaoTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("C1002 - deve rejeitar prescricao quando atendimento nao esta em andamento")
     void deveRejeitarPrescricaoQuandoAtendimentoNaoEstaEmAndamento(){
         UUID animalId = UUID.randomUUID();
@@ -50,6 +55,8 @@ class PrescricaoTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("C1003 - deve rejeitar emissao quando nao houver itens na prescricao")
     void deveRejeitarEmissaoQuandoNaoHouverItensNaPrescricao(){
         UUID animalId = UUID.randomUUID();
