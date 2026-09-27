@@ -17,10 +17,14 @@ public class Prescricao {
     }
 
     public void editarItem(ItemPrescricaoId id, ItemPrescricao novoItem) {
+        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException("Prescrição deve estar 'Aberta' para ser alterada");
         itens.put(id, novoItem);
     }
 
-    public void excluirItem(ItemPrescricaoId id) { itens.remove(id); }
+    public void removerItem(ItemPrescricaoId id) {
+        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException("Prescrição deve estar 'Aberta' para ser alterada");
+        itens.remove(id);
+    }
 
     public StatusPrescricao getStatus() {
         return status;
@@ -28,5 +32,9 @@ public class Prescricao {
 
     public List<ItemPrescricao> getItens() {
         return List.copyOf(itens.values());
+    }
+
+    public void finalizar() {
+        status = StatusPrescricao.FINALIZADA;
     }
 }
