@@ -155,4 +155,18 @@ class PrescricaoTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("A prescrição deve conter pelo menos um item para ser finalizada.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1203 - deve rejeitar quando finalizar uma prescricao nao aberta")
+    void deveRejeitarQuandoFinalizarUmaPrescricaoNaoAberta(){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.finalizar();
+
+        assertThatThrownBy(prescricao::finalizar)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("A prescrição deve estar 'Aberta' para ser finalizada.");
+    }
 }
