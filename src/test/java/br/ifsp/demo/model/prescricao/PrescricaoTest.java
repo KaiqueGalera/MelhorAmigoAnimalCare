@@ -141,4 +141,18 @@ class PrescricaoTest {
 
         assertEquals(StatusPrescricao.FINALIZADA, prescricao.getStatus());
     }
+    
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1202 - deve rejeitar quando finalizar prescricao sem itens")
+    void deveRejeitarQuandoFinalizarPrescricaoSemItens(){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.removerItem(item.getId());
+
+        assertThatThrownBy(prescricao::finalizar)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("A prescrição deve conter pelo menos um item para ser finalizada.");
+    }
 }
