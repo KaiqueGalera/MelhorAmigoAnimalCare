@@ -1,5 +1,6 @@
 package br.ifsp.demo;
 
+import br.ifsp.demo.exception.AgendamentoJaComAtendimento;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
@@ -84,6 +85,6 @@ class AtendimentoServiceTest {
         service.abrirAtendimentoComAgendamento(animalId, agendamentoId);
         AnimalId outroAnimal = AnimalId.of(UUID.randomUUID());
 
-        assertThrows(IllegalStateException.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
+        assertThrows(AgendamentoJaComAtendimento.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
     }
 }
