@@ -17,19 +17,23 @@ public class Prescricao {
     }
 
     public void editarItem(ItemPrescricaoId id, ItemPrescricao novoItem) {
-        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException("Prescrição deve estar 'Aberta' para ser alterada");
+        garantePrescricaoAberta("Prescrição deve estar 'Aberta' para ser alterada");
         itens.put(id, novoItem);
     }
 
     public void removerItem(ItemPrescricaoId id) {
-        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException("Prescrição deve estar 'Aberta' para ser alterada");
+        garantePrescricaoAberta("Prescrição deve estar 'Aberta' para ser alterada");
         itens.remove(id);
     }
 
     public void finalizar() {
-        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException("A prescrição deve estar 'Aberta' para ser finalizada.");
+        garantePrescricaoAberta("A prescrição deve estar 'Aberta' para ser finalizada.");
         if (itens.isEmpty()) throw new IllegalStateException("A prescrição deve conter pelo menos um item para ser finalizada.");
         status = StatusPrescricao.FINALIZADA;
+    }
+
+    public void garantePrescricaoAberta(String mensagem) {
+        if (status != StatusPrescricao.ABERTA) throw new IllegalStateException(mensagem);
     }
 
     public StatusPrescricao getStatus() {
