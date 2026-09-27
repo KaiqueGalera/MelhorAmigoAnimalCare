@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -82,5 +83,20 @@ class PrescricaoTest {
         assertEquals("Não oral", itemAtualizado.getVia());
         assertEquals("12 em 12 horas", itemAtualizado.getFrequencia());
         assertEquals(7, itemAtualizado.getDiasDuracao());
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1102 - deve remover um item de uma prescicao em aberta")
+    void deveRemoverUmItemDeUmaPrescicaoEmAberta(){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        ItemPrescricao item2 = new ItemPrescricao(ItemPrescricaoId.novo(), "Amoxicilina", 1000, "Não oral", "12 em 12 horas", 7);
+
+        Prescricao prescricao = new Prescricao(List.of(item, item2));
+
+        prescricao.excluirItem(item2.getId());
+
+        assertThat(prescricao.getItens()).containsExactly(item);
     }
 }
