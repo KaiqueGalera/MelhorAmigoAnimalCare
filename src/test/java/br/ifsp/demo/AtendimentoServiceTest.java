@@ -105,7 +105,17 @@ class AtendimentoServiceTest {
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         service.cancelarAtendimento(atendimento.getId(), "Motivo para cancelar 1");
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException  .class,
                 () -> service.cancelarAtendimento(atendimento.getId(), "Outro motivo"));
+    }
+
+    @Test
+    @DisplayName("#C0401 Devo encerrar atendimento")
+    void devoEncerrarAtendimento(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        service.encerrarAtendimento(atendimento.getId());
+
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
     }
 }
