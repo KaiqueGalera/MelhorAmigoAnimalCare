@@ -1,6 +1,11 @@
 package br.ifsp.demo.model.abertura;
 
+import br.ifsp.demo.model.clinico.Diagnostico;
+import br.ifsp.demo.model.clinico.SinaisVitais;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Atendimento {
@@ -10,6 +15,8 @@ public class Atendimento {
     private StatusAtendimento status;
     private final LocalDateTime dataHoraAtendimento;
     private String justificativa;
+    private SinaisVitais sinaisVitais;
+    private final List<Diagnostico> diagnosticos = new ArrayList<>();
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -29,6 +36,24 @@ public class Atendimento {
 
         this.status = StatusAtendimento.CANCELADO;
         this.justificativa = justificativa;
+    }
+
+    public void concluir(){
+        if (sinaisVitais == null) {
+            throw new IllegalStateException("O atendimento deve possuir registro de sinais vitais para sua conclusao");
+        }
+        if (diagnosticos.isEmpty()) {
+            throw new IllegalStateException("O atendimento devo possui ao menos um diagnóstico para sua conclusão");
+        }
+        this.status = StatusAtendimento.CONCLUIDO;
+    }
+
+    public void registrarSinaisVitais(SinaisVitais sinaisVitais) {
+        this.sinaisVitais = sinaisVitais;
+    }
+
+    public void registrarDiagnostico(Diagnostico diagnostico) {
+        diagnosticos.add(diagnostico);
     }
 
     public static Atendimento abrirProntoAtendimento(AnimalId animalId){

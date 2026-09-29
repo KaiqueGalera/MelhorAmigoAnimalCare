@@ -3,6 +3,9 @@ package br.ifsp.demo;
 import br.ifsp.demo.exception.AgendamentoJaComAtendimento;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.clinico.Diagnostico;
+import br.ifsp.demo.model.clinico.SinaisVitais;
+import br.ifsp.demo.model.clinico.TipoDiagnostico;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import br.ifsp.demo.service.abertura.AtendimentoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,10 +117,10 @@ class AtendimentoServiceTest {
     void devoEncerrarAtendimento(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        atendimento.registraSinaisVitais(new SinaisVitais(30, 100, 12, 5));
-        atendimento.registraDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
-        Atendimento concluido = service.encerrarAtendimento(atendimento.getId());
+        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        Atendimento concluido = service.concluirAtendimento(atendimento.getId());
 
-        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
+        assertThat(concluido.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
     }
 }

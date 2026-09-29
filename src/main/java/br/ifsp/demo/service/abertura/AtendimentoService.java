@@ -2,10 +2,7 @@ package br.ifsp.demo.service.abertura;
 
 import br.ifsp.demo.exception.AgendamentoJaComAtendimento;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
-import br.ifsp.demo.model.abertura.AgendamentoId;
-import br.ifsp.demo.model.abertura.AnimalId;
-import br.ifsp.demo.model.abertura.Atendimento;
-import br.ifsp.demo.model.abertura.AtendimentoId;
+import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
 public class AtendimentoService {
@@ -49,9 +46,11 @@ public class AtendimentoService {
         return atendimento;
     }
 
-    public Atendimento concluiAtendimento(AtendimentoId id){
+    public Atendimento concluirAtendimento(AtendimentoId atendimentoId){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+        atendimento.concluir();
+        repository.salvar(atendimento);
 
-        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
-
+        return atendimento;
     }
 }
