@@ -48,4 +48,10 @@ public class AtendimentoService {
 
         return atendimento;
     }
+
+    public Atendimento concluiAtendimento(AtendimentoId id){
+
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+
+    }
 }

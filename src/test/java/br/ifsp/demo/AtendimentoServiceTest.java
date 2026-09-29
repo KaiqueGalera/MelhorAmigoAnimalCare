@@ -114,7 +114,9 @@ class AtendimentoServiceTest {
     void devoEncerrarAtendimento(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        service.encerrarAtendimento(atendimento.getId());
+        atendimento.registraSinaisVitais(new SinaisVitais(30, 100, 12, 5));
+        atendimento.registraDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        Atendimento concluido = service.encerrarAtendimento(atendimento.getId());
 
         assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
     }
