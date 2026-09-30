@@ -5,6 +5,8 @@ import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
+import java.time.LocalDateTime;
+
 public class AtendimentoService {
     private final InMemoryAtendimentoRepository repository;
 
@@ -51,6 +53,13 @@ public class AtendimentoService {
         atendimento.concluir();
         repository.salvar(atendimento);
 
+        return atendimento;
+    }
+
+    public Atendimento reabrirAtendimento(AtendimentoId id, LocalDateTime agora) {
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.reabrir(agora);
+        repository.salvar(atendimento);
         return atendimento;
     }
 }

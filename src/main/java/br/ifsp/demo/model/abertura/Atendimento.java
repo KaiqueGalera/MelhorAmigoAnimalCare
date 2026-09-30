@@ -3,10 +3,10 @@ package br.ifsp.demo.model.abertura;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Atendimento {
     private final AtendimentoId id;
@@ -46,6 +46,10 @@ public class Atendimento {
             throw new IllegalStateException("O atendimento devo possui ao menos um diagnóstico para sua conclusão");
         }
         this.status = StatusAtendimento.CONCLUIDO;
+    }
+
+    public void reabrir(LocalDateTime agora) {
+        this.status = StatusAtendimento.EM_ANDAMENTO;
     }
 
     public void registrarSinaisVitais(SinaisVitais sinaisVitais) {

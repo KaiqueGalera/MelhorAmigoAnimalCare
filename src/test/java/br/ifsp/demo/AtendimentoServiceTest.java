@@ -148,7 +148,7 @@ class AtendimentoServiceTest {
     @Test
     @DisplayName("#C0501 Devo reabrir atendimento concluído dentro da janela de tempo")
     void devoReabrirAtendimentoDentroDaJanela(){
-        AnimalId animalId = AnimalId.novo();
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
