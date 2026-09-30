@@ -133,4 +133,14 @@ class AtendimentoServiceTest {
 
         assertThrows(IllegalStateException.class, ()-> service.concluirAtendimento(atendimento.getId()));
     }
+
+    @Test
+    @DisplayName("#C0403 Não devo encerrar atendimento sem diagnóstico registrados")
+    void naoDevoEncerrarAtendimentoSemDiagnostico(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+
+        assertThrows(IllegalStateException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+    }
 }
