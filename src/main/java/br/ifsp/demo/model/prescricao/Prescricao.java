@@ -36,6 +36,10 @@ public class Prescricao {
         if (status != StatusPrescricao.ABERTA) throw new IllegalStateException(mensagem);
     }
 
+    public void cancelar() {
+        status = StatusPrescricao.CANCELADA;
+    }
+
     public StatusPrescricao getStatus() {
         return status;
     }
