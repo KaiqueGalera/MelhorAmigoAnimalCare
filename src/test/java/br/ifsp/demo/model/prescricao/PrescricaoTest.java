@@ -169,4 +169,14 @@ class PrescricaoTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("A prescrição deve estar 'Aberta' para ser finalizada.");
     }
+    
+    @Test
+    @DisplayName("C1301 - deve cancelar uma prescricao em aberta")
+    void deveCancelarUmaPrescricaoEmAberta(){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.cancelar();
+
+        assertEquals(StatusPrescricao.CANCELADA, prescricao.getStatus());
+    }
 }
