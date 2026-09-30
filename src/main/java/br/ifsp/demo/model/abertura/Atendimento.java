@@ -39,6 +39,10 @@ public class Atendimento {
     }
 
     public void concluir(){
+        if (sinaisVitais == null) {
+            throw new IllegalStateException("O atendimento deve possuir registro de sinais vitais para sua conclusao");
+        }
+
         this.status = StatusAtendimento.CONCLUIDO;
     }
 
