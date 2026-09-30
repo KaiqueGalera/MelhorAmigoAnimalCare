@@ -179,4 +179,16 @@ class PrescricaoTest {
 
         assertEquals(StatusPrescricao.CANCELADA, prescricao.getStatus());
     }
+
+    @Test
+    @DisplayName("C1302 - deve rejeitar cancelamento de prescricao finalizada")
+    void deveRejeitarCancelamentoDePrescricaoFinalizada(){
+        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.finalizar();
+
+        assertThatThrownBy(prescricao::cancelar)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
+    }
 }
