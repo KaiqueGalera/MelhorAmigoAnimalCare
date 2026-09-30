@@ -1,10 +1,12 @@
 package br.ifsp.demo.model.prescricao;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Prescricao {
     private final Map<ItemPrescricaoId, ItemPrescricao> itens = new LinkedHashMap<>();
     private StatusPrescricao status;
+    private final LocalDateTime dataHoraEmissao;
 
     public Prescricao(List<ItemPrescricao> itensIniciais) {
         if (itensIniciais == null || itensIniciais.isEmpty()) {
@@ -14,6 +16,7 @@ public class Prescricao {
             itens.put(item.getId(), item);
         }
         this.status = StatusPrescricao.ABERTA;
+        this.dataHoraEmissao = LocalDateTime.now();
     }
 
     public void editarItem(ItemPrescricaoId id, ItemPrescricao novoItem) {
@@ -48,4 +51,6 @@ public class Prescricao {
     public List<ItemPrescricao> getItens() {
         return List.copyOf(itens.values());
     }
+
+    public LocalDateTime getDataHoraEmissao() { return dataHoraEmissao; }
 }
