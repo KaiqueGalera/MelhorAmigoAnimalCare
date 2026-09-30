@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -142,5 +143,18 @@ class AtendimentoServiceTest {
         atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
 
         assertThrows(IllegalStateException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+    }
+
+    @Test
+    @DisplayName("#C0501 Devo reabrir atendimento concluído dentro da janela de tempo")
+    void devoReabrirAtendimentoDentroDaJanela(){
+        AnimalId animalId = AnimalId.novo();
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        service.concluirAtendimento(atendimento.getId());
+        Atendimento reaberto = service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now());
+
+        assertThat(reaberto.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
     }
 }
