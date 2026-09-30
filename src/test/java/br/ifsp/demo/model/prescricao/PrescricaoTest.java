@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -190,5 +191,23 @@ class PrescricaoTest {
         assertThatThrownBy(prescricao::cancelar)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1701 - deve exibir detalhes de todas as prescricoes vinculadas ao atendimento")
+    void deveExibirDetalhesDeTodasAsPrescricoesVinculadasAoAtendimento() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        atendimento.emitirPrescricao(List.of(item));
+
+        List<Prescricao> prescricoes = atendimento.getPrescricoes();
+
+        assertThat(prescricoes).hasSize(1);
+        assertThat(prescricoes).allSatisfy(prescricao -> {
+            assertThat(prescricao.getStatus()).isEqualTo(StatusPrescricao.ABERTA);
+            assertThat(prescricao.getDataHoraEmissao()).isInstanceOf(LocalDateTime.class);
+        });
     }
 }
