@@ -123,4 +123,14 @@ class AtendimentoServiceTest {
 
         assertThat(concluido.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
     }
+
+    @Test
+    @DisplayName("#C0402 Não devo encerrar atendimento sem sinais vitais registrados")
+    void naoDevoEncerrarAtendimentoSemSinaisVitais(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+
+        assertThrows(IllegalStateException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+    }
 }
