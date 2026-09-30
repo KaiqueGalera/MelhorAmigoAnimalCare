@@ -37,6 +37,7 @@ public class Prescricao {
     }
 
     public void cancelar() {
+        if (status == StatusPrescricao.FINALIZADA) throw new IllegalStateException("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
         status = StatusPrescricao.CANCELADA;
     }
 
