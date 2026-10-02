@@ -157,4 +157,16 @@ class AtendimentoServiceTest {
 
         assertThat(reaberto.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
     }
+
+    @Test
+    @DisplayName("#C0502 Não devo reabrir atendimento concluído fora da janela de tempo")
+    void naoDevoReabrirAtendimentoForaDaJanela(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        service.concluirAtendimento(atendimento.getId());
+
+        assertThrows(IllegalStateException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now().plusHours(25)));
+    }
 }
