@@ -54,6 +54,10 @@ public class Atendimento {
 
     public void reabrir(LocalDateTime agora) {
         Duration decorrido = Duration.between(dataHoraConclusao, agora);
+        if (status != StatusAtendimento.CONCLUIDO) {
+            throw new IllegalStateException("Somente atendimentos concluídos podem ser reabertos");
+        }
+
         if (decorrido.compareTo(JANELA_REABERTURA) > 0) {
             throw new IllegalStateException("Janela de tempo para reabertura expirou");
         }

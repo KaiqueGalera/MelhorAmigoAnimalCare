@@ -169,4 +169,16 @@ class AtendimentoServiceTest {
 
         assertThrows(IllegalStateException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now().plusHours(25)));
     }
+
+    @Test
+    @DisplayName("#C0503 Não devo reabrir atendimento cancelado")
+    void naoDevoReabrirAtendimentoCancelado(){
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        service.cancelarAtendimento(atendimento.getId(), "Alguma justificativa convincente");
+
+        assertThrows(IllegalStateException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
+    }
 }
