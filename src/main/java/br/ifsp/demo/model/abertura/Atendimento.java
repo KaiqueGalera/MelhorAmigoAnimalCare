@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Atendimento {
+    private static final Duration JANELA_REABERTURA = Duration.ofHours(24);
     private final AtendimentoId id;
     private final AnimalId animalId;
     private final AgendamentoId agendamentoId;
@@ -17,6 +18,7 @@ public class Atendimento {
     private String justificativa;
     private SinaisVitais sinaisVitais;
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
+    private LocalDateTime dataHoraConclusao;
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -36,6 +38,7 @@ public class Atendimento {
 
         this.status = StatusAtendimento.CANCELADO;
         this.justificativa = justificativa;
+        this.dataHoraConclusao = LocalDateTime.now();
     }
 
     public void concluir(){
@@ -46,9 +49,15 @@ public class Atendimento {
             throw new IllegalStateException("O atendimento devo possui ao menos um diagnóstico para sua conclusão");
         }
         this.status = StatusAtendimento.CONCLUIDO;
+        this.dataHoraConclusao = LocalDateTime.now();
     }
 
     public void reabrir(LocalDateTime agora) {
+        Duration decorrido = Duration.between(dataHoraConclusao, agora);
+        if (decorrido.compareTo(JANELA_REABERTURA) > 0) {
+            throw new IllegalStateException("Janela de tempo para reabertura expirou");
+        }
+
         this.status = StatusAtendimento.EM_ANDAMENTO;
     }
 
