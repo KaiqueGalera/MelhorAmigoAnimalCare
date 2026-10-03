@@ -1,5 +1,6 @@
 package br.ifsp.demo.model.abertura;
 
+import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 
@@ -30,10 +31,10 @@ public class Atendimento {
 
     public void cancelar(String justificativa){
         if (status == StatusAtendimento.CANCELADO) {
-            throw new IllegalStateException("Atendimento cancelado não aceita alterações");
+            throw new AtendimentoCanceladoExcepiton("Atendimento cancelado não aceita alterações");
         }
         if (justificativa == null) {
-            throw new IllegalArgumentException("Justificativa é obrigatória para cancelar o atendimento");
+            throw new JustificativaObrigatoriaException("Justificativa é obrigatória para cancelar o atendimento");
         }
 
         this.status = StatusAtendimento.CANCELADO;
@@ -43,10 +44,10 @@ public class Atendimento {
 
     public void concluir(){
         if (sinaisVitais == null) {
-            throw new IllegalStateException("O atendimento deve possuir registro de sinais vitais para sua conclusao");
+            throw new SinaisVitaisObrigatoriosException("O atendimento deve possuir registro de sinais vitais para sua conclusao");
         }
         if (diagnosticos.isEmpty()) {
-            throw new IllegalStateException("O atendimento devo possui ao menos um diagnóstico para sua conclusão");
+            throw new DiagnosticoObrigatorioException("O atendimento devo possui ao menos um diagnóstico para sua conclusão");
         }
         this.status = StatusAtendimento.CONCLUIDO;
         this.dataHoraConclusao = LocalDateTime.now();
@@ -55,11 +56,11 @@ public class Atendimento {
     public void reabrir(LocalDateTime agora) {
         Duration decorrido = Duration.between(dataHoraConclusao, agora);
         if (status != StatusAtendimento.CONCLUIDO) {
-            throw new IllegalStateException("Somente atendimentos concluídos podem ser reabertos");
+            throw new AtendimentoNaoConcluidoException("Somente atendimentos concluídos podem ser reabertos");
         }
 
         if (decorrido.compareTo(JANELA_REABERTURA) > 0) {
-            throw new IllegalStateException("Janela de tempo para reabertura expirou");
+            throw new JanelaReaberturaExpiradaException("Janela de tempo para reabertura expirou");
         }
 
         this.status = StatusAtendimento.EM_ANDAMENTO;

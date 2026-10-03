@@ -1,7 +1,6 @@
 package br.ifsp.demo;
 
-import br.ifsp.demo.exception.AgendamentoJaComAtendimento;
-import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
+import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
@@ -10,6 +9,7 @@ import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import br.ifsp.demo.service.abertura.AtendimentoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -29,6 +29,8 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("# C0101 Devo abrir pronto atendimento para animal sem agendamento prévio")
     void devoAbrirProntoAtendimentoComSucesso(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -39,6 +41,8 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("# C0102 Não devo abrir pronto atendimento quando animal já estiver em atendimento")
     void naoDevoAbrirProntoAtendimento(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -48,6 +52,8 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("# C0103 Cancelar atendimento com justificativa com sucesso")
     void devoCancelarProntoAtendimentoComSucesso(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -60,6 +66,8 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("# C0201 Devo abrir atendimento para animal dado agendamento")
     void devoAbrirAtendimentoComAgendamento(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -72,6 +80,8 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("# C0202 Não devo abrir atendimento agendado dado animal em atendimento")
     void naoDevoAbrirAtendimentoComAgendamento(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -82,6 +92,8 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("# C0203-A Devo rejeitar associar agendamento com atendimento caso já tenha atendimento")
     void devoRejeitarAgendamentoJaUtilizado(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -89,36 +101,42 @@ class AtendimentoServiceTest {
         service.abrirAtendimentoComAgendamento(animalId, agendamentoId);
         AnimalId outroAnimal = AnimalId.of(UUID.randomUUID());
 
-        assertThrows(AgendamentoJaComAtendimento.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
+        assertThrows(AgendamentoJaUtilizadoException.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0302 Não devo cancelar atendimento sem informar justificativa")
     void naoDevoCancelarAtendimentoSemJustificativa(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(JustificativaObrigatoriaException.class,
                 () -> service.cancelarAtendimento(atendimento.getId(), null));
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0303 Não devo cancelar atendimento quando já cancelado")
     void naoDevoCancelarAtendimentoJaCancelado(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         service.cancelarAtendimento(atendimento.getId(), "Motivo para cancelar 1");
 
-        assertThrows(IllegalStateException  .class,
+        assertThrows(AtendimentoCanceladoExcepiton.class,
                 () -> service.cancelarAtendimento(atendimento.getId(), "Outro motivo"));
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0401 Devo encerrar atendimento")
     void devoEncerrarAtendimento(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.9, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
         Atendimento concluido = service.concluirAtendimento(atendimento.getId());
 
@@ -126,31 +144,37 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0402 Não devo encerrar atendimento sem sinais vitais registrados")
     void naoDevoEncerrarAtendimentoSemSinaisVitais(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
 
-        assertThrows(IllegalStateException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+        assertThrows(SinaisVitaisObrigatoriosException.class, ()-> service.concluirAtendimento(atendimento.getId()));
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0403 Não devo encerrar atendimento sem diagnóstico registrados")
     void naoDevoEncerrarAtendimentoSemDiagnostico(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.3, 100, 89));
 
-        assertThrows(IllegalStateException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+        assertThrows(DiagnosticoObrigatorioException.class, ()-> service.concluirAtendimento(atendimento.getId()));
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0501 Devo reabrir atendimento concluído dentro da janela de tempo")
     void devoReabrirAtendimentoDentroDaJanela(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.4, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
         service.concluirAtendimento(atendimento.getId());
         Atendimento reaberto = service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now());
@@ -159,26 +183,30 @@ class AtendimentoServiceTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0502 Não devo reabrir atendimento concluído fora da janela de tempo")
     void naoDevoReabrirAtendimentoForaDaJanela(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.6, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
         service.concluirAtendimento(atendimento.getId());
 
-        assertThrows(IllegalStateException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now().plusHours(25)));
+        assertThrows(JanelaReaberturaExpiradaException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now().plusHours(25)));
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
     @DisplayName("#C0503 Não devo reabrir atendimento cancelado")
     void naoDevoReabrirAtendimentoCancelado(){
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
-        atendimento.registrarSinaisVitais(new SinaisVitais(30, 100, 89));
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.5, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
         service.cancelarAtendimento(atendimento.getId(), "Alguma justificativa convincente");
 
-        assertThrows(IllegalStateException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
+        assertThrows(AtendimentoNaoConcluidoException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
     }
 }

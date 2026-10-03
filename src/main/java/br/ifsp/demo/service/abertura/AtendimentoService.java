@@ -1,6 +1,6 @@
 package br.ifsp.demo.service.abertura;
 
-import br.ifsp.demo.exception.AgendamentoJaComAtendimento;
+import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
@@ -31,7 +31,7 @@ public class AtendimentoService {
         }
 
         if (repository.existeAtendimentoParaAgendamento(agendamentoId)) {
-            throw new AgendamentoJaComAtendimento(agendamentoId);
+            throw new AgendamentoJaUtilizadoException(agendamentoId);
         }
 
         Atendimento atendimento = new Atendimento(agendamentoId, animalId);
