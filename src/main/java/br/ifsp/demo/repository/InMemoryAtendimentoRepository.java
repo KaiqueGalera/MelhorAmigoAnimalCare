@@ -1,5 +1,6 @@
 package br.ifsp.demo.repository;
 
+import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class InMemoryAtendimentoRepository {
         return atendimentos.stream()
                 .filter(atendimento -> atendimento.getId().equals(id))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new AtendimentoNaoEncontradoException(id));
     }
 
     public boolean existeAtendimentoParaAgendamento(AgendamentoId agendamentoId) {

@@ -1,6 +1,7 @@
 package br.ifsp.demo.service.abertura;
 
 import br.ifsp.demo.exception.AtendimentoNaoConcluidoException;
+import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.exception.JanelaReaberturaExpiradaException;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
 import br.ifsp.demo.model.abertura.AnimalId;
@@ -145,8 +146,8 @@ class AtendimentoServiceFuncionalTest {
     // =================================================================
 
     @ParameterizedTest(name = "temperatura={0}, FC={1}, FR={2}")
-    @Tag("Funcional")
-    @Tag("ParticaoEquivalencia")
+    @Tag("UnitTest")
+    @Tag("Functional")
     @DisplayName("#PE03 Não devo criar SinaisVitais com valores fisiologicamente inválidos")
     @CsvSource({
             "-1, 100, 24",     // temperatura negativa
@@ -166,12 +167,12 @@ class AtendimentoServiceFuncionalTest {
     // =================================================================
 
     @ParameterizedTest(name = "{0} sobre atendimento inexistente")
-    @Tag("Funcional")
-    @Tag("ParticaoEquivalencia")
+    @Tag("UnitTest")
+    @Tag("Functional")
     @DisplayName("#PE05 Não devo operar sobre um AtendimentoId que não existe no repositório")
     @MethodSource("acoesSobreAtendimentoInexistente")
     void naoDevoOperarSobreAtendimentoInexistente(String descricaoAcao, Executable acao) {
-        assertThrows(IllegalStateException.class, acao);
+        assertThrows(AtendimentoNaoEncontradoException.class, acao);
     }
 
     static Stream<Arguments> acoesSobreAtendimentoInexistente() {
