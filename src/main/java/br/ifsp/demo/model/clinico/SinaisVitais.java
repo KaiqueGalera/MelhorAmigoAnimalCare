@@ -4,5 +4,5 @@ public record SinaisVitais(
         double temperaturaC,
         int frequenciaCardiaca,
         double pesoKg
-) {
-}
+    ) {
+    }

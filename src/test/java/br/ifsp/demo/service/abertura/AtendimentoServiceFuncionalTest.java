@@ -1,5 +1,6 @@
 package br.ifsp.demo.service.abertura;
 
+import br.ifsp.demo.exception.AtendimentoNaoConcluidoException;
 import br.ifsp.demo.exception.JanelaReaberturaExpiradaException;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
 import br.ifsp.demo.model.abertura.AnimalId;
@@ -12,6 +13,7 @@ import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -134,5 +136,27 @@ class AtendimentoServiceFuncionalTest {
                 Arguments.of(Duration.ofHours(24), true),                   // exatamente no limite
                 Arguments.of(Duration.ofHours(24).plusMinutes(1), false)    // logo depois do limite
         );
+    }
+
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — faixas fisiológicas de SinaisVitais
+    // Classes: negativo / zero
+    // =================================================================
+
+    @ParameterizedTest(name = "temperatura={0}, FC={1}, FR={2}")
+    @Tag("Funcional")
+    @Tag("ParticaoEquivalencia")
+    @DisplayName("#PE03 Não devo criar SinaisVitais com valores fisiologicamente inválidos")
+    @CsvSource({
+            "-1, 100, 24",     // temperatura negativa
+            "0, 100, 24",      // temperatura zero
+            "38.5, -1, 24",    // frequência cardíaca negativa
+            "38.5, 0, 24",     // frequência cardíaca zero
+            "38.5, 100, -1",   // peso negativo
+            "38.5, 100, 0"     // peso zero
+    })
+    void naoDevoCriarSinaisVitaisComValoresInvalidos(double temperatura, int frequenciaCardiaca, int frequenciaRespiratoria) {
+        assertThrows(RuntimeException.class,
+                () -> new SinaisVitais(temperatura, frequenciaCardiaca, frequenciaRespiratoria));
     }
 }
