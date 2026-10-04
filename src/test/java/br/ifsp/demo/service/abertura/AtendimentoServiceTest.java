@@ -1,4 +1,4 @@
-package br.ifsp.demo;
+package br.ifsp.demo.service.abertura;
 
 import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.abertura.*;
@@ -6,7 +6,6 @@ import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
-import br.ifsp.demo.service.abertura.AtendimentoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
