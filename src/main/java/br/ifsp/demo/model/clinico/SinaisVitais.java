@@ -16,4 +16,4 @@ public record SinaisVitais(
             throw new IllegalArgumentException("Peso deve ser maior que zero");
         }
     }
-    }
+}

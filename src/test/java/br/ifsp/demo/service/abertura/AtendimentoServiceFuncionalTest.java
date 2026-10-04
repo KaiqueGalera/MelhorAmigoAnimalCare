@@ -5,6 +5,7 @@ import br.ifsp.demo.exception.JanelaReaberturaExpiradaException;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
 import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
+import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.abertura.StatusAtendimento;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-
+import org.junit.jupiter.api.function.Executable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -158,5 +159,33 @@ class AtendimentoServiceFuncionalTest {
     void naoDevoCriarSinaisVitaisComValoresInvalidos(double temperatura, int frequenciaCardiaca, int frequenciaRespiratoria) {
         assertThrows(RuntimeException.class,
                 () -> new SinaisVitais(temperatura, frequenciaCardiaca, frequenciaRespiratoria));
+    }
+
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — AtendimentoId existente x inexistente
+    // =================================================================
+
+    @ParameterizedTest(name = "{0} sobre atendimento inexistente")
+    @Tag("Funcional")
+    @Tag("ParticaoEquivalencia")
+    @DisplayName("#PE05 Não devo operar sobre um AtendimentoId que não existe no repositório")
+    @MethodSource("acoesSobreAtendimentoInexistente")
+    void naoDevoOperarSobreAtendimentoInexistente(String descricaoAcao, Executable acao) {
+        assertThrows(IllegalStateException.class, acao);
+    }
+
+    static Stream<Arguments> acoesSobreAtendimentoInexistente() {
+        InMemoryAtendimentoRepository repo = new InMemoryAtendimentoRepository();
+        AtendimentoService srv = new AtendimentoService(repo);
+        AtendimentoId idInexistente = AtendimentoId.novo();
+
+        return Stream.of(
+                Arguments.of("cancelarAtendimento",
+                        (Executable) () -> srv.cancelarAtendimento(idInexistente, "pq sim")),
+                Arguments.of("concluirAtendimento",
+                        (Executable) () -> srv.concluirAtendimento(idInexistente)),
+                Arguments.of("reabrirAtendimento",
+                        (Executable) () -> srv.reabrirAtendimento(idInexistente, LocalDateTime.now()))
+        );
     }
 }
