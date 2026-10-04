@@ -1,5 +1,6 @@
 package br.ifsp.demo.service.abertura;
 
+import br.ifsp.demo.exception.JanelaReaberturaExpiradaException;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
 import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
@@ -12,11 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +52,7 @@ class AtendimentoServiceFuncionalTest {
 
     @ParameterizedTest(name = "justificativa válida: \"{0}\"")
     @Tag("UnitTest")
-    @Tag("Funcional")
+    @Tag("Functional")
     @DisplayName("#PE02 Devo cancelar atendimento com justificativa válida")
     @ValueSource(strings = {
             "a",
@@ -73,8 +75,8 @@ class AtendimentoServiceFuncionalTest {
     // =================================================================
 
     @ParameterizedTest(name = "sinaisVitais={0}, diagnostico={1} -> deveConcluir={2}")
-    @Tag("Funcional")
-    @Tag("TabelaDecisao")
+    @Tag("UnitTest")
+    @Tag("Functional")
     @DisplayName("#TD01 Tabela de decisão para conclusão do atendimento")
     @CsvSource({
             "false, false, false",
@@ -98,5 +100,39 @@ class AtendimentoServiceFuncionalTest {
         } else {
             assertThrows(RuntimeException.class, () -> service.concluirAtendimento(atendimento.getId()));
         }
+    }
+
+    // =================================================================
+    // VALOR LIMITE — janela de reabertura (24h)
+    // =================================================================
+
+    @ParameterizedTest(name = "reabrir {0} após conclusão -> deveReabrir={1}")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#VL01 Valor limite da janela de reabertura (24h)")
+    @MethodSource("limitesJanelaReabertura")
+    void valorLimiteJanelaReabertura(Duration tempoDecorrido, boolean deveReabrir) {
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarSinaisVitais(new SinaisVitais(38.5, 100, 77));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        service.concluirAtendimento(atendimento.getId());
+
+        LocalDateTime instanteReabertura = LocalDateTime.now().plus(tempoDecorrido);
+
+        if (deveReabrir) {
+            assertDoesNotThrow(() -> service.reabrirAtendimento(atendimento.getId(), instanteReabertura));
+        } else {
+            assertThrows(JanelaReaberturaExpiradaException.class,
+                    () -> service.reabrirAtendimento(atendimento.getId(), instanteReabertura));
+        }
+    }
+
+    static Stream<Arguments> limitesJanelaReabertura() {
+        return Stream.of(
+                Arguments.of(Duration.ofHours(23).plusMinutes(59), true),   // logo antes do limite
+                Arguments.of(Duration.ofHours(24), true),                   // exatamente no limite
+                Arguments.of(Duration.ofHours(24).plusMinutes(1), false)    // logo depois do limite
+        );
     }
 }
