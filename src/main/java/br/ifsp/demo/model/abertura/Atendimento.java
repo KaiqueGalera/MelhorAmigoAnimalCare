@@ -33,7 +33,7 @@ public class Atendimento {
         if (status == StatusAtendimento.CANCELADO) {
             throw new AtendimentoCanceladoExcepiton("Atendimento cancelado não aceita alterações");
         }
-        if (justificativa == null) {
+        if (justificativa == null || justificativa.isBlank()) {
             throw new JustificativaObrigatoriaException("Justificativa é obrigatória para cancelar o atendimento");
         }
 
