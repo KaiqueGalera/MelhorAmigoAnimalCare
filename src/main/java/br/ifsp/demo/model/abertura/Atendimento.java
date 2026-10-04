@@ -58,7 +58,9 @@ public class Atendimento {
         if (status != StatusAtendimento.CONCLUIDO) {
             throw new AtendimentoNaoConcluidoException("Somente atendimentos concluídos podem ser reabertos");
         }
-
+        if (decorrido.isNegative()) {
+            throw new InstanteReaberturaInvalidoException(id);
+        }
         if (decorrido.compareTo(JANELA_REABERTURA) > 0) {
             throw new JanelaReaberturaExpiradaException("Janela de tempo para reabertura expirou");
         }
