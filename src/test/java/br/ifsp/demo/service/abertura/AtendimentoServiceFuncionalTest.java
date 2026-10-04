@@ -189,4 +189,34 @@ class AtendimentoServiceFuncionalTest {
                         (Executable) () -> srv.reabrirAtendimento(idInexistente, LocalDateTime.now()))
         );
     }
+
+    // =================================================================
+    // VALOR LIMITE — instante de reabertura anterior à conclusão
+    // =================================================================
+
+    @ParameterizedTest(name = "reabertura {0} antes da conclusão")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL02 Não devo reabrir atendimento com instante anterior ao da conclusão")
+    @MethodSource("instantesAnterioresAConclusao")
+    void naoDevoReabrirComInstanteAnteriorAConclusao(Duration antesDaConclusao) {
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        atendimento.registrarSinaisVitais(new SinaisVitais(38.5, 100, 77));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        service.concluirAtendimento(atendimento.getId());
+
+        LocalDateTime instanteReabertura = LocalDateTime.now().minus(antesDaConclusao);
+
+        assertThrows(RuntimeException.class,
+                () -> service.reabrirAtendimento(atendimento.getId(), instanteReabertura));
+    }
+
+    static Stream<Arguments> instantesAnterioresAConclusao() {
+        return Stream.of(
+                Arguments.of(Duration.ofMinutes(1)),
+                Arguments.of(Duration.ofHours(1)),
+                Arguments.of(Duration.ofDays(1))
+        );
+    }
 }
