@@ -3,15 +3,18 @@ package br.ifsp.demo.service.abertura;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
 import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
+import br.ifsp.demo.model.abertura.StatusAtendimento;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AtendimentoServiceFuncionalTest {
@@ -26,7 +29,7 @@ class AtendimentoServiceFuncionalTest {
 
     // =================================================================
     // PARTIÇÃO DE EQUIVALÊNCIA — justificativa de cancelamento
-    // Classes: inválida (nula / vazia / só espaços em branco)
+    // Classes: inválida (nula / vazia / só espaços em branco) x válidas
     // =================================================================
 
     @ParameterizedTest(name = "justificativa inválida: \"{0}\"")
@@ -39,5 +42,24 @@ class AtendimentoServiceFuncionalTest {
 
         assertThrows(JustificativaObrigatoriaException.class,
                 () -> service.cancelarAtendimento(atendimento.getId(), justificativaInvalida));
+    }
+
+    @ParameterizedTest(name = "justificativa válida: \"{0}\"")
+    @Tag("UnitTest")
+    @Tag("Funcional")
+    @DisplayName("#PE02 Devo cancelar atendimento com justificativa válida")
+    @ValueSource(strings = {
+            "a",
+            "Animal estava muito inquieto e o dono optou por ir embora",
+            "Tutor não compareceu"
+    })
+    void devoCancelarComJustificativaValida(String justificativaValida) {
+        AnimalId animalId = AnimalId.of(UUID.randomUUID());
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+
+        Atendimento cancelado = service.cancelarAtendimento(atendimento.getId(), justificativaValida);
+
+        assertThat(cancelado.getStatus()).isEqualTo(StatusAtendimento.CANCELADO);
+        assertThat(cancelado.getJustificativa()).isEqualTo(justificativaValida);
     }
 }
