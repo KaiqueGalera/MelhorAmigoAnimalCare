@@ -67,4 +67,22 @@ class PrescricaoServiceTest {
         Prescricao prescricaoAtualizada = prescricaoService.consultarPrescricoes(atendimento.getId()).get(0);
         assertThat(prescricaoAtualizada.getItens()).containsExactly(itemEditado);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1102 - deve remover item de prescricao via service")
+    void deveRemoverItemDePrescricaoViaService() {
+        Atendimento atendimento = atendimentoService.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        ItemPrescricao item1 = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        ItemPrescricao item2 = new ItemPrescricao("Amoxicilina", 250, "Oral", "8/8h", 10);
+        Prescricao prescricao = prescricaoService.emitirPrescricao(atendimento.getId(), List.of(item1, item2));
+
+        prescricaoService.removerItem(atendimento.getId(), prescricao.getId(), item1.getId());
+
+        Prescricao prescricaoAtualizada = prescricaoService.consultarPrescricoes(atendimento.getId()).get(0);
+        assertThat(prescricaoAtualizada.getItens()).containsExactly(item2);
+    }
+
+
 }
