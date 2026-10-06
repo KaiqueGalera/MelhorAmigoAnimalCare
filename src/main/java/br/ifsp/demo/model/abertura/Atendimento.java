@@ -5,6 +5,8 @@ import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
+import br.ifsp.demo.model.prescricao.PrescricaoId;
+import br.ifsp.demo.model.prescricao.StatusPrescricao;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -99,6 +101,13 @@ public class Atendimento {
         Prescricao prescricao = new Prescricao(itens);
         prescricoes.add(prescricao);
         return prescricao;
+    }
+
+    public Prescricao encontrarPrescricao(PrescricaoId prescricaoId) {
+        return prescricoes.stream()
+                .filter(p -> p.getId().equals(prescricaoId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
     }
 
     public String getJustificativa() {
