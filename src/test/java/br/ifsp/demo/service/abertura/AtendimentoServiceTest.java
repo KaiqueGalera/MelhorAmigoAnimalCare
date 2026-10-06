@@ -229,4 +229,21 @@ class AtendimentoServiceTest {
         assertThatCode(atendimento::concluir).doesNotThrowAnyException();
         assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0406 - deve rejeitar conclusao de atendimento com prescricao aberta")
+    void deveRejeitarConclusaoDeAtendimentoComPrescricaoAberta() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.6, 100, 89));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        atendimento.emitirPrescricao(List.of(item));
+
+        assertThatThrownBy(atendimento::concluir)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Finalização de atendimento rejeitada, não é possível a finalização de atendimentos com prescrições abertas.");
+    }
 }
