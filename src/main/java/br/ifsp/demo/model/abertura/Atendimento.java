@@ -52,6 +52,15 @@ public class Atendimento {
         if (diagnosticos.isEmpty()) {
             throw new DiagnosticoObrigatorioException("O atendimento devo possui ao menos um diagnóstico para sua conclusão");
         }
+
+        boolean possuiPrescricaoAberta = prescricoes.stream()
+                .anyMatch(p -> p.getStatus() == StatusPrescricao.ABERTA);
+
+        if (possuiPrescricaoAberta) {
+            throw new IllegalStateException(
+                    "Finalização de atendimento rejeitada, não é possível a finalização de atendimentos com prescrições abertas.");
+        }
+
         this.status = StatusAtendimento.CONCLUIDO;
         this.dataHoraConclusao = LocalDateTime.now();
     }
