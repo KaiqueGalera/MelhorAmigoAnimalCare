@@ -40,7 +40,7 @@ class PrescricaoServiceTest {
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
-    @DisplayName("1701 - deve consultar todas as prescricoes de um atendimento via service")
+    @DisplayName("C1701 - deve consultar todas as prescricoes de um atendimento via service")
     void deveConsultarTodasAsPrescricoesDeUmAtendimentoViaService() {
         Atendimento atendimento = atendimentoService.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
         ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
@@ -50,5 +50,21 @@ class PrescricaoServiceTest {
 
         assertThat(prescricoes).hasSize(1);
         assertThat(prescricoes.getFirst().getItens()).containsExactly(item);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1101 - deve editar item de prescricao via service")
+    void deveEditarItemDePrescricaoViaService() {
+        Atendimento atendimento = atendimentoService.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = prescricaoService.emitirPrescricao(atendimento.getId(), List.of(item));
+
+        ItemPrescricao itemEditado = new ItemPrescricao(item.getId(), "Amoxicilina", 1000, "Oral", "12 em 12 horas", 7);
+        prescricaoService.editarItem(atendimento.getId(), prescricao.getId(), item.getId(), itemEditado);
+
+        Prescricao prescricaoAtualizada = prescricaoService.consultarPrescricoes(atendimento.getId()).get(0);
+        assertThat(prescricaoAtualizada.getItens()).containsExactly(itemEditado);
     }
 }
