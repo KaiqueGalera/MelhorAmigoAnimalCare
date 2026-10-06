@@ -1,7 +1,5 @@
 package br.ifsp.demo.model.prescricao;
 
-import java.util.UUID;
-
 public class ItemPrescricao {
     private final ItemPrescricaoId id;
     private String medicamento;

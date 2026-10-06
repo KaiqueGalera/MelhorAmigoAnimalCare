@@ -3,6 +3,8 @@ package br.ifsp.demo.model.abertura;
 import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
+import br.ifsp.demo.model.prescricao.ItemPrescricao;
+import br.ifsp.demo.model.prescricao.Prescricao;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ public class Atendimento {
     private SinaisVitais sinaisVitais;
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
     private LocalDateTime dataHoraConclusao;
+    private final List<Prescricao> prescricoes = new ArrayList<>();
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -80,6 +83,15 @@ public class Atendimento {
         return new Atendimento(null, animalId);
     }
 
+    public Prescricao emitirPrescricao(List<ItemPrescricao> itens) {
+        if (status != StatusAtendimento.EM_ANDAMENTO) {
+            throw new IllegalStateException("Emissão rejeitada: só é possível emitir uma prescrição durante um atendimento em andamento.");
+        }
+        Prescricao prescricao = new Prescricao(itens);
+        prescricoes.add(prescricao);
+        return prescricao;
+    }
+
     public String getJustificativa() {
         return justificativa;
     }
@@ -103,4 +115,6 @@ public class Atendimento {
     public LocalDateTime getDataHoraAtendimento() {
         return dataHoraAtendimento;
     }
+
+    public List<Prescricao> getPrescricoes() { return prescricoes; }
 }
