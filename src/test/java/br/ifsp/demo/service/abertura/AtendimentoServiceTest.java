@@ -5,6 +5,8 @@ import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
+import br.ifsp.demo.model.prescricao.ItemPrescricao;
+import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +14,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -207,5 +212,21 @@ class AtendimentoServiceTest {
         service.cancelarAtendimento(atendimento.getId(), "Alguma justificativa convincente");
 
         assertThrows(AtendimentoNaoConcluidoException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0405 - deve permitir conclusao de atendimento com prescricao cancelada")
+    void devePermitirConclusaoDeAtendimentoComPrescricaoCancelada() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        atendimento.registrarSinaisVitais(new SinaisVitais(30.6, 100, 89));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        Prescricao prescricao = atendimento.emitirPrescricao(List.of(item));
+        prescricao.cancelar();
+
+        assertThatCode(atendimento::concluir).doesNotThrowAnyException();
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
     }
 }
