@@ -4,19 +4,29 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class Prescricao {
+    private final PrescricaoId id;
     private final Map<ItemPrescricaoId, ItemPrescricao> itens = new LinkedHashMap<>();
     private StatusPrescricao status;
     private final LocalDateTime dataHoraEmissao;
 
     public Prescricao(List<ItemPrescricao> itensIniciais) {
+        this(PrescricaoId.novo(), itensIniciais, LocalDateTime.now());
+    }
+
+    public Prescricao(List<ItemPrescricao> itensIniciais, LocalDateTime dataHoraEmissao) {
+        this(PrescricaoId.novo(), itensIniciais, dataHoraEmissao);
+    }
+
+    public Prescricao(PrescricaoId id, List<ItemPrescricao> itensIniciais, LocalDateTime dataHoraEmissao) {
         if (itensIniciais == null || itensIniciais.isEmpty()) {
             throw new IllegalArgumentException("Emissão rejeitada: só é possível emitir uma prescrição com pelo menos um item.");
         }
         for (ItemPrescricao item : itensIniciais) {
             itens.put(item.getId(), item);
         }
+        this.id = id;
         this.status = StatusPrescricao.ABERTA;
-        this.dataHoraEmissao = LocalDateTime.now();
+        this.dataHoraEmissao = dataHoraEmissao;
     }
 
     public void editarItem(ItemPrescricaoId id, ItemPrescricao novoItem) {
@@ -43,6 +53,8 @@ public class Prescricao {
         if (status == StatusPrescricao.FINALIZADA) throw new IllegalStateException("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
         status = StatusPrescricao.CANCELADA;
     }
+
+    public PrescricaoId getId() { return id; }
 
     public StatusPrescricao getStatus() {
         return status;
