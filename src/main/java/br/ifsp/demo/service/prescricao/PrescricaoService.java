@@ -25,4 +25,12 @@ public class PrescricaoService {
         Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
         return atendimento.getPrescricoes();
     }
+
+    public void editarItem(AtendimentoId atendimentoId, PrescricaoId prescricaoId,
+                           ItemPrescricaoId itemId, ItemPrescricao novoItem) {
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+        Prescricao prescricao = atendimento.encontrarPrescricao(prescricaoId);
+        prescricao.editarItem(itemId, novoItem);
+        repository.salvar(atendimento);
+    }
 }
