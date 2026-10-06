@@ -36,4 +36,19 @@ class PrescricaoServiceTest {
 
         assertThat(prescricao.getStatus()).isEqualTo(StatusPrescricao.ABERTA);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("1701 - deve consultar todas as prescricoes de um atendimento via service")
+    void deveConsultarTodasAsPrescricoesDeUmAtendimentoViaService() {
+        Atendimento atendimento = atendimentoService.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        prescricaoService.emitirPrescricao(atendimento.getId(), List.of(item));
+
+        List<Prescricao> prescricoes = prescricaoService.consultarPrescricoes(atendimento.getId());
+
+        assertThat(prescricoes).hasSize(1);
+        assertThat(prescricoes.getFirst().getItens()).containsExactly(item);
+    }
 }
