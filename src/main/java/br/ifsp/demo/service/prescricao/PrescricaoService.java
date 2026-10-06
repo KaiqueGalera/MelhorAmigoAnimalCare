@@ -33,4 +33,11 @@ public class PrescricaoService {
         prescricao.editarItem(itemId, novoItem);
         repository.salvar(atendimento);
     }
+
+    public void removerItem(AtendimentoId atendimentoId, PrescricaoId prescricaoId, ItemPrescricaoId itemId) {
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+        Prescricao prescricao = atendimento.encontrarPrescricao(prescricaoId);
+        prescricao.removerItem(itemId);
+        repository.salvar(atendimento);
+    }
 }
