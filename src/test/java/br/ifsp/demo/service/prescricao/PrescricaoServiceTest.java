@@ -98,4 +98,19 @@ class PrescricaoServiceTest {
         Prescricao prescricaoAtualizada = prescricaoService.consultarPrescricoes(atendimento.getId()).get(0);
         assertThat(prescricaoAtualizada.getStatus()).isEqualTo(StatusPrescricao.FINALIZADA);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1301 - deve cancelar prescricao via service")
+    void deveCancelarPrescricaoViaService() {
+        Atendimento atendimento = atendimentoService.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        Prescricao prescricao = prescricaoService.emitirPrescricao(atendimento.getId(), List.of(item));
+
+        prescricaoService.cancelar(atendimento.getId(), prescricao.getId());
+
+        Prescricao prescricaoAtualizada = prescricaoService.consultarPrescricoes(atendimento.getId()).get(0);
+        assertThat(prescricaoAtualizada.getStatus()).isEqualTo(StatusPrescricao.CANCELADA);
+    }
 }
