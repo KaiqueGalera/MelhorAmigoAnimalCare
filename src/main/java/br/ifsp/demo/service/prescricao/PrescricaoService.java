@@ -20,4 +20,9 @@ public class PrescricaoService {
         repository.salvar(atendimento);
         return prescricao;
     }
+
+    public List<Prescricao> consultarPrescricoes(AtendimentoId atendimentoId) {
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+        return atendimento.getPrescricoes();
+    }
 }
