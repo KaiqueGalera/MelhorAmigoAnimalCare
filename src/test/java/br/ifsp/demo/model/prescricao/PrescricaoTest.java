@@ -210,7 +210,7 @@ class PrescricaoTest {
     @Tag("Functional")
     @NullSource
     @ValueSource(ints = {0, -1})
-    @DisplayName("US10 - deve rejeitar item com dosagem invalida")
+    @DisplayName("US10a - deve rejeitar item com dosagem invalida")
     void deveRejeitarItemComDosagemInvalida(int dosagem) {
         assertThatThrownBy(() -> new ItemPrescricao("Dipirona", dosagem, "Oral", "12/12h", 7))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -222,7 +222,7 @@ class PrescricaoTest {
     @Tag("Functional")
     @NullSource
     @ValueSource(strings = {"", "   "})
-    @DisplayName("US10 - deve rejeitar item com medicamento invalido")
+    @DisplayName("US10b - deve rejeitar item com medicamento invalido")
     void deveRejeitarItemComMedicamentoInvalido(String medicamento) {
         assertThatThrownBy(() -> new ItemPrescricao(medicamento, 500, "Oral", "12/12h", 7))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -234,7 +234,7 @@ class PrescricaoTest {
     @Tag("Functional")
     @NullSource
     @ValueSource(strings = {"", "   "})
-    @DisplayName("US10 - deve rejeitar item com via de administracao invalida")
+    @DisplayName("US10c - deve rejeitar item com via de administracao invalida")
     void deveRejeitarItemComViaInvalida(String via) {
         assertThatThrownBy(() -> new ItemPrescricao("Dipirona", 500, via, "12/12h", 7))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -246,7 +246,7 @@ class PrescricaoTest {
     @Tag("Functional")
     @NullSource
     @ValueSource(strings = {"", "   "})
-    @DisplayName("US10 - deve rejeitar item com frequencia invalida")
+    @DisplayName("US10d - deve rejeitar item com frequencia invalida")
     void deveRejeitarItemComFrequenciaInvalida(String frequencia) {
         assertThatThrownBy(() -> new ItemPrescricao("Dipirona", 500, "Oral", frequencia, 7))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -258,10 +258,84 @@ class PrescricaoTest {
     @Tag("Functional")
     @NullSource
     @ValueSource(ints = {0, -1})
-    @DisplayName("US10 - deve rejeitar item com duracao invalida")
+    @DisplayName("US10e - deve rejeitar item com duracao invalida")
     void deveRejeitarItemComDuracaoInvalida(Integer duracao) {
         assertThatThrownBy(() -> new ItemPrescricao("Dipirona", 500, "Oral", "12/12h", duracao))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Valor Inválido: Duração deve ser maior que zero");
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("acoesComIdInexistente")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US11a - deve rejeitar operacao com ID de item inexistente")
+    void deveRejeitarOperacaoComIdDeItemInexistente(String descricao, BiConsumer<Prescricao, ItemPrescricaoId> acao) {
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
+        ItemPrescricaoId idInexistente = ItemPrescricaoId.novo();
+
+        assertThatThrownBy(() -> acao.accept(prescricao, idInexistente))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Item de prescrição não encontrado.");
+    }
+
+    static Stream<Arguments> acoesComIdInexistente() {
+        return Stream.of(
+                Arguments.of("editar item",
+                        (BiConsumer<Prescricao, ItemPrescricaoId>) (p, id) ->
+                                p.editarItem(id, new ItemPrescricao("Amoxicilina", 1000, "Oral", "12/12h", 7))),
+                Arguments.of("remover item",
+                        (BiConsumer<Prescricao, ItemPrescricaoId>) Prescricao::removerItem)
+        );
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US11b - deve rejeitar edicao quando novo item tem ID divergente da chave")
+    void deveRejeitarEdicaoQuandoNovoItemTemIdDivergente() {
+        ItemPrescricao item = itemValido();
+        Prescricao prescricao = new Prescricao(List.of(item));
+        ItemPrescricao comOutroId = new ItemPrescricao("Amoxicilina", 1000, "Oral", "12/12h", 7);
+
+        assertThatThrownBy(() -> prescricao.editarItem(item.getId(), comOutroId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("O id do item editado deve ser igual ao id original.");
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US11c - deve permitir remover o ultimo item restante retornando prescricao vazia")
+    void devePermitirRemoverUltimoItemRestanteRetornandoPrescricaoVazia() {
+        ItemPrescricao item = itemValido();
+        Prescricao prescricao = new Prescricao(List.of(item));
+
+        prescricao.removerItem(item.getId());
+
+        assertThat(prescricao.getItens()).isEmpty();
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US11d - deve rejeitar edicao com id nulo")
+    void deveRejeitarEdicaoComIdNulo() {
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
+
+        assertThatThrownBy(() -> prescricao.editarItem(null, itemValido()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US11e - deve rejeitar edicao com novo item nulo")
+    void deveRejeitarEdicaoComNovoItemNulo() {
+        ItemPrescricao item = itemValido();
+        Prescricao prescricao = new Prescricao(List.of(item));
+
+        assertThatThrownBy(() -> prescricao.editarItem(item.getId(), null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
