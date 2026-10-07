@@ -126,8 +126,6 @@ class PrescricaoTest {
                 .hasMessage("A prescrição deve conter pelo menos um item para ser finalizada.");
     }
 
-    // ===================== RF13 - Cancelar prescrição (TDD) =====================
-
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
