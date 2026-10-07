@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -198,5 +201,67 @@ class PrescricaoTest {
             assertThat(prescricao.getStatus()).isEqualTo(StatusPrescricao.ABERTA);
             assertThat(prescricao.getDataHoraEmissao()).isInstanceOf(LocalDateTime.class);
         });
+    }
+
+    // TESTES FUNCIONAIS
+
+    @ParameterizedTest(name = "dosagem = {0}")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @NullSource
+    @ValueSource(ints = {0, -1})
+    @DisplayName("US10 - deve rejeitar item com dosagem invalida")
+    void deveRejeitarItemComDosagemInvalida(int dosagem) {
+        assertThatThrownBy(() -> new ItemPrescricao("Dipirona", dosagem, "Oral", "12/12h", 7))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Valor Inválido: Dosagem deve ser maior que zero");
+    }
+
+    @ParameterizedTest(name = "medicamento = \"{0}\"")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @NullSource
+    @ValueSource(strings = {"", "   "})
+    @DisplayName("US10 - deve rejeitar item com medicamento invalido")
+    void deveRejeitarItemComMedicamentoInvalido(String medicamento) {
+        assertThatThrownBy(() -> new ItemPrescricao(medicamento, 500, "Oral", "12/12h", 7))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Valor Inválido: Medicamento é obrigatório");
+    }
+
+    @ParameterizedTest(name = "via = \"{0}\"")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @NullSource
+    @ValueSource(strings = {"", "   "})
+    @DisplayName("US10 - deve rejeitar item com via de administracao invalida")
+    void deveRejeitarItemComViaInvalida(String via) {
+        assertThatThrownBy(() -> new ItemPrescricao("Dipirona", 500, via, "12/12h", 7))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Valor Inválido: Via de administração é obrigatória");
+    }
+
+    @ParameterizedTest(name = "frequencia = \"{0}\"")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @NullSource
+    @ValueSource(strings = {"", "   "})
+    @DisplayName("US10 - deve rejeitar item com frequencia invalida")
+    void deveRejeitarItemComFrequenciaInvalida(String frequencia) {
+        assertThatThrownBy(() -> new ItemPrescricao("Dipirona", 500, "Oral", frequencia, 7))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Valor Inválido: Frequência é obrigatória");
+    }
+
+    @ParameterizedTest(name = "duracao = {0}")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @NullSource
+    @ValueSource(ints = {0, -1})
+    @DisplayName("US10 - deve rejeitar item com duracao invalida")
+    void deveRejeitarItemComDuracaoInvalida(Integer duracao) {
+        assertThatThrownBy(() -> new ItemPrescricao("Dipirona", 500, "Oral", "12/12h", duracao))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Valor Inválido: Duração deve ser maior que zero");
     }
 }
