@@ -280,6 +280,6 @@ class AtendimentoServiceTest {
                 List.of()
         ))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Solicitação de exame rejeitada, pelo menos um exame deve ser selecionado para prosseguir.");
+                .hasMessage("Solicitação de exame rejeitada: pelo menos um exame deve ser selecionado para prosseguir.");
     }
 }
