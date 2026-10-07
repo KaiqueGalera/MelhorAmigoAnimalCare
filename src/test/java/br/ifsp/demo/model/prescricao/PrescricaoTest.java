@@ -343,7 +343,7 @@ class PrescricaoTest {
     @MethodSource("acoesInvalidasQuandoCancelada")
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("F-RF12a - deve rejeitar operacao quando prescricao esta cancelada")
+    @DisplayName("US12a - deve rejeitar operacao quando prescricao esta cancelada")
     void deveRejeitarOperacaoQuandoPrescricaoEstaCancelada(
             String descricao, BiConsumer<Prescricao, ItemPrescricao> acao, String mensagemEsperada) {
         ItemPrescricao item = itemValido();
