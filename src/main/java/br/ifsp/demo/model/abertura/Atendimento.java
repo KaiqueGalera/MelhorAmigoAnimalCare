@@ -3,6 +3,7 @@ package br.ifsp.demo.model.abertura;
 import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
+import br.ifsp.demo.model.exame.Exame;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.model.prescricao.PrescricaoId;
@@ -135,4 +136,8 @@ public class Atendimento {
     }
 
     public List<Prescricao> getPrescricoes() { return prescricoes; }
+
+    public List<Exame> getExames() {
+        return List.of();
+    }
 }
