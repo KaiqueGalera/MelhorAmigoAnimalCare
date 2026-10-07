@@ -282,4 +282,21 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Solicitação de exame rejeitada: pelo menos um exame deve ser selecionado para prosseguir.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0603 - não deve prosseguir com a solicitação caso o atendimento não exista.")
+    void naoDeveProsseguirComASolicitacaoCasoOAtendimentoNãoExista() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        assertThatThrownBy(() -> service.solicitarExames(
+                atendimento.getId(),
+                List.of(exame1, exame2)
+        ))
+                .isInstanceOf(AtendimentoNaoEncontradoException.class);
+    }
 }
