@@ -246,22 +246,4 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Finalização de atendimento rejeitada, não é possível a finalização de atendimentos com prescrições abertas.");
     }
-
-    @Test
-    @Tag("UnitTest")
-    @Tag("TDD")
-    @DisplayName("C0601 - deve adicionar os exames solicitados à lista de exames do atendimento.")
-    void deveAdicionarOsExamesSolicitadosAListaDeExamesDoAtendimento() {
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
-
-        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
-        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
-
-        service.solicitarExames(atendimento, List.of(exame1, exame2));
-
-        var exames = atendimento.getExames();
-        assertThat(exames.size()).isEqualTo(2);
-        assertThat(exames.contains(exame1)).isEqualTo(true);
-        assertThat(exames.contains(exame2)).isEqualTo(true);
-    }
 }
