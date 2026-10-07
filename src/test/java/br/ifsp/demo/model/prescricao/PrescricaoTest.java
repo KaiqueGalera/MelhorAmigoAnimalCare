@@ -151,7 +151,7 @@ class PrescricaoTest {
 
         assertThatThrownBy(prescricao::cancelar)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
+                .hasMessage("A prescrição deve estar 'Aberta' para ser cancelada.");
     }
 
     @ParameterizedTest(name = "{0}")
