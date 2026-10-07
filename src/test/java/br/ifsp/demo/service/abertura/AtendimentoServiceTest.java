@@ -5,6 +5,8 @@ import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
+import br.ifsp.demo.model.exame.Exame;
+import br.ifsp.demo.model.exame.ExameId;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
