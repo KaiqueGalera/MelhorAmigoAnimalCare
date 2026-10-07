@@ -203,8 +203,6 @@ class PrescricaoTest {
         });
     }
 
-    // TESTES FUNCIONAIS
-
     @ParameterizedTest(name = "dosagem = {0}")
     @Tag("UnitTest")
     @Tag("Functional")
