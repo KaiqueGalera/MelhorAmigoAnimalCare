@@ -17,26 +17,29 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PrescricaoTest {
+
+    private static Atendimento atendimentoEmAndamento() {
+        return Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+    }
+
+    private static ItemPrescricao itemValido() {
+        return new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+    }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1001 - deve criar nova prescricao com status ABERTA")
     void deveCriarNovaPrescricaoComStatusAberta(){
-        UUID animalId = UUID.randomUUID();
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(animalId));
+        Atendimento atendimento = atendimentoEmAndamento();
 
-        List<ItemPrescricao> itens = List.of(
-                new ItemPrescricao("Dipirona", 1, "Oral", "12/12h", 7)
-        );
-
-        Prescricao prescricao = atendimento.emitirPrescricao(itens);
+        Prescricao prescricao = atendimento.emitirPrescricao(List.of(itemValido()));
 
         assertEquals(StatusPrescricao.ABERTA, prescricao.getStatus());
-        assertTrue(atendimento.getPrescricoes().contains(prescricao));
+        assertThat(atendimento.getPrescricoes()).contains(prescricao);
     }
 
     @Test
@@ -44,15 +47,10 @@ class PrescricaoTest {
     @Tag("TDD")
     @DisplayName("C1002 - deve rejeitar prescricao quando atendimento nao esta em andamento")
     void deveRejeitarPrescricaoQuandoAtendimentoNaoEstaEmAndamento(){
-        UUID animalId = UUID.randomUUID();
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(animalId));
+        Atendimento atendimento = atendimentoEmAndamento();
         atendimento.cancelar("TESTE");
 
-        List<ItemPrescricao> itens = List.of(
-                new ItemPrescricao("Dipirona", 1, "Oral", "12/12h", 7)
-        );
-
-        assertThatThrownBy(() -> atendimento.emitirPrescricao(itens))
+        assertThatThrownBy(() -> atendimento.emitirPrescricao(List.of(itemValido())))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Emissão rejeitada: só é possível emitir uma prescrição durante um atendimento em andamento.");
     }
@@ -62,12 +60,9 @@ class PrescricaoTest {
     @Tag("TDD")
     @DisplayName("C1003 - deve rejeitar emissao quando nao houver itens na prescricao")
     void deveRejeitarEmissaoQuandoNaoHouverItensNaPrescricao(){
-        UUID animalId = UUID.randomUUID();
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(animalId));
+        Atendimento atendimento = atendimentoEmAndamento();
 
-        List<ItemPrescricao> itens = List.of();
-
-        assertThatThrownBy(() -> atendimento.emitirPrescricao(itens))
+        assertThatThrownBy(() -> atendimento.emitirPrescricao(List.of()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Emissão rejeitada: só é possível emitir uma prescrição com pelo menos um item.");
     }
@@ -77,7 +72,7 @@ class PrescricaoTest {
     @Tag("TDD")
     @DisplayName("C1101 - deve editar itens de uma prescricao em aberta")
     void deveEditarItensDeUmaPrescricaoEmAberta(){
-        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        ItemPrescricao item = itemValido();
         Prescricao prescricao = new Prescricao(List.of(item));
 
         ItemPrescricao itemEditado = new ItemPrescricao(item.getId(), "Amoxicilina", 1000, "Não oral", "12 em 12 horas", 7);
@@ -96,9 +91,8 @@ class PrescricaoTest {
     @Tag("TDD")
     @DisplayName("C1102 - deve remover um item de uma prescicao em aberta")
     void deveRemoverUmItemDeUmaPrescicaoEmAberta(){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        ItemPrescricao item2 = new ItemPrescricao(ItemPrescricaoId.novo(), "Amoxicilina", 1000, "Não oral", "12 em 12 horas", 7);
-
+        ItemPrescricao item = itemValido();
+        ItemPrescricao item2 = new ItemPrescricao("Amoxicilina", 1000, "Não oral", "12 em 12 horas", 7);
         Prescricao prescricao = new Prescricao(List.of(item, item2));
 
         prescricao.removerItem(item2.getId());
@@ -106,49 +100,24 @@ class PrescricaoTest {
         assertThat(prescricao.getItens()).containsExactly(item);
     }
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("acoesInvalidasQuandoNaoAberta")
-    @Tag("UnitTest")
-    @Tag("TDD")
-    @DisplayName("C1103 - deve retornar erro quando editar ou remover um item existente quando prescricao nao esta aberta")
-    void deveRetornarErroQuandoEditarOuRemoverUmItemExistenteQuandoPrescricaoNaoEstaAberta(String descricao, BiConsumer<Prescricao, ItemPrescricao> acao){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        Prescricao prescricao = new Prescricao(List.of(item));
-        prescricao.finalizar();
-
-        assertThatThrownBy(() -> acao.accept(prescricao, item))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Prescrição deve estar 'Aberta' para ser alterada");
-    }
-
-    static Stream<Arguments> acoesInvalidasQuandoNaoAberta() {
-        return Stream.of(
-                Arguments.of("editar item",
-                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.editarItem(item.getId(), item)),
-                Arguments.of("remover item",
-                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.removerItem(item.getId()))
-        );
-    }
-    
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1201 - deve finalizar prescricao aberta com pelo menos um item")
     void deveFinalizarPrescricaoAbertaComPeloMenosUmItem(){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        Prescricao prescricao = new Prescricao(List.of(item));
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
 
         prescricao.finalizar();
 
         assertEquals(StatusPrescricao.FINALIZADA, prescricao.getStatus());
     }
-    
+
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1202 - deve rejeitar quando finalizar prescricao sem itens")
     void deveRejeitarQuandoFinalizarPrescricaoSemItens(){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
+        ItemPrescricao item = itemValido();
         Prescricao prescricao = new Prescricao(List.of(item));
         prescricao.removerItem(item.getId());
 
@@ -157,27 +126,15 @@ class PrescricaoTest {
                 .hasMessage("A prescrição deve conter pelo menos um item para ser finalizada.");
     }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("TDD")
-    @DisplayName("C1203 - deve rejeitar quando finalizar uma prescricao nao aberta")
-    void deveRejeitarQuandoFinalizarUmaPrescricaoNaoAberta(){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        Prescricao prescricao = new Prescricao(List.of(item));
-        prescricao.finalizar();
-
-        assertThatThrownBy(prescricao::finalizar)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("A prescrição deve estar 'Aberta' para ser finalizada.");
-    }
+    // ===================== RF13 - Cancelar prescrição (TDD) =====================
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1301 - deve cancelar uma prescricao em aberta")
     void deveCancelarUmaPrescricaoEmAberta(){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        Prescricao prescricao = new Prescricao(List.of(item));
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
+
         prescricao.cancelar();
 
         assertEquals(StatusPrescricao.CANCELADA, prescricao.getStatus());
@@ -188,8 +145,7 @@ class PrescricaoTest {
     @Tag("TDD")
     @DisplayName("C1302 - deve rejeitar cancelamento de prescricao finalizada")
     void deveRejeitarCancelamentoDePrescricaoFinalizada(){
-        ItemPrescricao item = new ItemPrescricao(ItemPrescricaoId.novo(),"Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        Prescricao prescricao = new Prescricao(List.of(item));
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
         prescricao.finalizar();
 
         assertThatThrownBy(prescricao::cancelar)
@@ -197,14 +153,45 @@ class PrescricaoTest {
                 .hasMessage("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
     }
 
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("acoesInvalidasQuandoNaoAberta")
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1103/C1203 - deve rejeitar operacao quando prescricao nao esta aberta")
+    void deveRejeitarOperacaoQuandoPrescricaoNaoEstaAberta(
+            String descricao, BiConsumer<Prescricao, ItemPrescricao> acao, String mensagemEsperada){
+        ItemPrescricao item = itemValido();
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.finalizar();
+
+        assertThatThrownBy(() -> acao.accept(prescricao, item))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(mensagemEsperada);
+    }
+
+    static Stream<Arguments> acoesInvalidasQuandoNaoAberta() {
+        String mensagemEditarRemover = "Prescrição deve estar 'Aberta' para ser alterada";
+        String mensagemFinalizar = "A prescrição deve estar 'Aberta' para ser finalizada.";
+        return Stream.of(
+                Arguments.of("editar item",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.editarItem(item.getId(), item),
+                        mensagemEditarRemover),
+                Arguments.of("remover item",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.removerItem(item.getId()),
+                        mensagemEditarRemover),
+                Arguments.of("finalizar",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.finalizar(),
+                        mensagemFinalizar)
+        );
+    }
+
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1701 - deve exibir detalhes de todas as prescricoes vinculadas ao atendimento")
     void deveExibirDetalhesDeTodasAsPrescricoesVinculadasAoAtendimento() {
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
-        ItemPrescricao item = new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
-        atendimento.emitirPrescricao(List.of(item));
+        Atendimento atendimento = atendimentoEmAndamento();
+        atendimento.emitirPrescricao(List.of(itemValido()));
 
         List<Prescricao> prescricoes = atendimento.getPrescricoes();
 
