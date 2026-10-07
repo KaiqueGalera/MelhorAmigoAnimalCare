@@ -259,7 +259,7 @@ class AtendimentoServiceTest {
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
 
-        service.solicitarExames(atendimento, List.of(exame1, exame2));
+        service.solicitarExames(atendimento.getId(), List.of(exame1, exame2));
 
         var exames = atendimento.getExames();
         assertThat(exames.size()).isEqualTo(2);
