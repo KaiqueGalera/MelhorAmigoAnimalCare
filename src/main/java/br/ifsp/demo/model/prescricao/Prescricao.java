@@ -31,12 +31,32 @@ public class Prescricao {
 
     public void editarItem(ItemPrescricaoId id, ItemPrescricao novoItem) {
         garantePrescricaoAberta("Prescrição deve estar 'Aberta' para ser alterada");
+        if (id == null) {
+            throw new IllegalArgumentException("O id do item é obrigatório.");
+        }
+        if (novoItem == null) {
+            throw new IllegalArgumentException("O novo item é obrigatório.");
+        }
+        garanteItemExistente(id);
+        if (!novoItem.getId().equals(id)) {
+            throw new IllegalArgumentException("O id do item editado deve ser igual ao id original.");
+        }
         itens.put(id, novoItem);
     }
 
     public void removerItem(ItemPrescricaoId id) {
         garantePrescricaoAberta("Prescrição deve estar 'Aberta' para ser alterada");
+        if (id == null) {
+            throw new IllegalArgumentException("O id do item é obrigatório.");
+        }
+        garanteItemExistente(id);
         itens.remove(id);
+    }
+
+    private void garanteItemExistente(ItemPrescricaoId id) {
+        if (!itens.containsKey(id)) {
+            throw new IllegalArgumentException("Item de prescrição não encontrado.");
+        }
     }
 
     public void finalizar() {
