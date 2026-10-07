@@ -2,39 +2,46 @@ package br.ifsp.demo.repository;
 
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
+import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryAtendimentoRepository {
-    private final List<Atendimento> atendimentos = new ArrayList<>();
+@Repository
+public class InMemoryAtendimentoRepository implements AtendimentoRepository {
+    private final Map<AtendimentoId, Atendimento> atendimentos = new ConcurrentHashMap<>();
 
-    public void salvar(Atendimento atendimento){
-        atendimentos.add(atendimento);
+    @Override
+    public void salvar(Atendimento atendimento) {
+        atendimentos.put(atendimento.getId(), atendimento);
     }
 
+    @Override
     public boolean existeEmAndamentoParaAnimal(AnimalId animalId) {
         return buscarPorAnimalId(animalId).stream()
-                .anyMatch(atendimento -> atendimento.getStatus().equals(StatusAtendimento.EM_ANDAMENTO));
+                .anyMatch(a -> a.getStatus().equals(StatusAtendimento.EM_ANDAMENTO));
     }
 
-    public List<Atendimento> buscarPorAnimalId(AnimalId animalId){
-        return atendimentos.stream()
-                .filter(atendimento -> atendimento.getAnimalId().equals(animalId))
-                .collect(Collectors.toList());
+    @Override
+    public List<Atendimento> buscarPorAnimalId(AnimalId animalId) {
+        return atendimentos.values().stream()
+                .filter(a -> a.getAnimalId().equals(animalId))
+                .toList();
     }
 
-    public Atendimento buscarUmPorAtendimentoId(AtendimentoId id){
-        return atendimentos.stream()
-                .filter(atendimento -> atendimento.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new AtendimentoNaoEncontradoException(id));
+    @Override
+    public Atendimento buscarUmPorAtendimentoId(AtendimentoId id) {
+        Atendimento atendimento = atendimentos.get(id);
+        if (atendimento == null) {
+            throw new AtendimentoNaoEncontradoException(id);
+        }
+        return atendimento;
     }
 
+    @Override
     public boolean existeAtendimentoParaAgendamento(AgendamentoId agendamentoId) {
-        return atendimentos.stream()
+        return atendimentos.values().stream()
                 .anyMatch(a -> agendamentoId.equals(a.getAgendamentoId()));
     }
-
 }

@@ -4,9 +4,11 @@ import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public class AtendimentoService {
     private final InMemoryAtendimentoRepository repository;
 

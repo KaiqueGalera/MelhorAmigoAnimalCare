@@ -3,14 +3,16 @@ package br.ifsp.demo.service.prescricao;
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.prescricao.*;
-import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
+import br.ifsp.demo.repository.AtendimentoRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PrescricaoService {
-    private final InMemoryAtendimentoRepository repository;
+    private final AtendimentoRepository repository;
 
-    public PrescricaoService(InMemoryAtendimentoRepository repository) {
+    public PrescricaoService(AtendimentoRepository repository) {
         this.repository = repository;
     }
 
