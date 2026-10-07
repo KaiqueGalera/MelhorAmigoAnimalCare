@@ -370,4 +370,17 @@ class PrescricaoTest {
                         mensagemFinalizar)
         );
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US13a - deve rejeitar cancelamento de prescricao ja cancelada")
+    void deveRejeitarCancelamentoDePrescricaoJaCancelada() {
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
+        prescricao.cancelar();
+
+        assertThatThrownBy(prescricao::cancelar)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("A prescrição deve estar 'Aberta' para ser cancelada.");
+    }
 }
