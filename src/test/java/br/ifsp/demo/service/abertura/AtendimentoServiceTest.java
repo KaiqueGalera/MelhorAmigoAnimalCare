@@ -254,7 +254,7 @@ class AtendimentoServiceTest {
     @Tag("TDD")
     @DisplayName("C0601 - deve adicionar os exames solicitados à lista de exames do atendimento.")
     void deveAdicionarOsExamesSolicitadosAListaDeExamesDoAtendimento() {
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
