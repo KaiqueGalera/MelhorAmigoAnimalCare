@@ -211,7 +211,7 @@ class PrescricaoTest {
     @NullSource
     @ValueSource(ints = {0, -1})
     @DisplayName("US10a - deve rejeitar item com dosagem invalida")
-    void deveRejeitarItemComDosagemInvalida(int dosagem) {
+    void deveRejeitarItemComDosagemInvalida(Integer dosagem) {
         assertThatThrownBy(() -> new ItemPrescricao("Dipirona", dosagem, "Oral", "12/12h", 7))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Valor Inválido: Dosagem deve ser maior que zero");
