@@ -135,4 +135,8 @@ public class Atendimento {
     }
 
     public List<Prescricao> getPrescricoes() { return prescricoes; }
+
+    public SinaisVitais getSinaisVitais(){
+        return sinaisVitais;
+    }
 }
