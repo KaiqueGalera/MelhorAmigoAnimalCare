@@ -8,7 +8,6 @@ import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.model.prescricao.PrescricaoId;
 import br.ifsp.demo.model.prescricao.StatusPrescricao;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class Atendimento {
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
     private LocalDateTime dataHoraConclusao;
     private final List<Prescricao> prescricoes = new ArrayList<>();
+    private final List<Exame> exames = new ArrayList<>();
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -111,6 +111,10 @@ public class Atendimento {
                 .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
     }
 
+    public void addExame(Exame exame) {
+        this.exames.add(exame);
+    }
+
     public String getJustificativa() {
         return justificativa;
     }
@@ -138,6 +142,6 @@ public class Atendimento {
     public List<Prescricao> getPrescricoes() { return prescricoes; }
 
     public List<Exame> getExames() {
-        return List.of();
+        return exames;
     }
 }

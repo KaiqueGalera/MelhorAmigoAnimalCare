@@ -65,6 +65,10 @@ public class AtendimentoService {
     }
 
     public Atendimento solicitarExames(AtendimentoId atendimentoId, List<Exame> exames) {
-        return null;
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+
+        exames.forEach(atendimento::addExame);
+
+        return atendimento;
     }
 }
