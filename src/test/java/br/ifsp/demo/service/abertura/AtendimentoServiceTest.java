@@ -267,4 +267,19 @@ class AtendimentoServiceTest {
         assertThat(exames.contains(exame2)).isEqualTo(true);
         assertThat(atendimento).isEqualTo(atendimentoAtualizado);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0602 - não deve prosseguir com a solicitação caso a lista de exames solicitados esteja vazia.")
+    void naoDeveProsseguirComASolicitacaoCasoAListaDeExamesSolicitadosEstejaVazia() {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        assertThatThrownBy(() -> service.solicitarExames(
+                atendimento.getId(),
+                List.of()
+        ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Solicitação de exame rejeitada, pelo menos um exame deve ser selecionado para prosseguir.");
+    }
 }
