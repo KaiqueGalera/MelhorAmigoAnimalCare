@@ -65,6 +65,9 @@ public class AtendimentoService {
     }
 
     public Atendimento solicitarExames(AtendimentoId atendimentoId, List<Exame> exames) {
+        if (exames.isEmpty())
+            throw new IllegalArgumentException("Solicitação de exame rejeitada, pelo menos um exame deve ser selecionado para prosseguir.");
+
         Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
 
         exames.forEach(atendimento::addExame);
