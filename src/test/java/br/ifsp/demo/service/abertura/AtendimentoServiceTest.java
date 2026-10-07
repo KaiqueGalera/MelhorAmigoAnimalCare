@@ -20,9 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 class AtendimentoServiceTest {
     private InMemoryAtendimentoRepository repository;
@@ -254,14 +252,16 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1401 - Deve registrar sinais vitais com sucesso em atendimento em andamento")
-    void deveRegistrarSinaisVitisComSucessoEmAtendimentoEmAndamento(){
+    void deveRegistrarSinaisVitaisComSucessoEmAtendimentoEmAndamento(){
         Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         atendimento.registrarSinaisVitais(new SinaisVitais(31.5, 110, 35.5));
 
-        assertEquals(31.5, atendimento.getSinaisVitais().temperaturaC());
-        assertEquals(110, atendimento.getSinaisVitais().frequenciaCardiaca());
-        assertEquals(35.5, atendimento.getSinaisVitais().pesoKg());
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
+
+        assertThat(atendimento.getSinaisVitais().temperaturaC()).isEqualTo(31.5);
+        assertThat(atendimento.getSinaisVitais().frequenciaCardiaca()).isEqualTo(110);
+        assertThat(atendimento.getSinaisVitais().pesoKg()).isEqualTo(35.5);
 
     }
 
