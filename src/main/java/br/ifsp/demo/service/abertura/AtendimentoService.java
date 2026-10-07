@@ -3,9 +3,10 @@ package br.ifsp.demo.service.abertura;
 import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.exame.Exame;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class AtendimentoService {
     private final InMemoryAtendimentoRepository repository;
@@ -61,5 +62,9 @@ public class AtendimentoService {
         atendimento.reabrir(agora);
         repository.salvar(atendimento);
         return atendimento;
+    }
+
+    public Atendimento solicitarExames(AtendimentoId atendimentoId, List<Exame> exames) {
+        return null;
     }
 }
