@@ -338,4 +338,36 @@ class PrescricaoTest {
         assertThatThrownBy(() -> prescricao.editarItem(item.getId(), null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @ParameterizedTest(name = "cancelada - {0}")
+    @MethodSource("acoesInvalidasQuandoCancelada")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("F-RF12a - deve rejeitar operacao quando prescricao esta cancelada")
+    void deveRejeitarOperacaoQuandoPrescricaoEstaCancelada(
+            String descricao, BiConsumer<Prescricao, ItemPrescricao> acao, String mensagemEsperada) {
+        ItemPrescricao item = itemValido();
+        Prescricao prescricao = new Prescricao(List.of(item));
+        prescricao.cancelar();
+
+        assertThatThrownBy(() -> acao.accept(prescricao, item))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(mensagemEsperada);
+    }
+
+    static Stream<Arguments> acoesInvalidasQuandoCancelada() {
+        String mensagemEditarRemover = "Prescrição deve estar 'Aberta' para ser alterada";
+        String mensagemFinalizar = "A prescrição deve estar 'Aberta' para ser finalizada.";
+        return Stream.of(
+                Arguments.of("editar item",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.editarItem(item.getId(), item),
+                        mensagemEditarRemover),
+                Arguments.of("remover item",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.removerItem(item.getId()),
+                        mensagemEditarRemover),
+                Arguments.of("finalizar",
+                        (BiConsumer<Prescricao, ItemPrescricao>) (p, item) -> p.finalizar(),
+                        mensagemFinalizar)
+        );
+    }
 }
