@@ -10,7 +10,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -151,7 +150,7 @@ class PrescricaoTest {
 
         assertThatThrownBy(prescricao::cancelar)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("A prescrição só pode ser cancelada quando o status não for 'Finalizada'");
+                .hasMessage("A prescrição deve estar 'Aberta' para ser cancelada.");
     }
 
     @ParameterizedTest(name = "{0}")
@@ -202,8 +201,6 @@ class PrescricaoTest {
             assertThat(prescricao.getDataHoraEmissao()).isInstanceOf(LocalDateTime.class);
         });
     }
-
-    // TESTES FUNCIONAIS
 
     @ParameterizedTest(name = "dosagem = {0}")
     @Tag("UnitTest")
@@ -404,7 +401,7 @@ class PrescricaoTest {
         ItemPrescricao item2 = new ItemPrescricao("Amoxicilina", 1000, "Oral", "12/12h", 10);
         atendimento.emitirPrescricao(List.of(item1, item2));
 
-        Prescricao prescricao = atendimento.getPrescricoes().get(0);
+        Prescricao prescricao = atendimento.getPrescricoes().getFirst();
 
         assertThat(prescricao.getItens()).containsExactly(item1, item2);
     }
