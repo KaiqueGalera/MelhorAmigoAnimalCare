@@ -10,7 +10,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -402,7 +401,7 @@ class PrescricaoTest {
         ItemPrescricao item2 = new ItemPrescricao("Amoxicilina", 1000, "Oral", "12/12h", 10);
         atendimento.emitirPrescricao(List.of(item1, item2));
 
-        Prescricao prescricao = atendimento.getPrescricoes().get(0);
+        Prescricao prescricao = atendimento.getPrescricoes().getFirst();
 
         assertThat(prescricao.getItens()).containsExactly(item1, item2);
     }
