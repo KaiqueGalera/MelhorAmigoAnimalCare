@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Atendimento {
     private static final Duration JANELA_REABERTURA = Duration.ofHours(24);
@@ -143,5 +144,17 @@ public class Atendimento {
 
     public List<Exame> getExames() {
         return exames;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Atendimento that = (Atendimento) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
