@@ -13,10 +13,6 @@ public class Prescricao {
         this(PrescricaoId.novo(), itensIniciais, LocalDateTime.now());
     }
 
-    public Prescricao(List<ItemPrescricao> itensIniciais, LocalDateTime dataHoraEmissao) {
-        this(PrescricaoId.novo(), itensIniciais, dataHoraEmissao);
-    }
-
     public Prescricao(PrescricaoId id, List<ItemPrescricao> itensIniciais, LocalDateTime dataHoraEmissao) {
         if (itensIniciais == null || itensIniciais.isEmpty()) {
             throw new IllegalArgumentException("Emissão rejeitada: só é possível emitir uma prescrição com pelo menos um item.");
