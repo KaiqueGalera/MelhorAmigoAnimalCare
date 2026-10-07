@@ -383,4 +383,60 @@ class PrescricaoTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("A prescrição deve estar 'Aberta' para ser cancelada.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US14a - deve retornar lista vazia quando atendimento nao possui nenhuma prescricao")
+    void deveRetornarListaVaziaQuandoAtendimentoNaoPossuiNenhumaPrescricao() {
+        Atendimento atendimento = atendimentoEmAndamento();
+
+        assertThat(atendimento.getPrescricoes()).isEmpty();
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US14b - deve exibir detalhes de prescricao com multiplos itens")
+    void deveExibirDetalhesDePrescricaoComMultiplosItens() {
+        Atendimento atendimento = atendimentoEmAndamento();
+        ItemPrescricao item1 = itemValido();
+        ItemPrescricao item2 = new ItemPrescricao("Amoxicilina", 1000, "Oral", "12/12h", 10);
+        atendimento.emitirPrescricao(List.of(item1, item2));
+
+        Prescricao prescricao = atendimento.getPrescricoes().get(0);
+
+        assertThat(prescricao.getItens()).containsExactly(item1, item2);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US14c - deve exibir todas as prescricoes quando atendimento possui mais de uma")
+    void deveExibirTodasAsPrescricoesQuandoAtendimentoPossuiMaisDeUma() {
+        Atendimento atendimento = atendimentoEmAndamento();
+        Prescricao prescricaoCancelada = atendimento.emitirPrescricao(List.of(itemValido()));
+        prescricaoCancelada.cancelar();
+        atendimento.emitirPrescricao(List.of(itemValido()));
+
+        List<Prescricao> prescricoes = atendimento.getPrescricoes();
+
+        assertThat(prescricoes).hasSize(2);
+        assertThat(prescricoes).extracting(Prescricao::getStatus)
+                .containsExactlyInAnyOrder(StatusPrescricao.CANCELADA, StatusPrescricao.ABERTA);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US14d - nao deve exibir prescricoes de outro atendimento")
+    void naoDeveExibirPrescricoesDeOutroAtendimento() {
+        Atendimento atendimentoA = atendimentoEmAndamento();
+        Atendimento atendimentoB = atendimentoEmAndamento();
+
+        atendimentoA.emitirPrescricao(List.of(itemValido()));
+
+        assertThat(atendimentoA.getPrescricoes()).hasSize(1);
+        assertThat(atendimentoB.getPrescricoes()).isEmpty();
+    }
 }
