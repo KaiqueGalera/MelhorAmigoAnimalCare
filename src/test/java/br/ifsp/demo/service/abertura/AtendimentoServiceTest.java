@@ -27,7 +27,7 @@ class AtendimentoServiceTest {
     private AtendimentoService service;
 
     @BeforeEach()
-    void prepara(){
+    void prepara() {
         repository = new InMemoryAtendimentoRepository();
         service = new AtendimentoService(repository);
     }
@@ -36,7 +36,7 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("# C0101 Devo abrir pronto atendimento para animal sem agendamento prévio")
-    void devoAbrirProntoAtendimentoComSucesso(){
+    void devoAbrirProntoAtendimentoComSucesso() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
 
@@ -48,18 +48,18 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("# C0102 Não devo abrir pronto atendimento quando animal já estiver em atendimento")
-    void naoDevoAbrirProntoAtendimento(){
+    void naoDevoAbrirProntoAtendimento() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         service.abrirProntoAtendimento(animalId);
 
-        assertThrows(AnimalJaEmAtendimentoException.class, ()-> service.abrirProntoAtendimento(animalId));
+        assertThrows(AnimalJaEmAtendimentoException.class, () -> service.abrirProntoAtendimento(animalId));
     }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("# C0103 Cancelar atendimento com justificativa com sucesso")
-    void devoCancelarProntoAtendimentoComSucesso(){
+    void devoCancelarProntoAtendimentoComSucesso() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         String justificativa = "Animal estava muito inquieto e o dono optou por ir embora";
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
@@ -73,7 +73,7 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("# C0201 Devo abrir atendimento para animal dado agendamento")
-    void devoAbrirAtendimentoComAgendamento(){
+    void devoAbrirAtendimentoComAgendamento() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         AgendamentoId agendamentoId = AgendamentoId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirAtendimentoComAgendamento(animalId, agendamentoId);
@@ -87,32 +87,32 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("# C0202 Não devo abrir atendimento agendado dado animal em atendimento")
-    void naoDevoAbrirAtendimentoComAgendamento(){
+    void naoDevoAbrirAtendimentoComAgendamento() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         AgendamentoId agendamentoId = AgendamentoId.of(UUID.randomUUID());
         service.abrirProntoAtendimento(animalId);
 
-        assertThrows(AnimalJaEmAtendimentoException.class, ()-> service.abrirAtendimentoComAgendamento(animalId, agendamentoId));
+        assertThrows(AnimalJaEmAtendimentoException.class, () -> service.abrirAtendimentoComAgendamento(animalId, agendamentoId));
     }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("# C0203-A Devo rejeitar associar agendamento com atendimento caso já tenha atendimento")
-    void devoRejeitarAgendamentoJaUtilizado(){
+    void devoRejeitarAgendamentoJaUtilizado() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         AgendamentoId agendamentoId = AgendamentoId.of(UUID.randomUUID());
         service.abrirAtendimentoComAgendamento(animalId, agendamentoId);
         AnimalId outroAnimal = AnimalId.of(UUID.randomUUID());
 
-        assertThrows(AgendamentoJaUtilizadoException.class, ()-> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
+        assertThrows(AgendamentoJaUtilizadoException.class, () -> service.abrirAtendimentoComAgendamento(outroAnimal, agendamentoId));
     }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0302 Não devo cancelar atendimento sem informar justificativa")
-    void naoDevoCancelarAtendimentoSemJustificativa(){
+    void naoDevoCancelarAtendimentoSemJustificativa() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
 
@@ -124,7 +124,7 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0303 Não devo cancelar atendimento quando já cancelado")
-    void naoDevoCancelarAtendimentoJaCancelado(){
+    void naoDevoCancelarAtendimentoJaCancelado() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         service.cancelarAtendimento(atendimento.getId(), "Motivo para cancelar 1");
@@ -137,7 +137,7 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0401 Devo encerrar atendimento")
-    void devoEncerrarAtendimento(){
+    void devoEncerrarAtendimento() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarSinaisVitais(new SinaisVitais(30.9, 100, 89));
@@ -151,31 +151,31 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0402 Não devo encerrar atendimento sem sinais vitais registrados")
-    void naoDevoEncerrarAtendimentoSemSinaisVitais(){
+    void naoDevoEncerrarAtendimentoSemSinaisVitais() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
 
-        assertThrows(SinaisVitaisObrigatoriosException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+        assertThrows(SinaisVitaisObrigatoriosException.class, () -> service.concluirAtendimento(atendimento.getId()));
     }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0403 Não devo encerrar atendimento sem diagnóstico registrados")
-    void naoDevoEncerrarAtendimentoSemDiagnostico(){
+    void naoDevoEncerrarAtendimentoSemDiagnostico() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarSinaisVitais(new SinaisVitais(30.3, 100, 89));
 
-        assertThrows(DiagnosticoObrigatorioException.class, ()-> service.concluirAtendimento(atendimento.getId()));
+        assertThrows(DiagnosticoObrigatorioException.class, () -> service.concluirAtendimento(atendimento.getId()));
     }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0501 Devo reabrir atendimento concluído dentro da janela de tempo")
-    void devoReabrirAtendimentoDentroDaJanela(){
+    void devoReabrirAtendimentoDentroDaJanela() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarSinaisVitais(new SinaisVitais(30.4, 100, 89));
@@ -190,28 +190,28 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0502 Não devo reabrir atendimento concluído fora da janela de tempo")
-    void naoDevoReabrirAtendimentoForaDaJanela(){
+    void naoDevoReabrirAtendimentoForaDaJanela() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarSinaisVitais(new SinaisVitais(30.6, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
         service.concluirAtendimento(atendimento.getId());
 
-        assertThrows(JanelaReaberturaExpiradaException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now().plusHours(25)));
+        assertThrows(JanelaReaberturaExpiradaException.class, () -> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now().plusHours(25)));
     }
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("#C0503 Não devo reabrir atendimento cancelado")
-    void naoDevoReabrirAtendimentoCancelado(){
+    void naoDevoReabrirAtendimentoCancelado() {
         AnimalId animalId = AnimalId.of(UUID.randomUUID());
         Atendimento atendimento = service.abrirProntoAtendimento(animalId);
         atendimento.registrarSinaisVitais(new SinaisVitais(30.5, 100, 89));
         atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
         service.cancelarAtendimento(atendimento.getId(), "Alguma justificativa convincente");
 
-        assertThrows(AtendimentoNaoConcluidoException.class, ()-> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
+        assertThrows(AtendimentoNaoConcluidoException.class, () -> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
     }
 
     @Test
@@ -246,13 +246,13 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Finalização de atendimento rejeitada, não é possível a finalização de atendimentos com prescrições abertas.");
     }
-}
+
 
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C1401 - Deve registrar sinais vitais com sucesso em atendimento em andamento")
-    void deveRegistrarSinaisVitaisComSucessoEmAtendimentoEmAndamento(){
+    void deveRegistrarSinaisVitaisComSucessoEmAtendimentoEmAndamento() {
         Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         atendimento.registrarSinaisVitais(new SinaisVitais(31.5, 110, 35.5));
@@ -264,4 +264,6 @@ class AtendimentoServiceTest {
         assertThat(atendimento.getSinaisVitais().pesoKg()).isEqualTo(35.5);
 
     }
+
+}
 
