@@ -3,7 +3,7 @@ package br.ifsp.demo.service.abertura;
 import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
-import br.ifsp.demo.model.exame.Exame;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,7 +70,7 @@ public class AtendimentoService {
         return atendimento;
     }
 
-    public Atendimento solicitarExames(AtendimentoId atendimentoId, List<Exame> exames) {
+    public Atendimento solicitarExames(AtendimentoId atendimentoId, List<ExameSolicitado> exames) {
         if (exames.isEmpty())
             throw new IllegalArgumentException("Solicitação de exame rejeitada: pelo menos um exame deve ser selecionado para prosseguir.");
 
