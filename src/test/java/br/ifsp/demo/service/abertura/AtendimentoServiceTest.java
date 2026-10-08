@@ -431,5 +431,22 @@ class AtendimentoServiceTest {
                 () -> service.registrarDiagnostico(idInexistente, new Diagnostico("A001", "Alergia", TipoDiagnostico.PRESUNTIVO)));
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1604 - Não deve registrar diagnóstico em atendimento concluido")
+    void naoDeveRegistrarDiagnosticoEmAtendimentoConcluido() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        atendimento.registrarSinaisVitais(new SinaisVitais(20.4, 95, 17.5));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        atendimento.concluir(); //fechar atendimento
+
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
+
+        assertThatThrownBy(() -> atendimento.registrarDiagnostico(new Diagnostico("A001", "Alergia", TipoDiagnostico.PRESUNTIVO)))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
 }
 
