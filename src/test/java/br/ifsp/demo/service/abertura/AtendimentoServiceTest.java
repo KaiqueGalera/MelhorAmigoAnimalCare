@@ -423,4 +423,39 @@ class AtendimentoServiceTest {
         ))
                 .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a um horário válido.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0701 - deve devolver uma lista com os exames que já foram feitos por um animal.")
+    void deveDevolverUmaListaComOsExamesQueJaForamFeitosPorUmAnimal() {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                9,
+                9,
+                0)
+        );
+
+        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(animalId);
+        assertThat(exames.size()).isEqualTo(2);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
+    }
 }
