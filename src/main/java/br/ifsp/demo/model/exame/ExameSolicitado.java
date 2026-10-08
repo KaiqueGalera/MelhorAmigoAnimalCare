@@ -16,6 +16,10 @@ public class ExameSolicitado {
         return data;
     }
 
+    public Exame getExame() {
+        return exame;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
