@@ -6,9 +6,13 @@ import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class AtendimentoService {
+    private final LocalTime INICIO_HORARIO_EXAME = LocalTime.of(9, 0);
+    private final LocalTime FIM_HORARIO_EXAME = LocalTime.of(18, 0);
+
     private final InMemoryAtendimentoRepository repository;
     private final LocalDateTime currentDate;
 
@@ -78,6 +82,9 @@ public class AtendimentoService {
 
         if (exames.stream().anyMatch(exame -> exame.getData().isBefore(currentDate)))
             throw new IllegalStateException("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data e horário válidos.");
+
+        if (exames.stream().anyMatch(exame -> exame.getData().toLocalTime().isBefore(INICIO_HORARIO_EXAME) || exame.getData().toLocalTime().isAfter(FIM_HORARIO_EXAME)))
+            throw new IllegalStateException("Solicitação de exame rejeitada: todos os exames devem estar vinculados a um horário válido.");
 
         exames.forEach(atendimento::addExame);
 
