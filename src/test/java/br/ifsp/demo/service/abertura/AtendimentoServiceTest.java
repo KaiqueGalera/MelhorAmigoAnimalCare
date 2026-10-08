@@ -640,4 +640,45 @@ class AtendimentoServiceTest {
         assertThat(exameSolicitado2.getStatus()).isEqualTo(ExameStatus.PENDENTE);
         assertThat(exameSolicitado3.getStatus()).isEqualTo(ExameStatus.PENDENTE);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0902 - deve garantir que o status do exame seja alterado automaticamente para CONCLUIDO quando seu resultado é registrado.")
+    void deveGarantirQueOStatusDoExameSejaAlteradoAutomaticamenteParaConcluidoQuandoSeuResultadoERegistrado() {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                9,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                4,
+                9,
+                0)
+        );
+
+        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+        var resultado = "O hemograma apresentou bons resultados, tudo certo!";
+
+        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
+        assertThat(exame).isEqualTo(exameSolicitado1);
+        assertThat(exame.getStatus()).isEqualTo(ExameStatus.CONCLUIDO);
+    }
 }
