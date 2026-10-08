@@ -4,6 +4,7 @@ import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.clinico.Anamnese;
+import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
@@ -78,5 +79,12 @@ public class AtendimentoService {
         repository.salvar(atendimento);
         return atendimento;
 
+    }
+
+    public Atendimento registrarDiagnostico(AtendimentoId id, Diagnostico diagnostico){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.registrarDiagnostico(diagnostico);
+        repository.salvar(atendimento);
+        return atendimento;
     }
 }

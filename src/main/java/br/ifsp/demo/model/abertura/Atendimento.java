@@ -155,4 +155,6 @@ public class Atendimento {
     public Anamnese getAnamnese() {
         return anamnese;
     }
+
+    public List<Diagnostico> getDiagnosticos(){ return diagnosticos; }
 }
