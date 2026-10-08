@@ -554,4 +554,50 @@ class AtendimentoServiceTest {
         assertThat(exame).isEqualTo(exameSolicitado1);
         assertThat(exame.getResultado()).isEqualTo(resultado);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0802 - deve conseguir editar o resultado de um exame solicitado em um atendimento.")
+    void deveConseguirEditarOResultadoDeUmExameSolicitadoEmUmAtendimento() {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                9,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                4,
+                9,
+                0)
+        );
+
+        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+        var resultado = "O hemograma apresentou bons resultados, tudo certo!";
+
+        service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
+
+        var novoResultado = "O hemograma não apresentou bons resultados, o retorno deve ser agendado!";
+
+        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), novoResultado);
+
+        assertThat(exame).isEqualTo(exameSolicitado1);
+        assertThat(exame.getResultado()).isEqualTo(novoResultado);
+    }
 }
