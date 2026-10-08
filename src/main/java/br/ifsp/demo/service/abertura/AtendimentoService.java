@@ -10,9 +10,15 @@ import java.util.List;
 
 public class AtendimentoService {
     private final InMemoryAtendimentoRepository repository;
+    private final LocalDateTime currentDate;
 
     public AtendimentoService(InMemoryAtendimentoRepository repository) {
+        this(repository, LocalDateTime.now());
+    }
+
+    AtendimentoService(InMemoryAtendimentoRepository repository, LocalDateTime date) {
         this.repository = repository;
+        this.currentDate = date;
     }
 
     public Atendimento abrirProntoAtendimento(AnimalId animalId){
