@@ -458,4 +458,13 @@ class AtendimentoServiceTest {
         assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
         assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0702 - deve devolver uma lista vazia caso o animal não tenha feito nenhum exame.")
+    void deveDevolverUmaListaVaziaCasoOAnimalNaoTenhaFeitoNenhumExame() {
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(AnimalId.of(UUID.randomUUID()));
+        assertThat(exames.isEmpty()).isEqualTo(true);
+    }
 }
