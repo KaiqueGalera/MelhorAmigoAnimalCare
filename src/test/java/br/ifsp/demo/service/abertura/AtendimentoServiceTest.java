@@ -287,5 +287,17 @@ class AtendimentoServiceTest {
                 () -> service.registrarSinaisVitais(atendimento.getId(), new SinaisVitais(temperatura, frequenciaCardiaca, peso)));
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("#C1403 Não devo registrar sinais vitais em atendimento inexistente")
+    void naoDevoRegistrarSinaisVitaisEmAtendimentoInexistente() {
+        AtendimentoId idInexistente = AtendimentoId.novo();
+        //já esta testando no lançamento de AtendimentoNaoEncontradoException quando o id não está no repositório, então esse teste é um pouco inútil
+
+        assertThrows(AtendimentoNaoEncontradoException.class,
+                () -> service.registrarSinaisVitais(idInexistente, new SinaisVitais(31.5, 110, 35.5)));
+    }
+
 }
 
