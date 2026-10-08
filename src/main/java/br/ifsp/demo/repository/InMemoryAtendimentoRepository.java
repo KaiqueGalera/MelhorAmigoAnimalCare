@@ -2,6 +2,7 @@ package br.ifsp.demo.repository;
 
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,4 +38,9 @@ public class InMemoryAtendimentoRepository {
                 .anyMatch(a -> agendamentoId.equals(a.getAgendamentoId()));
     }
 
+    public List<ExameSolicitado> buscarExamesPorAnimalId(AnimalId animalId) {
+        return atendimentos.stream().filter(atendimento -> atendimento.getAnimalId().equals(animalId))
+                .flatMap(atendimento -> atendimento.getExames().stream())
+                .toList();
+    }
 }
