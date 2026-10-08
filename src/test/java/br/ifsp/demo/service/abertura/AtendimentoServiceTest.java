@@ -550,7 +550,7 @@ class AtendimentoServiceTest {
 
         var resultado = "O hemograma apresentou bons resultados, tudo certo!";
 
-        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.exame.getId(), resultado);
+        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
         assertThat(exame).isEqualTo(exameSolicitado1);
         assertThat(exame.getResultado()).isEqualTo(resultado);
     }
