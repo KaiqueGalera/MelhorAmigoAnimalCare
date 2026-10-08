@@ -418,5 +418,18 @@ class AtendimentoServiceTest {
         );
     }
 
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("#C1603 Não deve registrar diagnóstico em atendimento inexistente")
+    void naoDeveRegistrarDiagnosticoEmAtendimentoInexistente() {
+        AtendimentoId idInexistente = AtendimentoId.novo();
+        //mesma coisa do #C1503 Não deve registrar anamnese em atendimento inexistente :/
+
+        assertThrows(AtendimentoNaoEncontradoException.class,
+                () -> service.registrarDiagnostico(idInexistente, new Diagnostico("A001", "Alergia", TipoDiagnostico.PRESUNTIVO)));
+    }
+
 }
 
