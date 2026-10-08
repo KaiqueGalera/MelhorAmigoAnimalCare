@@ -309,29 +309,32 @@ class AtendimentoServiceFuncionalTest {
     // VALOR LIMITE — tamanho da descrição do diagnóstico (máx. 200)
     // =================================================================
 
-        @ParameterizedTest(name = "descricao com {0} caracteres -> deveAceitar={1}")
-        @Tag("UnitTest")
-        @Tag("Functional")
-        @DisplayName("#VL06 Valor limite do tamanho da descrição do diagnóstico")
-        @CsvSource({
-                "199, true",
-                "200, true",
-                "201, false"
-        })
-        void valorLimiteDescricaoDiagnostico(int tamanho, boolean deveAceitar) {
-            Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
-            String descricao = "a".repeat(tamanho);
+    @ParameterizedTest(name = "descricao com {0} caracteres -> deveAceitar={1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL06 Valor limite do tamanho da descrição do diagnóstico")
+    @CsvSource({
+            "199, true",
+            "200, true",
+            "201, false"
+    })
+    void valorLimiteDescricaoDiagnostico(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String descricao = "a".repeat(tamanho);
 
-            if (deveAceitar) {
-                Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(),
-                        new Diagnostico("A001", descricao, TipoDiagnostico.PRESUNTIVO));
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(),
+                    new Diagnostico("A001", descricao, TipoDiagnostico.PRESUNTIVO));
 
-                assertThat(atualizado.getDiagnosticos().getFirst().descricao()).hasSize(tamanho);
-            } else {
-                assertThrows(IllegalArgumentException.class,
-                        () -> new Diagnostico("A001", descricao, TipoDiagnostico.PRESUNTIVO));
-            }
+            assertThat(atualizado.getDiagnosticos().getFirst().descricao()).hasSize(tamanho);
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Diagnostico("A001", descricao, TipoDiagnostico.PRESUNTIVO));
         }
+    }
+
+
+
 
 
 }
