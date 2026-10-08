@@ -3,6 +3,7 @@ package br.ifsp.demo.service.abertura;
 import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
 import java.time.LocalDateTime;
@@ -59,6 +60,13 @@ public class AtendimentoService {
     public Atendimento reabrirAtendimento(AtendimentoId id, LocalDateTime agora) {
         Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
         atendimento.reabrir(agora);
+        repository.salvar(atendimento);
+        return atendimento;
+    }
+
+    public Atendimento registrarSinaisVitais(AtendimentoId id, SinaisVitais sinais){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.registrarSinaisVitais(sinais);
         repository.salvar(atendimento);
         return atendimento;
     }
