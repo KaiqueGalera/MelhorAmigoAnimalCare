@@ -1,6 +1,5 @@
 package br.ifsp.demo.service.abertura;
 
-import br.ifsp.demo.exception.AtendimentoNaoConcluidoException;
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.exception.JanelaReaberturaExpiradaException;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
@@ -16,7 +15,6 @@ import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.api.function.Executable;
