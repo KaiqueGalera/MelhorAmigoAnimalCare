@@ -248,4 +248,32 @@ class AtendimentoServiceFuncionalTest {
     }
 
 
+    // =================================================================
+    // VALOR LIMITE — tamanho do histórico clínico da anamnese
+    // =================================================================
+
+    @ParameterizedTest(name = "historicoClinico com {0} caracteres -> deve aceitar = {1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL03 Valor limite do tamanho do histórico clínico da anamnese")
+    @CsvSource({
+            "499, true",
+            "500, true",
+            "501, false",
+    })
+    void valorLimiteHistoricoClinico(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String historico = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarAnamnese(atendimento.getId(), new Anamnese("queixa", historico));
+
+            assertThat(atualizado.getAnamnese().historicoClinico()).hasSize(tamanho);
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Anamnese("queixa", historico));
+        }
+    }
+
+
 }
