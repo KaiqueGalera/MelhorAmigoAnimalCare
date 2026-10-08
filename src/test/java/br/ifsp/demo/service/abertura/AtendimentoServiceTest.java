@@ -354,5 +354,17 @@ class AtendimentoServiceTest {
         );
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("#C1503 Não deve registrar anamnese em atendimento inexistente")
+    void naoDeveRegistrarAnamneseEmAtendimentoInexistente() {
+        AtendimentoId idInexistente = AtendimentoId.novo();
+        //mesma coisa do #C1403 Não deve registrar sinais vitais em atendimento inexistente :/
+
+        assertThrows(AtendimentoNaoEncontradoException.class,
+                () -> service.registrarAnamnese(idInexistente, new Anamnese("Alergia", "Pelo irritado e vermelho")));
+    }
+
 }
 
