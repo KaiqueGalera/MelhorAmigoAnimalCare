@@ -398,5 +398,25 @@ class AtendimentoServiceTest {
         assertThat(atualizado.getDiagnosticos()).isEqualTo(List.of(diagnostico));
     }
 
+    @ParameterizedTest
+    @MethodSource("diagnosticosQueUltrapassamLimite")
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1602 - Não deve registrar diagnostico que ultrapassa o limite de caracteres permitidos")
+    void naoDeveRegistrarDiagnosticoQueUltrapasseOLimiteDeCaracteresPermitidos(String codigo, String descricao, TipoDiagnostico tipo) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        assertThatThrownBy(() -> service.registrarDiagnostico(atendimento.getId(),
+                new Diagnostico(codigo, descricao, tipo)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    static Stream<Arguments> diagnosticosQueUltrapassamLimite() {
+        return Stream.of(
+                Arguments.of("a".repeat(11), "Gripe", TipoDiagnostico.PRESUNTIVO),
+                Arguments.of("A001", "a".repeat(201), TipoDiagnostico.PRESUNTIVO)
+        );
+    }
+
 }
 
