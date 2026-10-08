@@ -11,6 +11,10 @@ public class Exame {
         this.nome = nome;
     }
 
+    public ExameId getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
