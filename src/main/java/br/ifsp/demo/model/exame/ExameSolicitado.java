@@ -7,6 +7,7 @@ public class ExameSolicitado {
     private final Exame exame;
     private final LocalDateTime data;
     private String resultado = "";
+    private ExameStatus status = ExameStatus.PENDENTE;
 
     public ExameSolicitado(Exame exame, LocalDateTime data) {
         this.exame = exame;
@@ -23,6 +24,10 @@ public class ExameSolicitado {
 
     public String getResultado() {
         return resultado;
+    }
+
+    public ExameStatus getStatus() {
+        return status;
     }
 
     public void setResultado(String resultado) {
