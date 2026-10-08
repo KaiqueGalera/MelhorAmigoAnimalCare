@@ -8,6 +8,7 @@ import br.ifsp.demo.model.clinico.TipoDiagnostico;
 import br.ifsp.demo.model.exame.Exame;
 import br.ifsp.demo.model.exame.ExameId;
 import br.ifsp.demo.model.exame.ExameSolicitado;
+import br.ifsp.demo.model.exame.ExameStatus;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
