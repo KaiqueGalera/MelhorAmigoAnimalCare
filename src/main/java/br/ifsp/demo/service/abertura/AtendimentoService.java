@@ -2,7 +2,9 @@ package br.ifsp.demo.service.abertura;
 
 import br.ifsp.demo.exception.AgendamentoJaUtilizadoException;
 import br.ifsp.demo.exception.AnimalJaEmAtendimentoException;
+import br.ifsp.demo.exception.ExameNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.exame.ExameId;
 import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import java.time.LocalDateTime;
@@ -89,5 +91,19 @@ public class AtendimentoService {
         exames.forEach(atendimento::addExame);
 
         return atendimento;
+    }
+
+    public ExameSolicitado registrarResultadoExame(AtendimentoId atendimentoId, ExameId exameId, String resultado) {
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+
+        var exame = atendimento.getExames().stream().filter(e -> e.getExame()
+                        .getId()
+                        .equals(exameId))
+                .findFirst().orElseThrow(() -> new ExameNaoEncontradoException("Exame não encontrado!")
+        );
+
+        exame.setResultado(resultado);
+
+        return exame;
     }
 }
