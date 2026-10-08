@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -263,6 +265,26 @@ class AtendimentoServiceTest {
         assertThat(atendimento.getSinaisVitais().frequenciaCardiaca()).isEqualTo(110);
         assertThat(atendimento.getSinaisVitais().pesoKg()).isEqualTo(35.5);
 
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("#C1402 Não devo registrar sinais vitais com dados numéricos inválidos")
+    @CsvSource({
+            "-1, 110, 35.5", //temp neg
+            "0, 110, 35.5", //temp 0
+            "30.0, -1, 60", // freq neg
+            "30.0, 0, 60", //freq 0
+            "31.5, 200, -1", //peso neg
+            "31.5, 200, 0", //peso 0
+    })
+
+    void naoDevoRegistrarSinaisVitaisComDadosInvalidos(double temperatura, int frequenciaCardiaca, double peso) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.registrarSinaisVitais(atendimento.getId(), new SinaisVitais(temperatura, frequenciaCardiaca, peso)));
     }
 
 }
