@@ -395,7 +395,7 @@ class AtendimentoServiceTest {
         Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(), diagnostico); //adiciona no atendimento
 
         assertThat(atualizado.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
-        assertThat(atualizado.getDiagnosticos()).isEqualTo(diagnostico);
+        assertThat(atualizado.getDiagnosticos()).isEqualTo(List.of(diagnostico));
     }
 
 }
