@@ -378,6 +378,23 @@ class AtendimentoServiceFuncionalTest {
 
     }
 
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — Não permitir código e descrição vazios no diagnóstico
+    // =================================================================
+
+    @ParameterizedTest(name = "codigo=''{0}'', descricao=''{1}''")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#PE07 Não deve registrar código e/ou descrição vazios no diagnóstico")
+    @CsvSource({
+            "'', Alergia",
+            "A001, ''",
+    })
+    void valorVazioCodigoDescricaoDiagnostico(String codigo, String descricao) {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Diagnostico(codigo, descricao, TipoDiagnostico.PRESUNTIVO));
+    }
+
 
 
 }
