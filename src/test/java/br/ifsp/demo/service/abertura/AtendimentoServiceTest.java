@@ -14,11 +14,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -329,6 +332,26 @@ class AtendimentoServiceTest {
 
         assertThat(atualizado.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
         assertThat(atualizado.getAnamnese()).isEqualTo(anamnese);
+    }
+
+    @ParameterizedTest
+    @MethodSource("anamnesesQueUltrapassamLimite") //usei esse ao inves de csv pelo tamanho dos caracteres
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1502 - Não deve registrar anamnese que ultrapassa o limite de caracteres permitidos")
+    void naoDeveRegistrarAnamneseQueUltrapasseOLimiteDeCaracteresPermitidos(String descricao, String queixaPrincipal, String historicoClinico) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        assertThatThrownBy(() -> service.registrarAnamnese(atendimento.getId(),
+                new Anamnese(queixaPrincipal, historicoClinico)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    static Stream<Arguments> anamnesesQueUltrapassamLimite() {
+        return Stream.of(
+                Arguments.of("queixa principal com 101 caracteres", "a".repeat(101), "Vacinas em dia"),
+                Arguments.of("histórico clínico com 501 caracteres", "Vômito há dois dias", "a".repeat(501))
+        );
     }
 
 }
