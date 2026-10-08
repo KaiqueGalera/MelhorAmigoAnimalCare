@@ -262,8 +262,20 @@ class AtendimentoServiceTest {
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
 
-        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.now().plusHours(1));
-        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.now().plusHours(1));
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                10,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                10,
+                0)
+        );
 
         Atendimento atendimentoAtualizado = service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
 
