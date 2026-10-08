@@ -366,5 +366,23 @@ class AtendimentoServiceTest {
                 () -> service.registrarAnamnese(idInexistente, new Anamnese("Alergia", "Pelo irritado e vermelho")));
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1504 - Não deve registrar anamnese em atendimento concluido")
+    void naoDeveRegistrarAnamneseEmAtendimentoConcluido() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        atendimento.registrarSinaisVitais(new SinaisVitais(20.4, 95, 17.5));
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        atendimento.registrarAnamnese(new Anamnese("Dor de barriga", "Animal chegou com desconforto intestinal"));
+        atendimento.concluir(); //fechar atendimento
+
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
+
+        assertThatThrownBy(() -> atendimento.registrarAnamnese(new Anamnese("Suspeita de febre", "Animal chegou com suspeita de febre")))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
 }
 
