@@ -270,7 +270,7 @@ class AtendimentoServiceTest {
     @ParameterizedTest
     @Tag("UnitTest")
     @Tag("TDD")
-    @DisplayName("#C1402 Não devo registrar sinais vitais com dados numéricos inválidos")
+    @DisplayName("#C1402 Não deve registrar sinais vitais com dados numéricos inválidos")
     @CsvSource({
             "-1, 110, 35.5", //temp neg
             "0, 110, 35.5", //temp 0
@@ -280,7 +280,7 @@ class AtendimentoServiceTest {
             "31.5, 200, 0", //peso 0
     })
 
-    void naoDevoRegistrarSinaisVitaisComDadosInvalidos(double temperatura, int frequenciaCardiaca, double peso) {
+    void naoDeveRegistrarSinaisVitaisComDadosInvalidos(double temperatura, int frequenciaCardiaca, double peso) {
         Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         assertThrows(IllegalArgumentException.class,
@@ -290,14 +290,16 @@ class AtendimentoServiceTest {
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
-    @DisplayName("#C1403 Não devo registrar sinais vitais em atendimento inexistente")
-    void naoDevoRegistrarSinaisVitaisEmAtendimentoInexistente() {
+    @DisplayName("#C1403 Não deve registrar sinais vitais em atendimento inexistente")
+    void naoDeveRegistrarSinaisVitaisEmAtendimentoInexistente() {
         AtendimentoId idInexistente = AtendimentoId.novo();
         //já esta testando no lançamento de AtendimentoNaoEncontradoException quando o id não está no repositório, então esse teste é um pouco inútil
 
         assertThrows(AtendimentoNaoEncontradoException.class,
                 () -> service.registrarSinaisVitais(idInexistente, new SinaisVitais(31.5, 110, 35.5)));
     }
+
+
 
 }
 
