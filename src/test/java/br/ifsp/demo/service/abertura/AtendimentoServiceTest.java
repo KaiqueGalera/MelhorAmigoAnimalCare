@@ -384,5 +384,19 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalStateException.class);
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1601 - Deve registrar diagnóstico com sucesso em atendimento em andamento")
+    void deveRegistrarDiagnosticoComSucessoEmAtendimentoEmAndamento() {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Diagnostico diagnostico = new Diagnostico("A001", "Alergia comum", TipoDiagnostico.PRESUNTIVO);
+
+        Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(), diagnostico); //adiciona no atendimento
+
+        assertThat(atualizado.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
+        assertThat(atualizado.getDiagnosticos()).isEqualTo(diagnostico);
+    }
+
 }
 
