@@ -600,4 +600,43 @@ class AtendimentoServiceTest {
         assertThat(exame).isEqualTo(exameSolicitado1);
         assertThat(exame.getResultado()).isEqualTo(novoResultado);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0901 - deve devolver o status PENDENTE para um exame que ainda não possui resultado registrado.")
+    void deveDevolverOStatusPendenteParaUmExameQueAindaNãoPossuiResultadoRegistrado() {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                9,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                4,
+                9,
+                0)
+        );
+
+        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+        assertThat(exameSolicitado1.getStatus()).isEqualTo(ExameStatus.PENDENTE);
+        assertThat(exameSolicitado2.getStatus()).isEqualTo(ExameStatus.PENDENTE);
+        assertThat(exameSolicitado3.getStatus()).isEqualTo(ExameStatus.PENDENTE);
+    }
 }
