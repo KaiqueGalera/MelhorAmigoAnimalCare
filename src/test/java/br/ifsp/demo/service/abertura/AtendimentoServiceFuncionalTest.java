@@ -276,4 +276,33 @@ class AtendimentoServiceFuncionalTest {
     }
 
 
+    // =================================================================
+    // VALOR LIMITE — tamanho do código no diagnóstico
+    // =================================================================
+
+    @ParameterizedTest(name = "codigo com {0} caracteres -> deve aceitar = {1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL03 Valor limite do tamanho do código do diagnóstico")
+    @CsvSource({
+            "9, true",
+            "10, true",
+            "11, false",
+    })
+    void valorLimiteCodigo(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String codigo = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(), new Diagnostico(codigo, "descricao", TipoDiagnostico.PRESUNTIVO));
+
+            assertThat(atualizado.getDiagnosticos().getFirst().codigo()).hasSize(tamanho);
+
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Diagnostico(codigo, "descricao", TipoDiagnostico.PRESUNTIVO));
+        }
+    }
+
+
 }
