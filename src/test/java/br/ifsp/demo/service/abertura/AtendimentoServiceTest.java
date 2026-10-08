@@ -316,5 +316,19 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalStateException.class); //registrar sinais vitais depois de concluido
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1501 - Deve registrar anamnese com sucesso em atendimento em andamento")
+    void deveRegistrarAnamneseComSucessoEmAtendimentoEmAndamento() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Anamnese anamnese = new Anamnese("Vômito há dois dias", "Vacinas em dia");
+
+        Atendimento atualizado = service.registrarAnamnese(atendimento.getId(), anamnese); //adiciona no atendimento
+
+        assertThat(atualizado.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
+        assertThat(atualizado.getAnamnese()).isEqualTo(anamnese);
+    }
+
 }
 
