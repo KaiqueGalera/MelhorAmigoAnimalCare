@@ -3,7 +3,7 @@ package br.ifsp.demo.repository;
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.exame.ExameSolicitado;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,5 +42,13 @@ public class InMemoryAtendimentoRepository {
         return atendimentos.stream().filter(atendimento -> atendimento.getAnimalId().equals(animalId))
                 .flatMap(atendimento -> atendimento.getExames().stream())
                 .toList();
+    }
+
+    public List<ExameSolicitado> buscarExamesPorAnimalIdEPeriodo(AnimalId animalId, LocalDate dataInicial, LocalDate dataFinal) {
+        return buscarExamesPorAnimalId(animalId).stream().filter(exame ->
+                exame.getData().toLocalDate().isEqual(dataInicial)
+                        || (exame.getData().toLocalDate().isAfter(dataInicial) && exame.getData().toLocalDate().isBefore(dataFinal))
+                        ||  exame.getData().toLocalDate().isEqual(dataFinal)
+        ).toList();
     }
 }
