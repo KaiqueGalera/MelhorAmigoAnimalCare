@@ -4,15 +4,16 @@ import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.model.prescricao.PrescricaoId;
 import br.ifsp.demo.model.prescricao.StatusPrescricao;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Atendimento {
     private static final Duration JANELA_REABERTURA = Duration.ofHours(24);
@@ -26,6 +27,7 @@ public class Atendimento {
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
     private LocalDateTime dataHoraConclusao;
     private final List<Prescricao> prescricoes = new ArrayList<>();
+    private final List<ExameSolicitado> exames = new ArrayList<>();
     private Anamnese anamnese;
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
@@ -125,6 +127,10 @@ public class Atendimento {
                 .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
     }
 
+    public void addExame(ExameSolicitado exame) {
+        this.exames.add(exame);
+    }
+
     public String getJustificativa() {
         return justificativa;
     }
@@ -150,6 +156,22 @@ public class Atendimento {
     }
 
     public List<Prescricao> getPrescricoes() { return prescricoes; }
+
+    public List<ExameSolicitado> getExames() {
+        return exames;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Atendimento that = (Atendimento) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     public SinaisVitais getSinaisVitais(){
         return sinaisVitais;
