@@ -7,6 +7,7 @@ import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
 import br.ifsp.demo.model.exame.Exame;
 import br.ifsp.demo.model.exame.ExameId;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
@@ -259,12 +260,15 @@ class AtendimentoServiceTest {
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
 
-        Atendimento atendimentoAtualizado = service.solicitarExames(atendimento.getId(), List.of(exame1, exame2));
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.now().plusHours(1));
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.now().plusHours(1));
+
+        Atendimento atendimentoAtualizado = service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
 
         var exames = atendimentoAtualizado.getExames();
         assertThat(exames.size()).isEqualTo(2);
-        assertThat(exames.contains(exame1)).isEqualTo(true);
-        assertThat(exames.contains(exame2)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
         assertThat(atendimento).isEqualTo(atendimentoAtualizado);
     }
 
@@ -287,15 +291,18 @@ class AtendimentoServiceTest {
     @Tag("UnitTest")
     @Tag("TDD")
     @DisplayName("C0603 - não deve prosseguir com a solicitação caso o atendimento não exista.")
-    void naoDeveProsseguirComASolicitacaoCasoOAtendimentoNãoExista() {
+    void naoDeveProsseguirComASolicitacaoCasoOAtendimentoNaoExista() {
         Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
 
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.now().plusHours(1));
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.now().plusHours(1));
+
         assertThatThrownBy(() -> service.solicitarExames(
                 atendimento.getId(),
-                List.of(exame1, exame2)
+                List.of(exameSolicitado1, exameSolicitado2)
         ))
                 .isInstanceOf(AtendimentoNaoEncontradoException.class);
     }
