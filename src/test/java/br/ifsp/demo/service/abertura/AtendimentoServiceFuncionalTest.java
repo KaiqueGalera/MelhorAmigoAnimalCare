@@ -353,6 +353,30 @@ class AtendimentoServiceFuncionalTest {
     }
 
 
+    // =================================================================
+    // VALOR LIMITE — temperatura, frequência cardíaca e peso dos sinais vitais
+    // =================================================================
+
+    @ParameterizedTest(name = "temperatura={0}, frequenciaCardiaca={1}, peso={2} -> aceitam = true")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#VL07 Valor limite da temperatura, frequência cardíaca e peso nos sinais vitais - deve passar")
+    @CsvSource({
+            "0.1, 20, 20.0",    // menor valor válido pra temp
+            "20.0, 1, 20.0",    // menor valor válido pra a freq card
+            "20.0, 20, 0.1"     // menor valor válido pra o peso
+    })
+    void valorLimiteTemperaturaFrequenciaPesoSinaisVitais(double temperatura, int frequencia, double peso) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Atendimento atualizado = service.registrarSinaisVitais(atendimento.getId(),
+                new SinaisVitais(temperatura, frequencia, peso));
+
+        assertThat(atualizado.getSinaisVitais().temperaturaC()).isEqualTo(temperatura);
+        assertThat(atualizado.getSinaisVitais().frequenciaCardiaca()).isEqualTo(frequencia);
+        assertThat(atualizado.getSinaisVitais().pesoKg()).isEqualTo(peso);
+
+    }
 
 
 
