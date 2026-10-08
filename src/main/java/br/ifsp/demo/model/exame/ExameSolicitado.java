@@ -34,6 +34,12 @@ public class ExameSolicitado {
         if (resultado.isBlank()) return;
 
         this.resultado = resultado;
+
+        setStatus();
+    }
+
+    private void setStatus() {
+        this.status = ExameStatus.CONCLUIDO;
     }
 
     @Override
