@@ -83,6 +83,9 @@ public class Atendimento {
     }
 
     public void registrarSinaisVitais(SinaisVitais sinaisVitais) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registra sinais vitais em atendimento em aberto");
+        }
         this.sinaisVitais = sinaisVitais;
     }
 
