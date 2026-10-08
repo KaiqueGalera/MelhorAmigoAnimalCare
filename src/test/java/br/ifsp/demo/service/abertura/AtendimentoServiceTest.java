@@ -345,4 +345,43 @@ class AtendimentoServiceTest {
         ))
                 .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data válida.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0605 - não deve prosseguir com a solicitação caso pelo menos um exame possua horário anterior ao horário do atendimento.")
+    void naoDeveProsseguirComASolicitacaoCasoPeloMenosUmExamePossuaHorarioAnteriorAoHorarioDoAtendimento() {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                2)
+        );
+
+        assertThatThrownBy(() -> serviceLocal.solicitarExames(
+                atendimento.getId(),
+                List.of(exameSolicitado1, exameSolicitado2)
+        ))
+                .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data e horário válidos.");
+    }
 }
