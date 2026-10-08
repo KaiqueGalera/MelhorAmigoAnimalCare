@@ -310,8 +310,8 @@ class AtendimentoServiceTest {
     @Test
     @Tag("UnitTest")
     @Tag("TDD")
-    @DisplayName("C0604 - não deve prosseguir com a solicitação caso pelo menos um exame possua uma data inválida.")
-    void naoDeveProsseguirComASolicitacaoCasoPeloMenosUmExamePossuaUmaDataInvalida() {
+    @DisplayName("C0604 - não deve prosseguir com a solicitação caso pelo menos um exame possua uma data anterior a data do atendimento.")
+    void naoDeveProsseguirComASolicitacaoCasoPeloMenosUmExamePossuaUmaDataAnteriorADataDoAtendimento() {
         AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
                 2026,
                 Month.OCTOBER,
@@ -327,14 +327,14 @@ class AtendimentoServiceTest {
         ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
                 2026,
                 Month.OCTOBER,
-                7,
+                6,
                 9,
                 0)
         );
         ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
                 2026,
                 Month.OCTOBER,
-                7,
+                8,
                 10,
                 0)
         );
