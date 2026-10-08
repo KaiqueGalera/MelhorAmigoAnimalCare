@@ -2,6 +2,7 @@ package br.ifsp.demo.service.abertura;
 
 import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;

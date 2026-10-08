@@ -1,6 +1,7 @@
 package br.ifsp.demo.model.abertura;
 
 import br.ifsp.demo.exception.*;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
@@ -25,6 +26,7 @@ public class Atendimento {
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
     private LocalDateTime dataHoraConclusao;
     private final List<Prescricao> prescricoes = new ArrayList<>();
+    private Anamnese anamnese;
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -93,6 +95,10 @@ public class Atendimento {
         diagnosticos.add(diagnostico);
     }
 
+    public void registrarAnamnese(Anamnese anamnese) {
+        this.anamnese = anamnese;
+    }
+
     public static Atendimento abrirProntoAtendimento(AnimalId animalId){
         return new Atendimento(null, animalId);
     }
@@ -141,5 +147,9 @@ public class Atendimento {
 
     public SinaisVitais getSinaisVitais(){
         return sinaisVitais;
+    }
+
+    public Anamnese getAnamnese() {
+        return anamnese;
     }
 }
