@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -466,5 +467,50 @@ class AtendimentoServiceTest {
     void deveDevolverUmaListaVaziaCasoOAnimalNaoTenhaFeitoNenhumExame() {
         List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(AnimalId.of(UUID.randomUUID()));
         assertThat(exames.isEmpty()).isEqualTo(true);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C0703 - deve devolver uma lista com os exames do animal que foram realizados dentro do perído informado.")
+    void deveDevolverUmaListaComOsExamesDoAnimalQueForamRealizadosDentroDoPeriodoInformado() {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                9,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                4,
+                9,
+                0)
+        );
+
+        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+        var dataInicial = LocalDate.of(2026, Month.OCTOBER, 8);
+        var dataFinal = LocalDate.of(2026, Month.DECEMBER, 8);
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalIdEPeriodo(animalId, dataInicial, dataFinal);
+        assertThat(exames.size()).isEqualTo(2);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado3)).isEqualTo(true);
     }
 }
