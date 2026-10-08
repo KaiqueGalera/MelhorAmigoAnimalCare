@@ -3,7 +3,7 @@ package br.ifsp.demo.model.abertura;
 import br.ifsp.demo.exception.*;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
-import br.ifsp.demo.model.exame.Exame;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.model.prescricao.PrescricaoId;
@@ -26,7 +26,7 @@ public class Atendimento {
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
     private LocalDateTime dataHoraConclusao;
     private final List<Prescricao> prescricoes = new ArrayList<>();
-    private final List<Exame> exames = new ArrayList<>();
+    private final List<ExameSolicitado> exames = new ArrayList<>();
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -112,7 +112,7 @@ public class Atendimento {
                 .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
     }
 
-    public void addExame(Exame exame) {
+    public void addExame(ExameSolicitado exame) {
         this.exames.add(exame);
     }
 
@@ -142,7 +142,7 @@ public class Atendimento {
 
     public List<Prescricao> getPrescricoes() { return prescricoes; }
 
-    public List<Exame> getExames() {
+    public List<ExameSolicitado> getExames() {
         return exames;
     }
 
