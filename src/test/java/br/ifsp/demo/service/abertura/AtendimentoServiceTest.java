@@ -299,7 +299,22 @@ class AtendimentoServiceTest {
                 () -> service.registrarSinaisVitais(idInexistente, new SinaisVitais(31.5, 110, 35.5)));
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("C1404 - Não deve registrar sinais vitais em atendimento concluido")
+    void naoDeveRegistrarSinaisVitaisEmAtendimentoConcluido() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
+        atendimento.registrarSinaisVitais(new SinaisVitais(20.4, 95, 17.5)); //ja inserido
+        atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+        atendimento.concluir(); //fechar atendimento
+
+        assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.CONCLUIDO);
+
+        assertThatThrownBy(() -> atendimento.registrarSinaisVitais(new SinaisVitais(38.0, 90, 10.0)))
+                .isInstanceOf(IllegalStateException.class); //registrar sinais vitais depois de concluido
+    }
 
 }
 
