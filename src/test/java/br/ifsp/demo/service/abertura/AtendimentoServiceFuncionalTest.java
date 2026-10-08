@@ -334,6 +334,25 @@ class AtendimentoServiceFuncionalTest {
     }
 
 
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — tipo do diagnóstico -> Classes: PRESUNTIVO / EMPIRICO / DEFINITIVO (todas válidas)
+    // =================================================================
+
+    @ParameterizedTest(name = "tipo={0}")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#PE06 Devo registrar diagnóstico de qualquer tipo em atendimento em andamento")
+    @EnumSource(TipoDiagnostico.class)
+    void devoRegistrarDiagnosticoDeQualquerTipo(TipoDiagnostico tipo) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Diagnostico diagnostico = new Diagnostico("A001", "Alergia comum", tipo);
+
+        Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(), diagnostico);
+
+        assertThat(atualizado.getDiagnosticos()).containsExactly(diagnostico);
+    }
+
+
 
 
 
