@@ -8,6 +8,7 @@ import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.abertura.StatusAtendimento;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
@@ -219,4 +220,34 @@ class AtendimentoServiceFuncionalTest {
                 Arguments.of(Duration.ofDays(1))
         );
     }
+
+
+    // =================================================================
+    // VALOR LIMITE — tamanho da queixa principal da anamnese
+    // =================================================================
+
+    @ParameterizedTest(name = "queixaPrincipal com {0} caracteres -> deve aceitar = {1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL03 Valor limite do tamanho da queixa principal da anamnese")
+    @CsvSource({
+            "99, true",
+            "100, true",
+            "101, false",
+    })
+    void valorLimiteQueixaPrincipal(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String queixa = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarAnamnese(atendimento.getId(), new Anamnese(queixa, "histórico"));
+
+            assertThat(atualizado.getAnamnese().queixaPrincipal()).hasSize(tamanho); //se a queixa tem o tamanho que eu dei
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Anamnese(queixa, "histórico")); //se nao, lança exceção
+        }
+    }
+
+
 }
