@@ -343,7 +343,7 @@ class AtendimentoServiceTest {
                 atendimento.getId(),
                 List.of(exameSolicitado1, exameSolicitado2)
         ))
-                .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data válida.");
+                .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data e horário válidos.");
     }
 
     @Test

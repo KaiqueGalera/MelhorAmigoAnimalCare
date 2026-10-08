@@ -77,7 +77,7 @@ public class AtendimentoService {
         Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
 
         if (exames.stream().anyMatch(exame -> exame.getData().isBefore(currentDate)))
-            throw new IllegalStateException("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data válida.");
+            throw new IllegalStateException("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data e horário válidos.");
 
         exames.forEach(atendimento::addExame);
 
