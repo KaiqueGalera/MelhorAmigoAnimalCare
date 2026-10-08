@@ -92,6 +92,9 @@ public class Atendimento {
     }
 
     public void registrarDiagnostico(Diagnostico diagnostico) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar diagnóstico em atendimento em aberto");
+        }
         diagnosticos.add(diagnostico);
     }
 
