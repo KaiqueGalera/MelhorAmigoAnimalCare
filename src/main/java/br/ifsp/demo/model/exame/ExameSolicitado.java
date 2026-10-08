@@ -6,6 +6,7 @@ import java.util.Objects;
 public class ExameSolicitado {
     private final Exame exame;
     private final LocalDateTime data;
+    private String resultado = "";
 
     public ExameSolicitado(Exame exame, LocalDateTime data) {
         this.exame = exame;
@@ -18,6 +19,16 @@ public class ExameSolicitado {
 
     public Exame getExame() {
         return exame;
+    }
+
+    public String getResultado() {
+        return resultado;
+    }
+
+    public void setResultado(String resultado) {
+        if (resultado.isBlank()) return;
+
+        this.resultado = resultado;
     }
 
     @Override
