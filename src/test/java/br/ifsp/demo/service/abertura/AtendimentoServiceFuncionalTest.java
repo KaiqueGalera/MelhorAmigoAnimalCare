@@ -390,9 +390,27 @@ class AtendimentoServiceFuncionalTest {
             "'', Alergia",
             "A001, ''",
     })
-    void valorVazioCodigoDescricaoDiagnostico(String codigo, String descricao) {
+    void naoDevoCriarDiagnosicoComTextoVazio(String codigo, String descricao) {
         assertThrows(IllegalArgumentException.class,
                 () -> new Diagnostico(codigo, descricao, TipoDiagnostico.PRESUNTIVO));
+    }
+
+
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — Não permitir queixa principal e histórico clínico vazios na anamnese
+    // =================================================================
+
+    @ParameterizedTest(name = "queixaPrincipal=''{0}'', historicoClinico=''{1}''")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#PE08 Não deve registrar queixa principal e/ou histórico clínico vazios na anamnese")
+    @CsvSource({
+            "'', Paciente chegou chegando",
+            "Diarréia, ''",
+    })
+    void naoDevoCriarAnamneseComTextoVazio(String queixa, String historico) {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Anamnese(queixa, historico));
     }
 
 
