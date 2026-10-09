@@ -1,6 +1,5 @@
 package br.ifsp.demo.service.abertura;
 
-import br.ifsp.demo.exception.AtendimentoNaoConcluidoException;
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.exception.JanelaReaberturaExpiradaException;
 import br.ifsp.demo.exception.JustificativaObrigatoriaException;
@@ -11,6 +10,9 @@ import br.ifsp.demo.model.abertura.StatusAtendimento;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
+import br.ifsp.demo.model.exame.Exame;
+import br.ifsp.demo.model.exame.ExameId;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,8 @@ import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.api.function.Executable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -218,5 +222,38 @@ class AtendimentoServiceFuncionalTest {
                 Arguments.of(Duration.ofHours(1)),
                 Arguments.of(Duration.ofDays(1))
         );
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve adicionar um único exame solicitado a lista de exames do atendimento.")
+    void deveAdicionarUmUnicoExameSolicitadoAListaDeExamesDoAtendimento() {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                10,
+                0)
+        );
+
+        Atendimento atendimentoAtualizado = serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1));
+
+        var exames = atendimentoAtualizado.getExames();
+        assertThat(exames.size()).isEqualTo(1);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(atendimento).isEqualTo(atendimentoAtualizado);
     }
 }
