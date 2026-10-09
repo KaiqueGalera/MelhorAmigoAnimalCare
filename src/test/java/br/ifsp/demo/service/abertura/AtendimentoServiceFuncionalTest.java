@@ -311,7 +311,7 @@ class AtendimentoServiceFuncionalTest {
             "17:59",
             "18:00",
     })
-    void deveAceitarExameComHorarioDentroDoimitePermitido(String horario) {
+    void deveAceitarExameComHorarioDentroDoLimitePermitido(String horario) {
         AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
                 2026,
                 Month.OCTOBER,
@@ -387,12 +387,12 @@ class AtendimentoServiceFuncionalTest {
     @ParameterizedTest
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("C0703 - deve devolver uma lista vazia se nenhum exame foi realizado dentro do periodo informado.")
+    @DisplayName("deve devolver uma lista vazia caso não existam exames no periodo informado")
     @ValueSource(strings = {
             "2026-10-07",
             "2026-12-09",
     })
-    void deveDevolverUmaListaComOsExamesDoAnimalQueForamRealizadosDentroDoPeriodoInformado(String data) {
+    void deveDevolverUmaListaVaziaCasoNaoExistamExamesNoPeriodoInformado(String data) {
         var animalId = AnimalId.of(UUID.randomUUID());
 
         AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
