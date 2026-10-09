@@ -3,14 +3,15 @@ package br.ifsp.demo.service.prescricao;
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.prescricao.*;
+import br.ifsp.demo.repository.AtendimentoRepository;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
 import java.util.List;
 
 public class PrescricaoService {
-    private final InMemoryAtendimentoRepository repository;
+    private final AtendimentoRepository repository;      // era InMemoryAtendimentoRepository
 
-    public PrescricaoService(InMemoryAtendimentoRepository repository) {
+    public PrescricaoService(AtendimentoRepository repository) {
         this.repository = repository;
     }
 

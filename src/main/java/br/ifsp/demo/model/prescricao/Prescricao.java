@@ -9,6 +9,21 @@ public class Prescricao {
     private StatusPrescricao status;
     private final LocalDateTime dataHoraEmissao;
 
+    private Prescricao(PrescricaoId id, List<ItemPrescricao> itens,
+                       StatusPrescricao status, LocalDateTime dataHoraEmissao) {
+        for (ItemPrescricao item : itens) {
+            this.itens.put(item.getId(), item);
+        }
+        this.id = id;
+        this.status = status;
+        this.dataHoraEmissao = dataHoraEmissao;
+    }
+
+    public static Prescricao reconstituir(PrescricaoId id, List<ItemPrescricao> itens,
+                                          StatusPrescricao status, LocalDateTime dataHoraEmissao) {
+        return new Prescricao(id, itens, status, dataHoraEmissao);
+    }
+
     public Prescricao(List<ItemPrescricao> itensIniciais) {
         this(PrescricaoId.novo(), itensIniciais, LocalDateTime.now());
     }

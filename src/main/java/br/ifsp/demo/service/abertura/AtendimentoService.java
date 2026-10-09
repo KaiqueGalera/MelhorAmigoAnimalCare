@@ -9,25 +9,37 @@ import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
+import br.ifsp.demo.repository.AtendimentoRepository;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class AtendimentoService {
     private final LocalTime INICIO_HORARIO_EXAME = LocalTime.of(9, 0);
     private final LocalTime FIM_HORARIO_EXAME = LocalTime.of(18, 0);
 
-    private final InMemoryAtendimentoRepository repository;
-    private final LocalDateTime currentDate;
+    private final AtendimentoRepository repository;
+    private final Supplier<LocalDateTime> relogio;
 
-    public AtendimentoService(InMemoryAtendimentoRepository repository) {
-        this(repository, LocalDateTime.now());
+    // Construtor usado pelo Spring: o "agora" é lido a cada chamada.
+    @Autowired
+    public AtendimentoService(AtendimentoRepository repository) {
+        this.repository = repository;
+        this.relogio = LocalDateTime::now;
     }
 
-    AtendimentoService(InMemoryAtendimentoRepository repository, LocalDateTime date) {
+    // Construtor usado nos testes para fixar o "agora".
+    AtendimentoService(AtendimentoRepository repository, LocalDateTime date) {
         this.repository = repository;
-        this.currentDate = date;
+        this.relogio = () -> date;
+    }
+
+    public Atendimento buscarAtendimento(AtendimentoId id) {
+        return repository.buscarUmPorAtendimentoId(id);
     }
 
     public Atendimento abrirProntoAtendimento(AnimalId animalId){
@@ -84,8 +96,9 @@ public class AtendimentoService {
             throw new IllegalArgumentException("Solicitação de exame rejeitada: pelo menos um exame deve ser selecionado para prosseguir.");
 
         Atendimento atendimento = repository.buscarUmPorAtendimentoId(atendimentoId);
+        LocalDateTime agora = relogio.get();
 
-        if (exames.stream().anyMatch(exame -> exame.getData().isBefore(currentDate)))
+        if (exames.stream().anyMatch(exame -> exame.getData().isBefore(agora)))
             throw new IllegalStateException("Solicitação de exame rejeitada: todos os exames devem estar vinculados a uma data e horário válidos.");
 
         if (exames.stream().anyMatch(exame -> exame.getData().toLocalTime().isBefore(INICIO_HORARIO_EXAME) || exame.getData().toLocalTime().isAfter(FIM_HORARIO_EXAME)))

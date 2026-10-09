@@ -30,6 +30,34 @@ public class Atendimento {
     private final List<ExameSolicitado> exames = new ArrayList<>();
     private Anamnese anamnese;
 
+    private Atendimento(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId,
+                        StatusAtendimento status, LocalDateTime dataHoraAtendimento,
+                        LocalDateTime dataHoraConclusao, String justificativa,
+                        SinaisVitais sinaisVitais, List<Diagnostico> diagnosticos,
+                        List<Prescricao> prescricoes) {
+        this.id = id;
+        this.animalId = animalId;
+        this.agendamentoId = agendamentoId;
+        this.status = status;
+        this.dataHoraAtendimento = dataHoraAtendimento;
+        this.dataHoraConclusao = dataHoraConclusao;
+        this.justificativa = justificativa;
+        this.sinaisVitais = sinaisVitais;
+        this.diagnosticos.addAll(diagnosticos);
+        this.prescricoes.addAll(prescricoes);
+    }
+
+    public static Atendimento reconstituir(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId,
+                                           StatusAtendimento status, LocalDateTime dataHoraAtendimento,
+                                           LocalDateTime dataHoraConclusao, String justificativa,
+                                           SinaisVitais sinaisVitais, List<Diagnostico> diagnosticos,
+                                           List<Prescricao> prescricoes) {
+        return new Atendimento(id, animalId, agendamentoId, status, dataHoraAtendimento,
+                dataHoraConclusao, justificativa, sinaisVitais, diagnosticos, prescricoes);
+    }
+
+    public LocalDateTime getDataHoraConclusao() { return dataHoraConclusao; }
+
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
         this.status = StatusAtendimento.EM_ANDAMENTO;

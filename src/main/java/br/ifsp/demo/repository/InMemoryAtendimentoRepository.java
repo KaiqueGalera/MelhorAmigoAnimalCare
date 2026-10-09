@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InMemoryAtendimentoRepository {
+public class InMemoryAtendimentoRepository implements AtendimentoRepository {
     private final List<Atendimento> atendimentos = new ArrayList<>();
 
     public void salvar(Atendimento atendimento){

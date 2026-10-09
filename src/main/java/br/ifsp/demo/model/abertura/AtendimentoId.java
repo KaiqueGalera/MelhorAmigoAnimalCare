@@ -14,6 +14,15 @@ public class AtendimentoId {
         return new AtendimentoId(UUID.randomUUID());
     }
 
+    public static AtendimentoId of(UUID uuid){
+        return new AtendimentoId(uuid);
+    }
+
+
+    public UUID getValue() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

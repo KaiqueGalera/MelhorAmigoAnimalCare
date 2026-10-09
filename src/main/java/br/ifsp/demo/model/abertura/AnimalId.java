@@ -14,6 +14,10 @@ public class AnimalId {
         return new AnimalId(uuid);
     }
 
+    public UUID getValue() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
