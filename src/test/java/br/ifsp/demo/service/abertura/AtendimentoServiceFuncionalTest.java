@@ -21,10 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.api.function.Executable;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
+import java.time.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -385,5 +382,55 @@ class AtendimentoServiceFuncionalTest {
         List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(animalId);
         assertThat(exames.size()).isEqualTo(1);
         assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("C0703 - deve devolver uma lista vazia se nenhum exame foi realizado dentro do periodo informado.")
+    @ValueSource(strings = {
+            "2026-10-07",
+            "2026-12-09",
+    })
+    void deveDevolverUmaListaComOsExamesDoAnimalQueForamRealizadosDentroDoPeriodoInformado(String data) {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                5,
+                10,
+                0)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalDate periodo = LocalDate.parse(data);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                periodo.getYear(),
+                periodo.getMonth(),
+                periodo.getDayOfMonth(),
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                periodo.getYear(),
+                periodo.getMonth(),
+                periodo.getDayOfMonth(),
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+
+        var dataInicial = LocalDate.of(2026, Month.OCTOBER, 8);
+        var dataFinal = LocalDate.of(2026, Month.DECEMBER, 8);
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalIdEPeriodo(animalId, dataInicial, dataFinal);
+        assertThat(exames.isEmpty()).isEqualTo(true);
     }
 }
