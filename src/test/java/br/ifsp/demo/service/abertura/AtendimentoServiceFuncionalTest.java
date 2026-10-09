@@ -352,4 +352,38 @@ class AtendimentoServiceFuncionalTest {
         assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
         assertThat(atendimento).isEqualTo(atendimentoAtualizado);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve devolver um único exame caso o animal tenha apenas um exame registrado.")
+    void deveDevolverUmUnicoExameCasoOAnimalTenhaApenasUmExameRegistrado() {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1));
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(animalId);
+        assertThat(exames.size()).isEqualTo(1);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+    }
 }
