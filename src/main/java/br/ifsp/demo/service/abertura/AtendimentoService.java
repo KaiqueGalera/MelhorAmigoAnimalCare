@@ -6,6 +6,9 @@ import br.ifsp.demo.exception.ExameNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
 import br.ifsp.demo.model.exame.ExameId;
 import br.ifsp.demo.model.exame.ExameSolicitado;
+import br.ifsp.demo.model.clinico.Anamnese;
+import br.ifsp.demo.model.clinico.Diagnostico;
+import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -105,5 +108,27 @@ public class AtendimentoService {
         exame.setResultado(resultado);
 
         return exame;
+    }
+
+    public Atendimento registrarSinaisVitais(AtendimentoId id, SinaisVitais sinais){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.registrarSinaisVitais(sinais);
+        repository.salvar(atendimento);
+        return atendimento;
+    }
+
+    public Atendimento registrarAnamnese(AtendimentoId id, Anamnese anamnese){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.registrarAnamnese(anamnese);
+        repository.salvar(atendimento);
+        return atendimento;
+
+    }
+
+    public Atendimento registrarDiagnostico(AtendimentoId id, Diagnostico diagnostico){
+        Atendimento atendimento = repository.buscarUmPorAtendimentoId(id);
+        atendimento.registrarDiagnostico(diagnostico);
+        repository.salvar(atendimento);
+        return atendimento;
     }
 }

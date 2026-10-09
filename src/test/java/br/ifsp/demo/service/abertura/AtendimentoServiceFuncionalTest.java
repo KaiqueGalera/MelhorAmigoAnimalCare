@@ -7,6 +7,7 @@ import br.ifsp.demo.model.abertura.AnimalId;
 import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.abertura.StatusAtendimento;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
@@ -21,11 +22,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.api.function.Executable;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -172,7 +174,7 @@ class AtendimentoServiceFuncionalTest {
     @ParameterizedTest(name = "{0} sobre atendimento inexistente")
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("#PE05 Não devo operar sobre um AtendimentoId que não existe no repositório")
+    @DisplayName("#PE04 Não devo operar sobre um AtendimentoId que não existe no repositório")
     @MethodSource("acoesSobreAtendimentoInexistente")
     void naoDevoOperarSobreAtendimentoInexistente(String descricaoAcao, Executable acao) {
         assertThrows(AtendimentoNaoEncontradoException.class, acao);
@@ -222,6 +224,203 @@ class AtendimentoServiceFuncionalTest {
                 Arguments.of(Duration.ofDays(1))
         );
     }
+
+
+    // =================================================================
+    // VALOR LIMITE — tamanho da queixa principal da anamnese
+    // =================================================================
+
+    @ParameterizedTest(name = "queixaPrincipal com {0} caracteres -> deve aceitar = {1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL03 Valor limite do tamanho da queixa principal da anamnese")
+    @CsvSource({
+            "99, true",
+            "100, true",
+            "101, false",
+    })
+    void valorLimiteQueixaPrincipal(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String queixa = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarAnamnese(atendimento.getId(), new Anamnese(queixa, "histórico"));
+
+            assertThat(atualizado.getAnamnese().queixaPrincipal()).hasSize(tamanho); //se a queixa tem o tamanho que eu dei
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Anamnese(queixa, "histórico")); //se nao, lança exceção
+        }
+    }
+
+
+    // =================================================================
+    // VALOR LIMITE — tamanho do histórico clínico da anamnese
+    // =================================================================
+
+    @ParameterizedTest(name = "historicoClinico com {0} caracteres -> deve aceitar = {1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL04 Valor limite do tamanho do histórico clínico da anamnese")
+    @CsvSource({
+            "499, true",
+            "500, true",
+            "501, false",
+    })
+    void valorLimiteHistoricoClinico(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String historico = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarAnamnese(atendimento.getId(), new Anamnese("queixa", historico));
+
+            assertThat(atualizado.getAnamnese().historicoClinico()).hasSize(tamanho);
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Anamnese("queixa", historico));
+        }
+    }
+
+
+    // =================================================================
+    // VALOR LIMITE — tamanho do código no diagnóstico
+    // =================================================================
+
+    @ParameterizedTest(name = "codigo com {0} caracteres -> deve aceitar = {1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL05 Valor limite do tamanho do código do diagnóstico")
+    @CsvSource({
+            "9, true",
+            "10, true",
+            "11, false",
+    })
+    void valorLimiteCodigo(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String codigo = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(), new Diagnostico(codigo, "descricao", TipoDiagnostico.PRESUNTIVO));
+
+            assertThat(atualizado.getDiagnosticos().getFirst().codigo()).hasSize(tamanho);
+
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Diagnostico(codigo, "descricao", TipoDiagnostico.PRESUNTIVO));
+        }
+    }
+
+
+    // =================================================================
+    // VALOR LIMITE — tamanho da descrição do diagnóstico (máx. 200)
+    // =================================================================
+
+    @ParameterizedTest(name = "descricao com {0} caracteres -> deveAceitar={1}")
+    @Tag("Funcional")
+    @Tag("ValorLimite")
+    @DisplayName("#VL06 Valor limite do tamanho da descrição do diagnóstico")
+    @CsvSource({
+            "199, true",
+            "200, true",
+            "201, false"
+    })
+    void valorLimiteDescricaoDiagnostico(int tamanho, boolean deveAceitar) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        String descricao = "a".repeat(tamanho);
+
+        if (deveAceitar) {
+            Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(),
+                    new Diagnostico("A001", descricao, TipoDiagnostico.PRESUNTIVO));
+
+            assertThat(atualizado.getDiagnosticos().getFirst().descricao()).hasSize(tamanho);
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Diagnostico("A001", descricao, TipoDiagnostico.PRESUNTIVO));
+        }
+    }
+
+
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — tipo do diagnóstico -> Classes: PRESUNTIVO / EMPIRICO / DEFINITIVO (todas válidas)
+    // =================================================================
+
+    @ParameterizedTest(name = "tipo={0}")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#PE05 Devo registrar diagnóstico de qualquer tipo em atendimento em andamento")
+    @EnumSource(TipoDiagnostico.class)
+    void devoRegistrarDiagnosticoDeQualquerTipo(TipoDiagnostico tipo) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Diagnostico diagnostico = new Diagnostico("A001", "Alergia comum", tipo);
+
+        Atendimento atualizado = service.registrarDiagnostico(atendimento.getId(), diagnostico);
+
+        assertThat(atualizado.getDiagnosticos()).containsExactly(diagnostico);
+    }
+
+
+    // =================================================================
+    // VALOR LIMITE — temperatura, frequência cardíaca e peso dos sinais vitais
+    // =================================================================
+
+    @ParameterizedTest(name = "temperatura={0}, frequenciaCardiaca={1}, peso={2} -> aceitam = true")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#VL07 Valor limite da temperatura, frequência cardíaca e peso nos sinais vitais - deve passar")
+    @CsvSource({
+            "0.1, 20, 20.0",    // menor valor válido pra temp
+            "20.0, 1, 20.0",    // menor valor válido pra a freq card
+            "20.0, 20, 0.1"     // menor valor válido pra o peso
+    })
+    void valorLimiteTemperaturaFrequenciaPesoSinaisVitais(double temperatura, int frequencia, double peso) {
+        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Atendimento atualizado = service.registrarSinaisVitais(atendimento.getId(),
+                new SinaisVitais(temperatura, frequencia, peso));
+
+        assertThat(atualizado.getSinaisVitais().temperaturaC()).isEqualTo(temperatura);
+        assertThat(atualizado.getSinaisVitais().frequenciaCardiaca()).isEqualTo(frequencia);
+        assertThat(atualizado.getSinaisVitais().pesoKg()).isEqualTo(peso);
+
+    }
+
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — Não permitir código e descrição vazios no diagnóstico
+    // =================================================================
+
+    @ParameterizedTest(name = "codigo=''{0}'', descricao=''{1}''")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#PE06 Não deve registrar código e/ou descrição vazios no diagnóstico")
+    @CsvSource({
+            "'', Alergia",
+            "A001, ''",
+    })
+    void naoDevoCriarDiagnosicoComTextoVazio(String codigo, String descricao) {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Diagnostico(codigo, descricao, TipoDiagnostico.PRESUNTIVO));
+    }
+
+
+    // =================================================================
+    // PARTIÇÃO DE EQUIVALÊNCIA — Não permitir queixa principal e histórico clínico vazios na anamnese
+    // =================================================================
+
+    @ParameterizedTest(name = "queixaPrincipal=''{0}'', historicoClinico=''{1}''")
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("#PE07 Não deve registrar queixa principal e/ou histórico clínico vazios na anamnese")
+    @CsvSource({
+            "'', Paciente chegou chegando",
+            "Diarréia, ''",
+    })
+    void naoDevoCriarAnamneseComTextoVazio(String queixa, String historico) {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Anamnese(queixa, historico));
+    }
+
+
+
 
     @Test
     @Tag("UnitTest")
