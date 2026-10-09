@@ -168,7 +168,7 @@ class AtendimentoServiceFuncionalTest {
     @ParameterizedTest(name = "{0} sobre atendimento inexistente")
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("#PE05 Não devo operar sobre um AtendimentoId que não existe no repositório")
+    @DisplayName("#PE04 Não devo operar sobre um AtendimentoId que não existe no repositório")
     @MethodSource("acoesSobreAtendimentoInexistente")
     void naoDevoOperarSobreAtendimentoInexistente(String descricaoAcao, Executable acao) {
         assertThrows(AtendimentoNaoEncontradoException.class, acao);
@@ -341,7 +341,7 @@ class AtendimentoServiceFuncionalTest {
     @ParameterizedTest(name = "tipo={0}")
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("#PE06 Devo registrar diagnóstico de qualquer tipo em atendimento em andamento")
+    @DisplayName("#PE05 Devo registrar diagnóstico de qualquer tipo em atendimento em andamento")
     @EnumSource(TipoDiagnostico.class)
     void devoRegistrarDiagnosticoDeQualquerTipo(TipoDiagnostico tipo) {
         Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
@@ -385,7 +385,7 @@ class AtendimentoServiceFuncionalTest {
     @ParameterizedTest(name = "codigo=''{0}'', descricao=''{1}''")
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("#PE07 Não deve registrar código e/ou descrição vazios no diagnóstico")
+    @DisplayName("#PE06 Não deve registrar código e/ou descrição vazios no diagnóstico")
     @CsvSource({
             "'', Alergia",
             "A001, ''",
@@ -403,7 +403,7 @@ class AtendimentoServiceFuncionalTest {
     @ParameterizedTest(name = "queixaPrincipal=''{0}'', historicoClinico=''{1}''")
     @Tag("UnitTest")
     @Tag("Functional")
-    @DisplayName("#PE08 Não deve registrar queixa principal e/ou histórico clínico vazios na anamnese")
+    @DisplayName("#PE07 Não deve registrar queixa principal e/ou histórico clínico vazios na anamnese")
     @CsvSource({
             "'', Paciente chegou chegando",
             "Diarréia, ''",
