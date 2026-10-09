@@ -23,12 +23,14 @@ import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.api.function.Executable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AtendimentoServiceFuncionalTest {
@@ -255,5 +257,50 @@ class AtendimentoServiceFuncionalTest {
         assertThat(exames.size()).isEqualTo(1);
         assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
         assertThat(atendimento).isEqualTo(atendimentoAtualizado);
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve rejeitar exame com horário posterior ao limite permitido.")
+    @ValueSource(strings = {
+            "08:59",
+            "18:01"
+    })
+    void deveRejeitarExameComHorarioPosteriorAoLimitePermitido(String horario) {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                0)
+        );
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalTime horaExame = LocalTime.parse(horario);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+
+        assertThatThrownBy(() -> serviceLocal.solicitarExames(
+                atendimento.getId(),
+                List.of(exameSolicitado1, exameSolicitado2)
+        ))
+                .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a um horário válido.");
     }
 }
