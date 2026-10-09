@@ -487,4 +487,59 @@ class AtendimentoServiceFuncionalTest {
         assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
         assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
     }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve lançar uma exceção caso o resultado informado seja nulo ou vazio")
+    @MethodSource("resultados")
+    void deveLancarUmaExcecaoCasoOResultadoInformadoSejaNuloOuVazio(String resultado) {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                9,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                4,
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+        assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    static Stream<String> resultados() {
+        return Stream.of(
+                null,
+                "",
+                " ",
+                "    "
+        );
+    }
 }
