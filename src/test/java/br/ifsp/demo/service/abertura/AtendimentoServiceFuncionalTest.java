@@ -303,4 +303,53 @@ class AtendimentoServiceFuncionalTest {
         ))
                 .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a um horário válido.");
     }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve aceitar exame com horário dentro do limite permitido.")
+    @ValueSource(strings = {
+            "09:00",
+            "09:01",
+            "17:59",
+            "18:00",
+    })
+    void deveAceitarExameComHorarioDentroDoimitePermitido(String horario) {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                0)
+        );
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalTime horaExame = LocalTime.parse(horario);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+
+        Atendimento atendimentoAtualizado = serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+
+        var exames = atendimentoAtualizado.getExames();
+        assertThat(exames.size()).isEqualTo(2);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
+        assertThat(atendimento).isEqualTo(atendimentoAtualizado);
+    }
 }
