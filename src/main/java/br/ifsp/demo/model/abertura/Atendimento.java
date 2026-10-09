@@ -1,6 +1,7 @@
 package br.ifsp.demo.model.abertura;
 
 import br.ifsp.demo.exception.*;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.exame.ExameSolicitado;
@@ -27,6 +28,7 @@ public class Atendimento {
     private LocalDateTime dataHoraConclusao;
     private final List<Prescricao> prescricoes = new ArrayList<>();
     private final List<ExameSolicitado> exames = new ArrayList<>();
+    private Anamnese anamnese;
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -85,11 +87,24 @@ public class Atendimento {
     }
 
     public void registrarSinaisVitais(SinaisVitais sinaisVitais) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar sinais vitais em atendimento em aberto");
+        }
         this.sinaisVitais = sinaisVitais;
     }
 
     public void registrarDiagnostico(Diagnostico diagnostico) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar diagnóstico em atendimento em aberto");
+        }
         diagnosticos.add(diagnostico);
+    }
+
+    public void registrarAnamnese(Anamnese anamnese) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar anamnese em atendimento em aberto");
+        }
+        this.anamnese = anamnese;
     }
 
     public static Atendimento abrirProntoAtendimento(AnimalId animalId){
@@ -157,4 +172,14 @@ public class Atendimento {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    public SinaisVitais getSinaisVitais(){
+        return sinaisVitais;
+    }
+
+    public Anamnese getAnamnese() {
+        return anamnese;
+    }
+
+    public List<Diagnostico> getDiagnosticos(){ return diagnosticos; }
 }
