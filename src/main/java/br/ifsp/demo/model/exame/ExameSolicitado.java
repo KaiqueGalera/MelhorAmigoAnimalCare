@@ -31,7 +31,8 @@ public class ExameSolicitado {
     }
 
     public void setResultado(String resultado) {
-        if (resultado.isBlank()) return;
+        if (resultado == null || resultado.isBlank())
+            throw new IllegalArgumentException("O resultado deve ser informado!");
 
         this.resultado = resultado;
 

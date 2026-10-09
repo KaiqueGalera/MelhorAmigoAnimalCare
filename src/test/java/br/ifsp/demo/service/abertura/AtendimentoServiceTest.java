@@ -264,7 +264,14 @@ class AtendimentoServiceTest {
     @Tag("TDD")
     @DisplayName("C0601 - deve adicionar os exames solicitados à lista de exames do atendimento.")
     void deveAdicionarOsExamesSolicitadosAListaDeExamesDoAtendimento() {
-        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -284,7 +291,7 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        Atendimento atendimentoAtualizado = service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+        Atendimento atendimentoAtualizado = serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
 
         var exames = atendimentoAtualizado.getExames();
         assertThat(exames.size()).isEqualTo(2);
@@ -452,7 +459,15 @@ class AtendimentoServiceTest {
     void deveDevolverUmaListaComOsExamesQueJaForamFeitosPorUmAnimal() {
         var animalId = AnimalId.of(UUID.randomUUID());
 
-        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -472,7 +487,7 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
 
         List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(animalId);
         assertThat(exames.size()).isEqualTo(2);
@@ -496,7 +511,15 @@ class AtendimentoServiceTest {
     void deveDevolverUmaListaComOsExamesDoAnimalQueForamRealizadosDentroDoPeriodoInformado() {
         var animalId = AnimalId.of(UUID.randomUUID());
 
-        Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -523,7 +546,7 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
 
         var dataInicial = LocalDate.of(2026, Month.OCTOBER, 8);
         var dataFinal = LocalDate.of(2026, Month.DECEMBER, 8);
@@ -539,7 +562,15 @@ class AtendimentoServiceTest {
     @Tag("TDD")
     @DisplayName("C0801 - deve salvar o resultado de um exame solicitado em um atendimento.")
     void deveSalvarOResultadoDeUmExameSolicitadoEmUmAtendimento() {
-        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -566,11 +597,11 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
 
         var resultado = "O hemograma apresentou bons resultados, tudo certo!";
 
-        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
+        var exame = serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
         assertThat(exame).isEqualTo(exameSolicitado1);
         assertThat(exame.getResultado()).isEqualTo(resultado);
     }
@@ -580,7 +611,15 @@ class AtendimentoServiceTest {
     @Tag("TDD")
     @DisplayName("C0802 - deve conseguir editar o resultado de um exame solicitado em um atendimento.")
     void deveConseguirEditarOResultadoDeUmExameSolicitadoEmUmAtendimento() {
-        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -607,15 +646,15 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
 
         var resultado = "O hemograma apresentou bons resultados, tudo certo!";
 
-        service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
+        serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
 
         var novoResultado = "O hemograma não apresentou bons resultados, o retorno deve ser agendado!";
 
-        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), novoResultado);
+        var exame = serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), novoResultado);
 
         assertThat(exame).isEqualTo(exameSolicitado1);
         assertThat(exame.getResultado()).isEqualTo(novoResultado);
@@ -626,7 +665,15 @@ class AtendimentoServiceTest {
     @Tag("TDD")
     @DisplayName("C0901 - deve devolver o status PENDENTE para um exame que ainda não possui resultado registrado.")
     void deveDevolverOStatusPendenteParaUmExameQueAindaNãoPossuiResultadoRegistrado() {
-        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -653,7 +700,7 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
 
         assertThat(exameSolicitado1.getStatus()).isEqualTo(ExameStatus.PENDENTE);
         assertThat(exameSolicitado2.getStatus()).isEqualTo(ExameStatus.PENDENTE);
@@ -665,7 +712,15 @@ class AtendimentoServiceTest {
     @Tag("TDD")
     @DisplayName("C0902 - deve garantir que o status do exame seja alterado automaticamente para CONCLUIDO quando seu resultado é registrado.")
     void deveGarantirQueOStatusDoExameSejaAlteradoAutomaticamenteParaConcluidoQuandoSeuResultadoERegistrado() {
-        Atendimento atendimento = service.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
         Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
         Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
@@ -692,11 +747,11 @@ class AtendimentoServiceTest {
                 0)
         );
 
-        service.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
 
         var resultado = "O hemograma apresentou bons resultados, tudo certo!";
 
-        var exame = service.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
+        var exame = serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado);
         assertThat(exame).isEqualTo(exameSolicitado1);
         assertThat(exame.getStatus()).isEqualTo(ExameStatus.CONCLUIDO);
     }

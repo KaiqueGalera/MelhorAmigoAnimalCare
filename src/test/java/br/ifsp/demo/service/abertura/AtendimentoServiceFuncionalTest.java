@@ -11,19 +11,25 @@ import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
+import br.ifsp.demo.model.exame.Exame;
+import br.ifsp.demo.model.exame.ExameId;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.junit.jupiter.api.function.Executable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.*;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AtendimentoServiceFuncionalTest {
@@ -415,4 +421,324 @@ class AtendimentoServiceFuncionalTest {
 
 
 
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve adicionar um único exame solicitado a lista de exames do atendimento.")
+    void deveAdicionarUmUnicoExameSolicitadoAListaDeExamesDoAtendimento() {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                10,
+                0)
+        );
+
+        Atendimento atendimentoAtualizado = serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1));
+
+        var exames = atendimentoAtualizado.getExames();
+        assertThat(exames.size()).isEqualTo(1);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(atendimento).isEqualTo(atendimentoAtualizado);
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve rejeitar exame com horário posterior ao limite permitido.")
+    @ValueSource(strings = {
+            "08:59",
+            "18:01"
+    })
+    void deveRejeitarExameComHorarioPosteriorAoLimitePermitido(String horario) {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                0)
+        );
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalTime horaExame = LocalTime.parse(horario);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+
+        assertThatThrownBy(() -> serviceLocal.solicitarExames(
+                atendimento.getId(),
+                List.of(exameSolicitado1, exameSolicitado2)
+        ))
+                .isInstanceOf(IllegalStateException.class).hasMessage("Solicitação de exame rejeitada: todos os exames devem estar vinculados a um horário válido.");
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve aceitar exame com horário dentro do limite permitido.")
+    @ValueSource(strings = {
+            "09:00",
+            "09:01",
+            "17:59",
+            "18:00",
+    })
+    void deveAceitarExameComHorarioDentroDoLimitePermitido(String horario) {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                0)
+        );
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalTime horaExame = LocalTime.parse(horario);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                horaExame.getHour(),
+                horaExame.getMinute())
+        );
+
+        Atendimento atendimentoAtualizado = serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+
+        var exames = atendimentoAtualizado.getExames();
+        assertThat(exames.size()).isEqualTo(2);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
+        assertThat(atendimento).isEqualTo(atendimentoAtualizado);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve devolver um único exame caso o animal tenha apenas um exame registrado.")
+    void deveDevolverUmUnicoExameCasoOAnimalTenhaApenasUmExameRegistrado() {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1));
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalId(animalId);
+        assertThat(exames.size()).isEqualTo(1);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve devolver uma lista vazia caso não existam exames no periodo informado")
+    @ValueSource(strings = {
+            "2026-10-07",
+            "2026-12-09",
+    })
+    void deveDevolverUmaListaVaziaCasoNaoExistamExamesNoPeriodoInformado(String data) {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                5,
+                10,
+                0)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalDate periodo = LocalDate.parse(data);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                periodo.getYear(),
+                periodo.getMonth(),
+                periodo.getDayOfMonth(),
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                periodo.getYear(),
+                periodo.getMonth(),
+                periodo.getDayOfMonth(),
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+
+        var dataInicial = LocalDate.of(2026, Month.OCTOBER, 8);
+        var dataFinal = LocalDate.of(2026, Month.DECEMBER, 8);
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalIdEPeriodo(animalId, dataInicial, dataFinal);
+        assertThat(exames.isEmpty()).isEqualTo(true);
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve devolver uma lista com exames que estão dentro do periodo informado")
+    @ValueSource(strings = {
+            "2026-10-08",
+            "2026-10-09",
+            "2026-12-07",
+            "2026-12-08",
+    })
+    void deveDevolverUmaListaComExamesQueEstaoDentroDoPeriodoInformado(String data) {
+        var animalId = AnimalId.of(UUID.randomUUID());
+
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                5,
+                10,
+                0)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(animalId);
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        LocalDate periodo = LocalDate.parse(data);
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                periodo.getYear(),
+                periodo.getMonth(),
+                periodo.getDayOfMonth(),
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                periodo.getYear(),
+                periodo.getMonth(),
+                periodo.getDayOfMonth(),
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2));
+
+        var dataInicial = LocalDate.of(2026, Month.OCTOBER, 8);
+        var dataFinal = LocalDate.of(2026, Month.DECEMBER, 8);
+
+        List<ExameSolicitado> exames = repository.buscarExamesPorAnimalIdEPeriodo(animalId, dataInicial, dataFinal);
+        assertThat(exames.size()).isEqualTo(2);
+        assertThat(exames.contains(exameSolicitado1)).isEqualTo(true);
+        assertThat(exames.contains(exameSolicitado2)).isEqualTo(true);
+    }
+
+    @ParameterizedTest
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("deve lançar uma exceção caso o resultado informado seja nulo ou vazio")
+    @MethodSource("resultados")
+    void deveLancarUmaExcecaoCasoOResultadoInformadoSejaNuloOuVazio(String resultado) {
+        AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                7,
+                9,
+                1)
+        );
+
+        Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+        Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+        ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                2026,
+                Month.OCTOBER,
+                8,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                9,
+                9,
+                0)
+        );
+        ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                2026,
+                Month.DECEMBER,
+                4,
+                9,
+                0)
+        );
+
+        serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+        assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    static Stream<String> resultados() {
+        return Stream.of(
+                null,
+                "",
+                " ",
+                "    "
+        );
+    }
 }
