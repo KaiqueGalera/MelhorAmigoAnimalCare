@@ -148,12 +148,12 @@ public class Atendimento {
         return prescricao;
     }
 
-    public Prescricao encontrarPrescricao(PrescricaoId prescricaoId) {
-        return prescricoes.stream()
-                .filter(p -> p.getId().equals(prescricaoId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
-    }
+        public Prescricao encontrarPrescricao(PrescricaoId prescricaoId) {
+            return prescricoes.stream()
+                    .filter(p -> p.getId().equals(prescricaoId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
+        }
 
     public void addExame(ExameSolicitado exame) {
         this.exames.add(exame);

@@ -22,7 +22,7 @@ public class AnimalId {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         AnimalId animalId = (AnimalId) o;
-        return Objects.equals(id, animalId.id);
+        return Objects.equals(id    , animalId.id);
     }
 
     @Override
