@@ -12,6 +12,7 @@ import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.model.exame.ExameStatus;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
+import br.ifsp.demo.model.prescricao.PrescricaoId;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -1725,6 +1726,21 @@ class AtendimentoServiceTest {
                 List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5)));
 
         assertThat(atendimento.encontrarPrescricao(emitida.getId())).isSameAs(emitida);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("S0006 - equals e hashCode de Atendimento")
+    void equalsEHashCodeDeAtendimento() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Atendimento outro = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+        assertThat(atendimento.equals(null)).isFalse();                 // o == null
+        assertThat(atendimento.equals("outra classe")).isFalse();       // getClass() diferente
+        assertThat(atendimento.equals(atendimento)).isTrue();           // mesma classe, mesmo id
+        assertThat(atendimento.equals(outro)).isFalse();                // mesma classe, id diferente
+        assertThat(atendimento.hashCode()).isEqualTo(atendimento.hashCode());
     }
 }
 
