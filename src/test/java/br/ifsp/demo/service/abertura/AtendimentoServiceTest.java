@@ -1670,5 +1670,21 @@ class AtendimentoServiceTest {
             assertThat(service.buscarAtendimento(atendimento.getId())).isEqualTo(atendimento);
         }
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("S0002 - equals e hashCode de AtendimentoId")
+    void equalsEHashCodeDeAtendimentoId() {
+        UUID uuid = UUID.randomUUID();
+        AtendimentoId id = AtendimentoId.of(uuid);
+
+        assertThat(id.equals(id)).isTrue();                                     // mesma instância
+        assertThat(id.equals(null)).isFalse();
+        assertThat(id.equals("outra classe")).isFalse();
+        assertThat(id.equals(AtendimentoId.of(uuid))).isTrue();                 // mesmo valor
+        assertThat(id.equals(AtendimentoId.of(UUID.randomUUID()))).isFalse();   // valor diferente
+        assertThat(id.hashCode()).isEqualTo(AtendimentoId.of(uuid).hashCode());
+    }
 }
 
