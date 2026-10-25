@@ -1714,5 +1714,17 @@ class AtendimentoServiceTest {
         assertThat(id.equals(AnimalId.of(uuid))).isTrue();                  // mesmo valor
         assertThat(id.equals(AnimalId.of(UUID.randomUUID()))).isFalse();    // valor diferente
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("S0005 - encontra prescrição pelo id")
+    void deveEncontrarPrescricaoPeloId() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Prescricao emitida = atendimento.emitirPrescricao(
+                List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5)));
+
+        assertThat(atendimento.encontrarPrescricao(emitida.getId())).isSameAs(emitida);
+    }
 }
 
