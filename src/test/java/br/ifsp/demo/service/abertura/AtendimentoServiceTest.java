@@ -1742,5 +1742,20 @@ class AtendimentoServiceTest {
         assertThat(atendimento.equals(outro)).isFalse();                // mesma classe, id diferente
         assertThat(atendimento.hashCode()).isEqualTo(atendimento.hashCode());
     }
+
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("S0007 - não emite prescrição em atendimento cancelado")
+    void naoDeveEmitirPrescricaoEmAtendimentoCancelado() {
+        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        atendimento.cancelar("Tutor desistiu");
+
+        assertThatThrownBy(() -> atendimento.emitirPrescricao(
+                List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5))))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Emissão rejeitada");
+    }
 }
 
