@@ -105,7 +105,7 @@ public class AtendimentoService {
             throw new IllegalStateException("Solicitação de exame rejeitada: todos os exames devem estar vinculados a um horário válido.");
 
         exames.forEach(atendimento::addExame);
-
+        repository.salvar(atendimento);
         return atendimento;
     }
 
@@ -119,7 +119,7 @@ public class AtendimentoService {
         );
 
         exame.setResultado(resultado);
-
+        repository.salvar(atendimento);
         return exame;
     }
 
