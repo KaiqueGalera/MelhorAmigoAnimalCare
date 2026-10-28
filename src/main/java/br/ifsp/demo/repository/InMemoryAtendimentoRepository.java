@@ -12,6 +12,7 @@ public class InMemoryAtendimentoRepository implements AtendimentoRepository {
     private final List<Atendimento> atendimentos = new ArrayList<>();
 
     public void salvar(Atendimento atendimento){
+        atendimentos.removeIf(a -> a.getId().equals(atendimento.getId()));
         atendimentos.add(atendimento);
     }
 
