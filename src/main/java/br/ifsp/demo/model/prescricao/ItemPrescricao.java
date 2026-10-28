@@ -2,17 +2,18 @@ package br.ifsp.demo.model.prescricao;
 
 public class ItemPrescricao {
     private final ItemPrescricaoId id;
-    private String medicamento;
-    private Integer dosagem;
-    private String via;
-    private String frequencia;
-    private Integer diasDuracao;
+    private final String medicamento;
+    private final Integer dosagem;
+    private final String via;
+    private final String frequencia;
+    private final Integer diasDuracao;
 
     public ItemPrescricao(String medicamento, Integer dosagem, String via, String frequencia, Integer diasDuracao) {
         this(ItemPrescricaoId.novo(), medicamento, dosagem, via, frequencia, diasDuracao);
     }
 
     public ItemPrescricao(ItemPrescricaoId id, String medicamento, Integer dosagem, String via, String frequencia, Integer diasDuracao) {
+        validarId(id);
         validarMedicamento(medicamento);
         validarDosagem(dosagem);
         validarVia(via);
@@ -55,6 +56,10 @@ public class ItemPrescricao {
         if (diasDuracao == null || diasDuracao <= 0) {
             throw new IllegalArgumentException("Valor Inválido: Duração deve ser maior que zero");
         }
+    }
+
+    private static void validarId(ItemPrescricaoId id) {
+        if (id == null) throw new IllegalArgumentException("Valor Inválido: Id é obrigatório");
     }
 
     public ItemPrescricaoId getId() {
