@@ -4,13 +4,12 @@ import br.ifsp.demo.model.abertura.Atendimento;
 import br.ifsp.demo.model.abertura.AtendimentoId;
 import br.ifsp.demo.model.prescricao.*;
 import br.ifsp.demo.repository.AtendimentoRepository;
-import org.springframework.stereotype.Service;
+import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 
 import java.util.List;
 
-@Service
 public class PrescricaoService {
-    private final AtendimentoRepository repository;
+    private final AtendimentoRepository repository;      // era InMemoryAtendimentoRepository
 
     public PrescricaoService(AtendimentoRepository repository) {
         this.repository = repository;

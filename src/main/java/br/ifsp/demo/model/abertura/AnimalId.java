@@ -14,11 +14,15 @@ public class AnimalId {
         return new AnimalId(uuid);
     }
 
+    public UUID getValue() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         AnimalId animalId = (AnimalId) o;
-        return Objects.equals(id, animalId.id);
+        return Objects.equals(id    , animalId.id);
     }
 
     @Override

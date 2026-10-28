@@ -2,46 +2,53 @@ package br.ifsp.demo.repository;
 
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
-import org.springframework.stereotype.Repository;
-
+import br.ifsp.demo.model.exame.ExameSolicitado;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-@Repository
 public class InMemoryAtendimentoRepository implements AtendimentoRepository {
-    private final Map<AtendimentoId, Atendimento> atendimentos = new ConcurrentHashMap<>();
+    private final List<Atendimento> atendimentos = new ArrayList<>();
 
-    @Override
-    public void salvar(Atendimento atendimento) {
-        atendimentos.put(atendimento.getId(), atendimento);
+    public void salvar(Atendimento atendimento){
+        atendimentos.add(atendimento);
     }
 
-    @Override
     public boolean existeEmAndamentoParaAnimal(AnimalId animalId) {
         return buscarPorAnimalId(animalId).stream()
-                .anyMatch(a -> a.getStatus().equals(StatusAtendimento.EM_ANDAMENTO));
+                .anyMatch(atendimento -> atendimento.getStatus().equals(StatusAtendimento.EM_ANDAMENTO));
     }
 
-    @Override
-    public List<Atendimento> buscarPorAnimalId(AnimalId animalId) {
-        return atendimentos.values().stream()
-                .filter(a -> a.getAnimalId().equals(animalId))
+    public List<Atendimento> buscarPorAnimalId(AnimalId animalId){
+        return atendimentos.stream()
+                .filter(atendimento -> atendimento.getAnimalId().equals(animalId))
+                .collect(Collectors.toList());
+    }
+
+    public Atendimento buscarUmPorAtendimentoId(AtendimentoId id){
+        return atendimentos.stream()
+                .filter(atendimento -> atendimento.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new AtendimentoNaoEncontradoException(id));
+    }
+
+    public boolean existeAtendimentoParaAgendamento(AgendamentoId agendamentoId) {
+        return atendimentos.stream()
+                .anyMatch(a -> agendamentoId.equals(a.getAgendamentoId()));
+    }
+
+    public List<ExameSolicitado> buscarExamesPorAnimalId(AnimalId animalId) {
+        return atendimentos.stream().filter(atendimento -> atendimento.getAnimalId().equals(animalId))
+                .flatMap(atendimento -> atendimento.getExames().stream())
                 .toList();
     }
 
-    @Override
-    public Atendimento buscarUmPorAtendimentoId(AtendimentoId id) {
-        Atendimento atendimento = atendimentos.get(id);
-        if (atendimento == null) {
-            throw new AtendimentoNaoEncontradoException(id);
-        }
-        return atendimento;
-    }
-
-    @Override
-    public boolean existeAtendimentoParaAgendamento(AgendamentoId agendamentoId) {
-        return atendimentos.values().stream()
-                .anyMatch(a -> agendamentoId.equals(a.getAgendamentoId()));
+    public List<ExameSolicitado> buscarExamesPorAnimalIdEPeriodo(AnimalId animalId, LocalDate dataInicial, LocalDate dataFinal) {
+        return buscarExamesPorAnimalId(animalId).stream().filter(exame ->
+                exame.getData().toLocalDate().isEqual(dataInicial)
+                        || (exame.getData().toLocalDate().isAfter(dataInicial) && exame.getData().toLocalDate().isBefore(dataFinal))
+                        ||  exame.getData().toLocalDate().isEqual(dataFinal)
+        ).toList();
     }
 }

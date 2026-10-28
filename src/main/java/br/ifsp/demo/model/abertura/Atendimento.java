@@ -1,17 +1,19 @@
 package br.ifsp.demo.model.abertura;
 
 import br.ifsp.demo.exception.*;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
+import br.ifsp.demo.model.exame.ExameSolicitado;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.model.prescricao.PrescricaoId;
 import br.ifsp.demo.model.prescricao.StatusPrescricao;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Atendimento {
     private static final Duration JANELA_REABERTURA = Duration.ofHours(24);
@@ -25,6 +27,36 @@ public class Atendimento {
     private final List<Diagnostico> diagnosticos = new ArrayList<>();
     private LocalDateTime dataHoraConclusao;
     private final List<Prescricao> prescricoes = new ArrayList<>();
+    private final List<ExameSolicitado> exames = new ArrayList<>();
+    private Anamnese anamnese;
+
+    private Atendimento(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId,
+                        StatusAtendimento status, LocalDateTime dataHoraAtendimento,
+                        LocalDateTime dataHoraConclusao, String justificativa,
+                        SinaisVitais sinaisVitais, List<Diagnostico> diagnosticos,
+                        List<Prescricao> prescricoes) {
+        this.id = id;
+        this.animalId = animalId;
+        this.agendamentoId = agendamentoId;
+        this.status = status;
+        this.dataHoraAtendimento = dataHoraAtendimento;
+        this.dataHoraConclusao = dataHoraConclusao;
+        this.justificativa = justificativa;
+        this.sinaisVitais = sinaisVitais;
+        this.diagnosticos.addAll(diagnosticos);
+        this.prescricoes.addAll(prescricoes);
+    }
+
+    public static Atendimento reconstituir(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId,
+                                           StatusAtendimento status, LocalDateTime dataHoraAtendimento,
+                                           LocalDateTime dataHoraConclusao, String justificativa,
+                                           SinaisVitais sinaisVitais, List<Diagnostico> diagnosticos,
+                                           List<Prescricao> prescricoes) {
+        return new Atendimento(id, animalId, agendamentoId, status, dataHoraAtendimento,
+                dataHoraConclusao, justificativa, sinaisVitais, diagnosticos, prescricoes);
+    }
+
+    public LocalDateTime getDataHoraConclusao() { return dataHoraConclusao; }
 
     public Atendimento(AgendamentoId agendamentoId, AnimalId animalId) {
         this.dataHoraAtendimento = LocalDateTime.now();
@@ -83,11 +115,24 @@ public class Atendimento {
     }
 
     public void registrarSinaisVitais(SinaisVitais sinaisVitais) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar sinais vitais em atendimento em aberto");
+        }
         this.sinaisVitais = sinaisVitais;
     }
 
     public void registrarDiagnostico(Diagnostico diagnostico) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar diagnóstico em atendimento em aberto");
+        }
         diagnosticos.add(diagnostico);
+    }
+
+    public void registrarAnamnese(Anamnese anamnese) {
+        if (status != StatusAtendimento.EM_ANDAMENTO){
+            throw new IllegalStateException("Registro negado: Só é possível registrar anamnese em atendimento em aberto");
+        }
+        this.anamnese = anamnese;
     }
 
     public static Atendimento abrirProntoAtendimento(AnimalId animalId){
@@ -103,11 +148,15 @@ public class Atendimento {
         return prescricao;
     }
 
-    public Prescricao encontrarPrescricao(PrescricaoId prescricaoId) {
-        return prescricoes.stream()
-                .filter(p -> p.getId().equals(prescricaoId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
+        public Prescricao encontrarPrescricao(PrescricaoId prescricaoId) {
+            return prescricoes.stream()
+                    .filter(p -> p.getId().equals(prescricaoId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Prescrição não encontrada: " + prescricaoId));
+        }
+
+    public void addExame(ExameSolicitado exame) {
+        this.exames.add(exame);
     }
 
     public String getJustificativa() {
@@ -135,4 +184,30 @@ public class Atendimento {
     }
 
     public List<Prescricao> getPrescricoes() { return prescricoes; }
+
+    public List<ExameSolicitado> getExames() {
+        return exames;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Atendimento that = (Atendimento) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    public SinaisVitais getSinaisVitais(){
+        return sinaisVitais;
+    }
+
+    public Anamnese getAnamnese() {
+        return anamnese;
+    }
+
+    public List<Diagnostico> getDiagnosticos(){ return diagnosticos; }
 }

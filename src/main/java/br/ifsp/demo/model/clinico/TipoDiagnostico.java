@@ -1,7 +1,7 @@
-package br.ifsp.demo.model.clinico;
+    package br.ifsp.demo.model.clinico;
 
-public enum TipoDiagnostico {
-    PRESUNTIVO,
-    EMPIRICO,
-    DEFINITIVO
-}
+    public enum TipoDiagnostico {
+        PRESUNTIVO,
+        EMPIRICO,
+        DEFINITIVO
+    }

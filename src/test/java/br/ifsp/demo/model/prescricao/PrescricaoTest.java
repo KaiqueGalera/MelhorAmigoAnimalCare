@@ -262,6 +262,18 @@ class PrescricaoTest {
                 .hasMessage("Valor Inválido: Duração deve ser maior que zero");
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("TDD")
+    @DisplayName("US10f - deve rejeitar emissao quando a lista de itens da prescricao for nula")
+    void deveRejeitarEmissaoQuandoListaDeItensForNula() {
+        Atendimento atendimento = atendimentoEmAndamento();
+
+        assertThatThrownBy(() -> atendimento.emitirPrescricao(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Emissão rejeitada: só é possível emitir uma prescrição com pelo menos um item.");
+    }
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("acoesComIdInexistente")
     @Tag("UnitTest")
@@ -321,7 +333,8 @@ class PrescricaoTest {
         Prescricao prescricao = new Prescricao(List.of(itemValido()));
 
         assertThatThrownBy(() -> prescricao.editarItem(null, itemValido()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("O id do item é obrigatório.");
     }
 
     @Test
@@ -334,6 +347,18 @@ class PrescricaoTest {
 
         assertThatThrownBy(() -> prescricao.editarItem(item.getId(), null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @DisplayName("US11f - deve rejeitar remocao com id nulo")
+    void deveRejeitarRemocaoComIdNulo() {
+        Prescricao prescricao = new Prescricao(List.of(itemValido()));
+
+        assertThatThrownBy(() -> prescricao.removerItem(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("O id do item é obrigatório.");
     }
 
     @ParameterizedTest(name = "cancelada - {0}")
