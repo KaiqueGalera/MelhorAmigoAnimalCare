@@ -2,9 +2,14 @@ package br.ifsp.demo.repository;
 
 import br.ifsp.demo.exception.AtendimentoNaoEncontradoException;
 import br.ifsp.demo.model.abertura.*;
+import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.model.clinico.TipoDiagnostico;
+import br.ifsp.demo.model.exame.Exame;
+import br.ifsp.demo.model.exame.ExameId;
+import br.ifsp.demo.model.exame.ExameSolicitado;
+import br.ifsp.demo.model.exame.ExameStatus;
 import br.ifsp.demo.model.prescricao.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,19 +37,23 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
     public void salvar(Atendimento atendimento) {
         String id = atendimento.getId().getValue().toString();
         SinaisVitais sv = atendimento.getSinaisVitais();
+        Anamnese an = atendimento.getAnamnese();
 
         jdbc.update("""
                 INSERT INTO atendimento (id, animal_id, agendamento_id, status, data_hora_atendimento,
-                                         data_hora_conclusao, justificativa,
-                                         temperatura_c, frequencia_cardiaca, frequencia_respiratoria)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET
-                    status = excluded.status,
-                    data_hora_conclusao = excluded.data_hora_conclusao,
-                    justificativa = excluded.justificativa,
-                    temperatura_c = excluded.temperatura_c,
-                    frequencia_cardiaca = excluded.frequencia_cardiaca,
-                    frequencia_respiratoria = excluded.frequencia_respiratoria
+                                                 data_hora_conclusao, justificativa,
+                                                 temperatura_c, frequencia_cardiaca, peso_kg,
+                                                 queixa_principal, historico_clinico)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT(id) DO UPDATE SET
+                            status = excluded.status,
+                            data_hora_conclusao = excluded.data_hora_conclusao,
+                            justificativa = excluded.justificativa,
+                            temperatura_c = excluded.temperatura_c,
+                            frequencia_cardiaca = excluded.frequencia_cardiaca,
+                            peso_kg = excluded.peso_kg,
+                            queixa_principal = excluded.queixa_principal,
+                            historico_clinico = excluded.historico_clinico
                 """,
                 id,
                 atendimento.getAnimalId().getValue().toString(),
@@ -55,9 +64,10 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
                 atendimento.getJustificativa(),
                 sv == null ? null : sv.temperaturaC(),
                 sv == null ? null : sv.frequenciaCardiaca(),
-                sv == null ? null : sv.pesoKg());
+                sv == null ? null : sv.pesoKg(),
+                an == null ? null : an.queixaPrincipal(),
+                an == null ? null : an.historicoClinico());
 
-        // Diagnósticos são Value Objects sem identidade: regrava a lista inteira.
         jdbc.update("DELETE FROM diagnostico WHERE atendimento_id = ?", id);
         List<Diagnostico> diagnosticos = atendimento.getDiagnosticos();
         for (int i = 0; i < diagnosticos.size(); i++) {
@@ -99,7 +109,18 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
             }
         }
 
-        // TODO persistir aqui os demais
+        jdbc.update("DELETE FROM exame_solicitado WHERE atendimento_id = ?", id);
+        List<ExameSolicitado> exames = atendimento.getExames();
+        for (int i = 0; i < exames.size(); i++) {
+            ExameSolicitado e = exames.get(i);
+            jdbc.update("""
+            INSERT INTO exame_solicitado (atendimento_id, ordem, exame_id, exame_nome,
+                                          data_hora, resultado, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+                    id, i, e.getExame().getId().toString(), e.getExame().getNome(),
+                    e.getData().toString(), e.getResultado(), e.getStatus().name());
+        }
 
     }
 
@@ -150,12 +171,19 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
         String conclusao = rs.getString("data_hora_conclusao");
 
         SinaisVitais sinais = null;
+        Anamnese anamnese = null;
+
+        String queixa = rs.getString("queixa_principal");
+        if (queixa != null) {
+            anamnese = new Anamnese(queixa, rs.getString("historico_clinico"));
+        }
+
         double temperatura = rs.getDouble("temperatura_c");
         if (!rs.wasNull()) {
             sinais = new SinaisVitais(
                     temperatura,
                     rs.getInt("frequencia_cardiaca"),
-                    rs.getInt("frequencia_respiratoria"));
+                    rs.getDouble("peso_kg"));
         }
 
         return new LinhaAtendimento(
@@ -166,7 +194,8 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
                 LocalDateTime.parse(rs.getString("data_hora_atendimento")),
                 conclusao == null ? null : LocalDateTime.parse(conclusao),
                 rs.getString("justificativa"),
-                sinais);
+                sinais,
+                anamnese);
     }
 
     private Atendimento hidratar(LinhaAtendimento l) {
@@ -178,10 +207,25 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
                         TipoDiagnostico.valueOf(rs.getString("tipo"))),
                 l.id().getValue().toString());
 
+        List<ExameSolicitado> exames = jdbc.query(
+                "SELECT exame_id, exame_nome, data_hora, resultado, status FROM exame_solicitado " +
+                        "WHERE atendimento_id = ? ORDER BY ordem",
+                (rs, n) -> {
+                    Exame exame = new Exame(ExameId.of(UUID.fromString(rs.getString("exame_id"))),
+                            rs.getString("exame_nome"));
+                    ExameSolicitado s = new ExameSolicitado(exame, LocalDateTime.parse(rs.getString("data_hora")));
+                    if (ExameStatus.valueOf(rs.getString("status")) == ExameStatus.CONCLUIDO) {
+                        s.setResultado(rs.getString("resultado"));
+                    }
+                    return s;
+                },
+                l.id().getValue().toString());
+
         return Atendimento.reconstituir(
                 l.id(), l.animalId(), l.agendamentoId(), l.status(),
                 l.dataHoraAtendimento(), l.dataHoraConclusao(), l.justificativa(),
-                l.sinaisVitais(), diagnosticos, carregarPrescricoes(l.id().getValue().toString()));
+                l.sinaisVitais(), l.anamnese(), diagnosticos,
+                carregarPrescricoes(l.id().getValue().toString()), exames);
     }
 
     private List<Prescricao> carregarPrescricoes(String atendimentoId) {
@@ -225,6 +269,7 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
             LocalDateTime dataHoraAtendimento,
             LocalDateTime dataHoraConclusao,
             String justificativa,
-            SinaisVitais sinaisVitais) {
+            SinaisVitais sinaisVitais,
+            Anamnese anamnese) {
     }
 }

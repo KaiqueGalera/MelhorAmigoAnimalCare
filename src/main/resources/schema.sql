@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS atendimento (
     justificativa            TEXT,
     temperatura_c            REAL,
     frequencia_cardiaca      INTEGER,
-    frequencia_respiratoria  INTEGER
+    peso_kg                  REAL,
+    queixa_principal         TEXT,
+    historico_clinico        TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_atendimento_animal ON atendimento (animal_id);
@@ -50,3 +52,14 @@ CREATE TABLE IF NOT EXISTS item_prescricao (
 );
 
 CREATE INDEX IF NOT EXISTS idx_item_prescricao_prescricao ON item_prescricao (prescricao_id);
+
+CREATE TABLE IF NOT EXISTS exame_solicitado (
+    atendimento_id  TEXT    NOT NULL,
+    ordem           INTEGER NOT NULL,
+    exame_id        TEXT    NOT NULL,
+    exame_nome      TEXT    NOT NULL,
+    data_hora       TEXT    NOT NULL,
+    resultado       TEXT    NOT NULL DEFAULT '',
+    status          TEXT    NOT NULL,
+    PRIMARY KEY (atendimento_id, ordem)
+);

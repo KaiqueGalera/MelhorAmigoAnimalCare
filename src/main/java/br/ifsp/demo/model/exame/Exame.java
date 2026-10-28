@@ -11,9 +11,9 @@ public class Exame {
         this.nome = nome;
     }
 
-    public ExameId getId() {
-        return id;
-    }
+    public ExameId getId() { return id; }
+
+    public String getNome() { return nome; }
 
     @Override
     public boolean equals(Object o) {

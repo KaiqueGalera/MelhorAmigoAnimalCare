@@ -33,8 +33,8 @@ public class Atendimento {
     private Atendimento(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId,
                         StatusAtendimento status, LocalDateTime dataHoraAtendimento,
                         LocalDateTime dataHoraConclusao, String justificativa,
-                        SinaisVitais sinaisVitais, List<Diagnostico> diagnosticos,
-                        List<Prescricao> prescricoes) {
+                        SinaisVitais sinaisVitais, Anamnese anamnese, List<Diagnostico> diagnosticos,
+                        List<Prescricao> prescricoes, List<ExameSolicitado> exames) {
         this.id = id;
         this.animalId = animalId;
         this.agendamentoId = agendamentoId;
@@ -45,15 +45,18 @@ public class Atendimento {
         this.sinaisVitais = sinaisVitais;
         this.diagnosticos.addAll(diagnosticos);
         this.prescricoes.addAll(prescricoes);
+        this.anamnese = anamnese;
+        this.exames.addAll(exames);
     }
 
     public static Atendimento reconstituir(AtendimentoId id, AnimalId animalId, AgendamentoId agendamentoId,
                                            StatusAtendimento status, LocalDateTime dataHoraAtendimento,
                                            LocalDateTime dataHoraConclusao, String justificativa,
-                                           SinaisVitais sinaisVitais, List<Diagnostico> diagnosticos,
-                                           List<Prescricao> prescricoes) {
-        return new Atendimento(id, animalId, agendamentoId, status, dataHoraAtendimento,
-                dataHoraConclusao, justificativa, sinaisVitais, diagnosticos, prescricoes);
+                                           SinaisVitais sinaisVitais, Anamnese anamnese,
+                                           List<Diagnostico> diagnosticos, List<Prescricao> prescricoes,
+                                           List<ExameSolicitado> exames) {
+        return new Atendimento(id, animalId, agendamentoId, status, dataHoraAtendimento, dataHoraConclusao,
+                justificativa, sinaisVitais, anamnese, diagnosticos, prescricoes, exames);
     }
 
     public LocalDateTime getDataHoraConclusao() { return dataHoraConclusao; }
@@ -183,7 +186,7 @@ public class Atendimento {
         return dataHoraAtendimento;
     }
 
-    public List<Prescricao> getPrescricoes() { return prescricoes; }
+    public List<Prescricao> getPrescricoes() { return List.copyOf(prescricoes); }
 
     public List<ExameSolicitado> getExames() {
         return exames;
