@@ -10,14 +10,15 @@ import br.ifsp.demo.model.clinico.Anamnese;
 import br.ifsp.demo.model.clinico.Diagnostico;
 import br.ifsp.demo.model.clinico.SinaisVitais;
 import br.ifsp.demo.repository.AtendimentoRepository;
-import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Service
 public class AtendimentoService {
     private final LocalTime INICIO_HORARIO_EXAME = LocalTime.of(9, 0);
     private final LocalTime FIM_HORARIO_EXAME = LocalTime.of(18, 0);
@@ -25,14 +26,12 @@ public class AtendimentoService {
     private final AtendimentoRepository repository;
     private final Supplier<LocalDateTime> relogio;
 
-    // Construtor usado pelo Spring: o "agora" é lido a cada chamada.
     @Autowired
     public AtendimentoService(AtendimentoRepository repository) {
         this.repository = repository;
         this.relogio = LocalDateTime::now;
     }
 
-    // Construtor usado nos testes para fixar o "agora".
     AtendimentoService(AtendimentoRepository repository, LocalDateTime date) {
         this.repository = repository;
         this.relogio = () -> date;
