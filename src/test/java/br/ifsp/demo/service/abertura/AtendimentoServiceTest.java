@@ -1776,7 +1776,7 @@ class AtendimentoServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("Mutation")
-        @DisplayName("EncontrarPrescricao deve retornar a prescrição com o id informado, e não a primeira da lista")
+        @DisplayName("M0001 EncontrarPrescricao deve retornar a prescrição com o id informado, e não a primeira da lista")
         void encontrarPrescricao_deveRetornarPrescricaoDoIdInformado() {
             Prescricao primeira = atendimento.emitirPrescricao(criarItens());
             Prescricao segunda = atendimento.emitirPrescricao(criarItens());
@@ -1787,6 +1787,21 @@ class AtendimentoServiceTest {
             assertThat(encontrada).isSameAs(segunda);
             assertThat(encontrada).isNotSameAs(primeira);
             assertThat(encontrada).isNotSameAs(terceira);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0002 EncontrarPrescricao deve lançar exceção quando o id não pertence a nenhuma prescrição")
+        void encontrarPrescricao_deveLancarExcecaoQuandoIdNaoExiste() {
+            atendimento.emitirPrescricao(criarItens());
+
+            Atendimento outro = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            PrescricaoId idDeOutroAtendimento = outro.emitirPrescricao(criarItens()).getId();
+
+            assertThatThrownBy(() -> atendimento.encontrarPrescricao(idDeOutroAtendimento))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Prescrição não encontrada");
         }
     }
 }
