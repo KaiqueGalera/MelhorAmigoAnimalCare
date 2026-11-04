@@ -24,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -1802,6 +1803,27 @@ class AtendimentoServiceTest {
             assertThatThrownBy(() -> atendimento.encontrarPrescricao(idDeOutroAtendimento))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Prescrição não encontrada");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("hashCode deve ser derivado do id do atendimento")
+        void hashCode_deveDependerDoId() {
+            AtendimentoId id = AtendimentoId.novo();
+            AnimalId animalId = AnimalId.of(UUID.randomUUID());
+
+            Atendimento a1 = Atendimento.reconstituir(id, animalId, null, StatusAtendimento.EM_ANDAMENTO,
+                    LocalDateTime.now(), null, null, null, null, List.of(), List.of(), List.of());
+            Atendimento a2 = Atendimento.reconstituir(id, animalId, null, StatusAtendimento.EM_ANDAMENTO,
+                    LocalDateTime.now(), null, null, null, null, List.of(), List.of(), List.of());
+            Atendimento outro = Atendimento.reconstituir(AtendimentoId.novo(), animalId, null,
+                    StatusAtendimento.EM_ANDAMENTO, LocalDateTime.now(), null, null, null, null,
+                    List.of(), List.of(), List.of());
+
+            assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
+            assertThat(a1.hashCode()).isEqualTo(Objects.hashCode(id));
+            assertThat(a1.hashCode()).isNotEqualTo(outro.hashCode());
         }
     }
 }
