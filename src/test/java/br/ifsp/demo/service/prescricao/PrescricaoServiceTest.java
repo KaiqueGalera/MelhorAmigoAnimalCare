@@ -10,11 +10,16 @@ import br.ifsp.demo.service.abertura.AtendimentoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 class PrescricaoServiceTest {
     private final InMemoryAtendimentoRepository repository = new InMemoryAtendimentoRepository();
@@ -112,5 +117,51 @@ class PrescricaoServiceTest {
 
         Prescricao prescricaoAtualizada = prescricaoService.consultarPrescricoes(atendimento.getId()).get(0);
         assertThat(prescricaoAtualizada.getStatus()).isEqualTo(StatusPrescricao.CANCELADA);
+    }
+
+    @FunctionalInterface
+    interface Operacao {
+        void executar(PrescricaoService service, Atendimento atendimento, Prescricao prescricao);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("operacoes")
+    @Tag("UnitTest")
+    @Tag("Mutation")
+    @DisplayName("Deve salvar o atendimento no repositorio apos cada operacao de prescricao")
+    void deveSalvarOAtendimentoAposCadaOperacao(String nome, Operacao operacao) {
+        InMemoryAtendimentoRepository repositorioEspiao = spy(new InMemoryAtendimentoRepository());
+        Atendimento atendimento = new AtendimentoService(repositorioEspiao).abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        Prescricao prescricao = atendimento.emitirPrescricao(List.of(novoItem()));
+        clearInvocations(repositorioEspiao);
+
+        operacao.executar(new PrescricaoService(repositorioEspiao), atendimento, prescricao);
+
+        verify(repositorioEspiao).salvar(atendimento);
+    }
+
+    static Stream<Arguments> operacoes() {
+        return Stream.of(
+                Arguments.of("emitirPrescricao",
+                        (Operacao) (prescService, atendimento, prescricao) -> prescService.emitirPrescricao(atendimento.getId(), List.of(novoItem()))),
+                Arguments.of("editarItem",
+                        (Operacao) (prescService, atendimento, prescricao) -> {
+                            ItemPrescricao original = prescricao.getItens().getFirst();
+                            ItemPrescricao editado = new ItemPrescricao(
+                                    original.getId(), "Amoxicilina", 1000, "Oral", "12/12h", 7);
+                            prescService.editarItem(atendimento.getId(), prescricao.getId(), original.getId(), editado);
+                        }),
+                Arguments.of("removerItem",
+                        (Operacao) (prescService, atendimento, prescricao) ->
+                                prescService.removerItem(atendimento.getId(), prescricao.getId(), prescricao.getItens().getFirst().getId())),
+                Arguments.of("finalizar",
+                        (Operacao) (prescService, atendimento, prescricao) -> prescService.finalizar(atendimento.getId(), prescricao.getId())),
+                Arguments.of("cancelar",
+                        (Operacao) (prescService, atendimento, prescricao) -> prescService.cancelar(atendimento.getId(), prescricao.getId()))
+        );
+    }
+
+    private static ItemPrescricao novoItem() {
+        return new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5);
     }
 }
