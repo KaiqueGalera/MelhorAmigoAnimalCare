@@ -477,4 +477,14 @@ class PrescricaoTest {
         assertThat(prescricao.getDataHoraEmissao()).isEqualTo(emissao);
         assertThat(prescricao.getItens()).containsExactly(item1, item2);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("Deve rejeitar item de prescricao com id nulo")
+    void deveRejeitarItemDePrescricaoComIdNulo() {
+        assertThatThrownBy(() -> new ItemPrescricao(null, "Dipirona", 500, "Oral", "8 em 8 horas", 5))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Valor Inválido: Id é obrigatório");
+    }
 }
