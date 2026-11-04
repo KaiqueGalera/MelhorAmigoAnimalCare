@@ -6,10 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -460,5 +457,24 @@ class PrescricaoTest {
 
         assertThat(atendimentoA.getPrescricoes()).hasSize(1);
         assertThat(atendimentoB.getPrescricoes()).isEmpty();
+    }
+
+    @ParameterizedTest(name = "status = {0}")
+    @EnumSource(StatusPrescricao.class)
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("Deve reconstituir prescricao preservando id, status, data e itens")
+    void deveReconstituirPrescricaoPreservandoEstado(StatusPrescricao status) {
+        PrescricaoId id = PrescricaoId.novo();
+        LocalDateTime emissao = LocalDateTime.of(2026, 10, 5, 10, 0);
+        ItemPrescricao item1 = itemValido();
+        ItemPrescricao item2 = new ItemPrescricao("Amoxicilina", 1000, "Oral", "12/12h", 10);
+
+        Prescricao prescricao = Prescricao.reconstituir(id, List.of(item1, item2), status, emissao);
+
+        assertThat(prescricao.getId()).isEqualTo(id);
+        assertThat(prescricao.getStatus()).isEqualTo(status);
+        assertThat(prescricao.getDataHoraEmissao()).isEqualTo(emissao);
+        assertThat(prescricao.getItens()).containsExactly(item1, item2);
     }
 }
