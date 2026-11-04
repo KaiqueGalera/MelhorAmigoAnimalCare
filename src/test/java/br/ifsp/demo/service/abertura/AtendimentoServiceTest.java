@@ -1778,7 +1778,7 @@ class AtendimentoServiceTest {
         @Tag("UnitTest")
         @Tag("Mutation")
         @DisplayName("M0001 EncontrarPrescricao deve retornar a prescrição com o id informado, e não a primeira da lista")
-        void encontrarPrescricao_deveRetornarPrescricaoDoIdInformado() {
+        void encontrarPrescricaoDeveRetornarPrescricaoDoIdInformado() {
             Prescricao primeira = atendimento.emitirPrescricao(criarItens());
             Prescricao segunda = atendimento.emitirPrescricao(criarItens());
             Prescricao terceira = atendimento.emitirPrescricao(criarItens());
@@ -1794,7 +1794,7 @@ class AtendimentoServiceTest {
         @Tag("UnitTest")
         @Tag("Mutation")
         @DisplayName("M0002 EncontrarPrescricao deve lançar exceção quando o id não pertence a nenhuma prescrição")
-        void encontrarPrescricao_deveLancarExcecaoQuandoIdNaoExiste() {
+        void encontrarPrescricaoDeveLancarExcecaoQuandoIdNaoExiste() {
             atendimento.emitirPrescricao(criarItens());
 
             Atendimento outro = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
@@ -1809,7 +1809,7 @@ class AtendimentoServiceTest {
         @Tag("UnitTest")
         @Tag("Mutation")
         @DisplayName("M0003 HashCode deve ser derivado do id do atendimento")
-        void hashCode_deveDependerDoId() {
+        void hashCodeDeveDependerDoId() {
             AtendimentoId id = AtendimentoId.novo();
             AnimalId animalId = AnimalId.of(UUID.randomUUID());
 
@@ -1830,7 +1830,7 @@ class AtendimentoServiceTest {
         @Tag("UnitTest")
         @Tag("Mutation")
         @DisplayName("M0004 HashCode de AnimalId deve ser derivado do UUID")
-        void hashCodeDeAnimalId_devDependerDoUuid() {
+        void hashCodeDeAnimalIdDevDependerDoUuid() {
             UUID uuid = UUID.randomUUID();
             AnimalId a = AnimalId.of(uuid);
             AnimalId b = AnimalId.of(uuid);
@@ -1845,7 +1845,7 @@ class AtendimentoServiceTest {
         @Tag("UnitTest")
         @Tag("Mutation")
         @DisplayName("M0005 HashCode de AgendamentoId deve ser derivado do UUID")
-        void hashCodeDeAgendamentoId_deveDependerDoUuid() {
+        void hashCodeDeAgendamentoIdDeveDependerDoUuid() {
             UUID uuid = UUID.randomUUID();
             AgendamentoId a = AgendamentoId.of(uuid);
             AgendamentoId b = AgendamentoId.of(uuid);
@@ -1884,14 +1884,31 @@ class AtendimentoServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("Mutation")
-        @DisplayName("M0010 cancelarAtendimento deve salvar o atendimento")
-        void cancelarAtendimento_deveSalvar() {
+        @DisplayName("M0006 cancelarAtendimento deve salvar o atendimento")
+        void cancelarAtendimentoDeveSalvar() {
             RepositorioContador repo = new RepositorioContador();
             AtendimentoService svc = new AtendimentoService(repo);
             Atendimento atendimento = svc.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
             int antes = repo.salvamentos();
 
             svc.cancelarAtendimento(atendimento.getId(), "Tutor desistiu");
+
+            assertThat(repo.salvamentos()).isEqualTo(antes + 1);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0007 concluirAtendimento deve salvar o atendimento")
+        void concluirAtendimentoDeveSalvar() {
+            RepositorioContador repo = new RepositorioContador();
+            AtendimentoService svc = new AtendimentoService(repo);
+            Atendimento atendimento = svc.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            atendimento.registrarSinaisVitais(new SinaisVitais(38.5, 100, 12.0));
+            atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+            int antes = repo.salvamentos();
+
+            svc.concluirAtendimento(atendimento.getId());
 
             assertThat(repo.salvamentos()).isEqualTo(antes + 1);
         }
