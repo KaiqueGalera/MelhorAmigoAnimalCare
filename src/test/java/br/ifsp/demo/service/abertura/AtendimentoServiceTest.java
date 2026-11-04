@@ -1840,6 +1840,21 @@ class AtendimentoServiceTest {
             assertThat(a.hashCode()).isEqualTo(Objects.hashCode(uuid));
             assertThat(a.hashCode()).isNotEqualTo(outro.hashCode());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0005 HashCode de AgendamentoId deve ser derivado do UUID")
+        void hashCodeDeAgendamentoId_deveDependerDoUuid() {
+            UUID uuid = UUID.randomUUID();
+            AgendamentoId a = AgendamentoId.of(uuid);
+            AgendamentoId b = AgendamentoId.of(uuid);
+            AgendamentoId outro = AgendamentoId.of(UUID.randomUUID());
+
+            assertThat(a.hashCode()).isEqualTo(b.hashCode());
+            assertThat(a.hashCode()).isEqualTo(Objects.hashCode(uuid));
+            assertThat(a.hashCode()).isNotEqualTo(outro.hashCode());
+        }
     }
 }
 
