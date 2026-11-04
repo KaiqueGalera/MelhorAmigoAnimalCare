@@ -62,8 +62,8 @@ class ItemPrescricaoIdTest {
     @Test
     @Tag("UnitTest")
     @Tag("Mutation")
-    @DisplayName("hashcode deve ser o hash do uuid encapsulado")
-    void hashCodeDeveSerOHashDoUuidEncapsulado() {
+    @DisplayName("hashcode de ItemPrescricaoId deve ser o hash do uuid encapsulado")
+    void hashCodeDeItemPrescricaoIdDeveSerOHashDoUuidEncapsulado() {
         UUID uuid = new UUID(1L, 2L);
 
         assertThat(ItemPrescricaoId.of(uuid).hashCode()).isEqualTo(uuid.hashCode());
