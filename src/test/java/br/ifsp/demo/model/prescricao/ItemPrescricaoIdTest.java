@@ -58,4 +58,14 @@ class ItemPrescricaoIdTest {
                 Arguments.of("String com o mesmo UUID", RANDOM_UUID.toString()),
                 Arguments.of("PrescricaoId com o mesmo UUID", PrescricaoId.of(RANDOM_UUID)));
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Mutation")
+    @DisplayName("hashcode deve ser o hash do uuid encapsulado")
+    void hashCodeDeveSerOHashDoUuidEncapsulado() {
+        UUID uuid = new UUID(1L, 2L);
+
+        assertThat(ItemPrescricaoId.of(uuid).hashCode()).isEqualTo(uuid.hashCode());
+    }
 }
