@@ -1808,7 +1808,7 @@ class AtendimentoServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("Mutation")
-        @DisplayName("hashCode deve ser derivado do id do atendimento")
+        @DisplayName("M0003 HashCode deve ser derivado do id do atendimento")
         void hashCode_deveDependerDoId() {
             AtendimentoId id = AtendimentoId.novo();
             AnimalId animalId = AnimalId.of(UUID.randomUUID());
@@ -1824,6 +1824,21 @@ class AtendimentoServiceTest {
             assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
             assertThat(a1.hashCode()).isEqualTo(Objects.hashCode(id));
             assertThat(a1.hashCode()).isNotEqualTo(outro.hashCode());
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0004 HashCode de AnimalId deve ser derivado do UUID")
+        void hashCodeDeAnimalId_devDependerDoUuid() {
+            UUID uuid = UUID.randomUUID();
+            AnimalId a = AnimalId.of(uuid);
+            AnimalId b = AnimalId.of(uuid);
+            AnimalId outro = AnimalId.of(UUID.randomUUID());
+
+            assertThat(a.hashCode()).isEqualTo(b.hashCode());
+            assertThat(a.hashCode()).isEqualTo(Objects.hashCode(uuid));
+            assertThat(a.hashCode()).isNotEqualTo(outro.hashCode());
         }
     }
 }
