@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>br.ifsp</groupId>
     <artifactId>demo-auth-app</artifactId>
@@ -131,11 +131,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-maven</artifactId>
-            <version>1.18.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>0.15</version>
@@ -162,8 +157,27 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <targetClasses></targetClasses>
-                    <targetTests></targetTests>
+                    <targetClasses>
+                        <param>br.ifsp.demo.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>br.ifsp.demo.*</param>
+                    </targetTests>
+                    <excludedClasses>
+                        <param>br.ifsp.demo.suites.*</param>
+                        <param>br.ifsp.demo.DemoAuthAppApplication</param>
+                    </excludedClasses>
+                    <excludedTestClasses>
+                        <param>br.ifsp.demo.suites.*</param>
+                    </excludedTestClasses>
+                    <includedGroups>
+                        <param>UnitTest</param>
+                    </includedGroups>
+                    <outputFormats>
+                        <param>HTML</param>
+                        <param>XML</param>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
                 </configuration>
             </plugin>
             <plugin>

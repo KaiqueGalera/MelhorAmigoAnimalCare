@@ -1757,5 +1757,37 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Emissão rejeitada");
     }
+
+    @Nested
+    class AtendimentoMutationTest {
+
+        private Atendimento atendimento;
+
+        @BeforeEach
+        void setUp() {
+            atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        }
+
+        private List<ItemPrescricao> criarItens() {
+            return List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5),
+                    new ItemPrescricao("Novalgina", 200, "Oral", "6 em 6 horas", 5));
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("EncontrarPrescricao deve retornar a prescrição com o id informado, e não a primeira da lista")
+        void encontrarPrescricao_deveRetornarPrescricaoDoIdInformado() {
+            Prescricao primeira = atendimento.emitirPrescricao(criarItens());
+            Prescricao segunda = atendimento.emitirPrescricao(criarItens());
+            Prescricao terceira = atendimento.emitirPrescricao(criarItens());
+
+            Prescricao encontrada = atendimento.encontrarPrescricao(segunda.getId());
+
+            assertThat(encontrada).isSameAs(segunda);
+            assertThat(encontrada).isNotSameAs(primeira);
+            assertThat(encontrada).isNotSameAs(terceira);
+        }
+    }
 }
 
