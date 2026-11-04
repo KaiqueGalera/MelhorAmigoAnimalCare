@@ -1856,5 +1856,45 @@ class AtendimentoServiceTest {
             assertThat(a.hashCode()).isNotEqualTo(outro.hashCode());
         }
     }
+    @Nested
+    class AtendimentoServiceMutationTest {
+
+        private static final LocalDateTime AGORA = LocalDateTime.of(2026, 10, 7, 9, 1);
+
+        private static class RepositorioContador extends InMemoryAtendimentoRepository {
+            private int salvamentos = 0;
+
+            @Override
+            public void salvar(Atendimento atendimento) {
+                salvamentos++;
+                super.salvar(atendimento);
+            }
+
+            int salvamentos() {
+                return salvamentos;
+            }
+        }
+
+        private static ExameSolicitado exame(String nome, int hora) {
+            return new ExameSolicitado(
+                    new Exame(ExameId.of(UUID.randomUUID()), nome),
+                    LocalDateTime.of(2026, 10, 8, hora, 0));
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0010 cancelarAtendimento deve salvar o atendimento")
+        void cancelarAtendimento_deveSalvar() {
+            RepositorioContador repo = new RepositorioContador();
+            AtendimentoService svc = new AtendimentoService(repo);
+            Atendimento atendimento = svc.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            int antes = repo.salvamentos();
+
+            svc.cancelarAtendimento(atendimento.getId(), "Tutor desistiu");
+
+            assertThat(repo.salvamentos()).isEqualTo(antes + 1);
+        }
+    }
 }
 
