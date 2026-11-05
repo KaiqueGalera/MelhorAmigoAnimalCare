@@ -2063,6 +2063,19 @@ class AtendimentoServiceTest {
 
             assertThat(exameId.hashCode()).isEqualTo(value.hashCode());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0013 - deve considerar ExamesIds com mesmo value como iguais")
+        void deveConsiderarExamesIdsComMesmoValueComoIguais() {
+            UUID value = UUID.randomUUID();
+
+            ExameId exameId1 = ExameId.of(value);
+            ExameId exameId2 = ExameId.of(value);
+
+            assertThat(exameId1.equals(exameId2)).isEqualTo(true);
+        }
     }
 }
 
