@@ -32,7 +32,7 @@ public final class PrescricaoDtos {
 
     public record ItemResponse(UUID id, String medicamento, Integer dosagem, String via,
                                String frequencia, Integer diasDuracao) {
-        public static ItemResponse from(ItemPrescricao i) {
+        public static ItemResponse de(ItemPrescricao i) {
             return new ItemResponse(i.getId().getValue(), i.getMedicamento(), i.getDosagem(),
                     i.getVia(), i.getFrequencia(), i.getDiasDuracao());
         }
@@ -40,9 +40,9 @@ public final class PrescricaoDtos {
 
     public record PrescricaoResponse(UUID id, StatusPrescricao status, LocalDateTime dataHoraEmissao,
                                      List<ItemResponse> itens) {
-        public static PrescricaoResponse from(Prescricao p) {
+        public static PrescricaoResponse de(Prescricao p) {
             return new PrescricaoResponse(p.getId().getValue(), p.getStatus(), p.getDataHoraEmissao(),
-                    p.getItens().stream().map(ItemResponse::from).toList());
+                    p.getItens().stream().map(ItemResponse::de).toList());
         }
     }
 }

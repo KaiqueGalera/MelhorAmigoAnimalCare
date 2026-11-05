@@ -26,13 +26,13 @@ public class PrescricaoController {
     @PostMapping
     public ResponseEntity<PrescricaoResponse> emitir(@PathVariable UUID atendimentoId, @RequestBody EmitirRequest req) {
         Prescricao p = service.emitirPrescricao(AtendimentoId.of(atendimentoId), req.toDomain());
-        return ResponseEntity.status(HttpStatus.CREATED).body(PrescricaoResponse.from(p));
+        return ResponseEntity.status(HttpStatus.CREATED).body(PrescricaoResponse.de(p));
     }
 
     @GetMapping
     public List<PrescricaoResponse> listar(@PathVariable UUID atendimentoId) {
         return service.consultarPrescricoes(AtendimentoId.of(atendimentoId)).stream()
-                .map(PrescricaoResponse::from).toList();
+                .map(PrescricaoResponse::de).toList();
     }
 
     @PutMapping("/{prescricaoId}/itens/{itemId}")
