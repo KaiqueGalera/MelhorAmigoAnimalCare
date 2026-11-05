@@ -2089,6 +2089,22 @@ class AtendimentoServiceTest {
 
             assertThat(Objects.hash(exame, data)).isEqualTo(exameSolicitado.hashCode());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0015 - deve considerar ExamesSolicitados com exames ou datas diferentes como diferentes")
+        void deveConsiderarExamesSolicitadosComExamesOuDatasDiferentesComoDiferentes() {
+            Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+            Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Creatinina");
+
+            LocalDateTime data = LocalDateTime.of(2026, Month.NOVEMBER, 5, 19, 0);
+
+            ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, data);
+            ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, data);
+
+            assertThat(exameSolicitado1.equals(exameSolicitado2)).isEqualTo(false);
+        }
     }
 }
 
