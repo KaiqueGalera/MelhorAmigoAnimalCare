@@ -1671,95 +1671,182 @@ class AtendimentoServiceTest {
 
             assertThat(service.buscarAtendimento(atendimento.getId())).isEqualTo(atendimento);
         }
-    }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @DisplayName("S0002 - equals e hashCode de AtendimentoId")
-    void equalsEHashCodeDeAtendimentoId() {
-        UUID uuid = UUID.randomUUID();
-        AtendimentoId id = AtendimentoId.of(uuid);
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0002 - equals e hashCode de AtendimentoId")
+        void equalsEHashCodeDeAtendimentoId() {
+            UUID uuid = UUID.randomUUID();
+            AtendimentoId id = AtendimentoId.of(uuid);
 
-        assertThat(id.equals(id)).isTrue();                                     // mesma instância
-        assertThat(id.equals(null)).isFalse();
-        assertThat(id.equals("outra classe")).isFalse();
-        assertThat(id.equals(AtendimentoId.of(uuid))).isTrue();                 // mesmo valor
-        assertThat(id.equals(AtendimentoId.of(UUID.randomUUID()))).isFalse();   // valor diferente
-        assertThat(id.hashCode()).isEqualTo(AtendimentoId.of(uuid).hashCode());
-    }
+            assertThat(id.equals(id)).isTrue();                                     // mesma instância
+            assertThat(id.equals(null)).isFalse();
+            assertThat(id.equals("outra classe")).isFalse();
+            assertThat(id.equals(AtendimentoId.of(uuid))).isTrue();                 // mesmo valor
+            assertThat(id.equals(AtendimentoId.of(UUID.randomUUID()))).isFalse();   // valor diferente
+            assertThat(id.hashCode()).isEqualTo(AtendimentoId.of(uuid).hashCode());
+        }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @DisplayName("S0003 - equals de AgendamentoId")
-    void equalsDeAgendamentoId() {
-        UUID uuid = UUID.randomUUID();
-        AgendamentoId id = AgendamentoId.of(uuid);
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0003 - equals de AgendamentoId")
+        void equalsDeAgendamentoId() {
+            UUID uuid = UUID.randomUUID();
+            AgendamentoId id = AgendamentoId.of(uuid);
 
-        assertThat(id.equals(null)).isFalse();                                  // o == null
-        assertThat(id.equals("outra classe")).isFalse();                        // getClass() diferente
-        assertThat(id.equals(AgendamentoId.of(uuid))).isTrue();                 // mesmo valor
-        assertThat(id.equals(AgendamentoId.of(UUID.randomUUID()))).isFalse();   // valor diferente
-    }
+            assertThat(id.equals(null)).isFalse();                                  // o == null
+            assertThat(id.equals("outra classe")).isFalse();                        // getClass() diferente
+            assertThat(id.equals(AgendamentoId.of(uuid))).isTrue();                 // mesmo valor
+            assertThat(id.equals(AgendamentoId.of(UUID.randomUUID()))).isFalse();   // valor diferente
+        }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @DisplayName("S0004 - equals de AnimalId")
-    void equalsDeAnimalId() {
-        UUID uuid = UUID.randomUUID();
-        AnimalId id = AnimalId.of(uuid);
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0004 - equals de AnimalId")
+        void equalsDeAnimalId() {
+            UUID uuid = UUID.randomUUID();
+            AnimalId id = AnimalId.of(uuid);
 
-        assertThat(id.equals(null)).isFalse();                              // o == null
-        assertThat(id.equals("outra classe")).isFalse();                    // getClass() diferente
-        assertThat(id.equals(AnimalId.of(uuid))).isTrue();                  // mesmo valor
-        assertThat(id.equals(AnimalId.of(UUID.randomUUID()))).isFalse();    // valor diferente
-    }
+            assertThat(id.equals(null)).isFalse();                              // o == null
+            assertThat(id.equals("outra classe")).isFalse();                    // getClass() diferente
+            assertThat(id.equals(AnimalId.of(uuid))).isTrue();                  // mesmo valor
+            assertThat(id.equals(AnimalId.of(UUID.randomUUID()))).isFalse();    // valor diferente
+        }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @DisplayName("S0005 - encontra prescrição pelo id")
-    void deveEncontrarPrescricaoPeloId() {
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
-        Prescricao emitida = atendimento.emitirPrescricao(
-                List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5)));
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0005 - encontra prescrição pelo id")
+        void deveEncontrarPrescricaoPeloId() {
+            Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            Prescricao emitida = atendimento.emitirPrescricao(
+                    List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5)));
 
-        assertThat(atendimento.encontrarPrescricao(emitida.getId())).isSameAs(emitida);
-    }
+            assertThat(atendimento.encontrarPrescricao(emitida.getId())).isSameAs(emitida);
+        }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @DisplayName("S0006 - equals e hashCode de Atendimento")
-    void equalsEHashCodeDeAtendimento() {
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
-        Atendimento outro = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0006 - equals e hashCode de Atendimento")
+        void equalsEHashCodeDeAtendimento() {
+            Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            Atendimento outro = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
 
-        assertThat(atendimento.equals(null)).isFalse();                 // o == null
-        assertThat(atendimento.equals("outra classe")).isFalse();       // getClass() diferente
-        assertThat(atendimento.equals(atendimento)).isTrue();           // mesma classe, mesmo id
-        assertThat(atendimento.equals(outro)).isFalse();                // mesma classe, id diferente
-        assertThat(atendimento.hashCode()).isEqualTo(atendimento.hashCode());
-    }
+            assertThat(atendimento.equals(null)).isFalse();                 // o == null
+            assertThat(atendimento.equals("outra classe")).isFalse();       // getClass() diferente
+            assertThat(atendimento.equals(atendimento)).isTrue();           // mesma classe, mesmo id
+            assertThat(atendimento.equals(outro)).isFalse();                // mesma classe, id diferente
+            assertThat(atendimento.hashCode()).isEqualTo(atendimento.hashCode());
+        }
 
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @DisplayName("S0007 - não emite prescrição em atendimento cancelado")
-    void naoDeveEmitirPrescricaoEmAtendimentoCancelado() {
-        Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
-        atendimento.cancelar("Tutor desistiu");
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0007 - não emite prescrição em atendimento cancelado")
+        void naoDeveEmitirPrescricaoEmAtendimentoCancelado() {
+            Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            atendimento.cancelar("Tutor desistiu");
 
-        assertThatThrownBy(() -> atendimento.emitirPrescricao(
-                List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5))))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Emissão rejeitada");
+            assertThatThrownBy(() -> atendimento.emitirPrescricao(
+                    List.of(new ItemPrescricao("Dipirona", 500, "Oral", "8 em 8 horas", 5))))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("Emissão rejeitada");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0008 - método getNome de Exame")
+        void metodoGetNomeDeExame() {
+            String nomeExame = "Hemograma completo";
+
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), nomeExame);
+
+            assertThat(exame.getNome()).isEqualTo(nomeExame);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0009 - equals e hashCode de Exame")
+        void equalsEHashCodeDeExame() {
+            ExameId exameId =  ExameId.of(UUID.randomUUID());
+            Exame exame = new Exame(exameId, "Hemograma completo");
+
+            assertThat(exame.equals(exameId)).isEqualTo(false);
+            assertThat(exame.equals(null)).isEqualTo(false);
+            assertThat(exame.hashCode()).isEqualTo(exame.hashCode());
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0010 - equals e hashCode de ExameSolicitado")
+        void equalsEHashCodeDeExameSolicitado() {
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma completo");
+            ExameSolicitado exameSolicitado = new ExameSolicitado(exame, LocalDateTime.of(2026, Month.NOVEMBER, 4, 9, 0));
+
+            assertThat(exameSolicitado.equals(exame)).isEqualTo(false);
+            assertThat(exameSolicitado.equals(null)).isEqualTo(false);
+            assertThat(exameSolicitado.hashCode()).isEqualTo(exameSolicitado.hashCode());
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0011 - deve lançar exceção ao receber um valor nulo no método of de ExameId")
+        void deveLancarExcecaoAoReceberUmValorNuloNoMetodoOfDeExameId() {
+            assertThatThrownBy(() -> ExameId.of(null)).isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0012 - equals de ExameId")
+        void equalsDeExameId() {
+            ExameId exameId = ExameId.of(UUID.randomUUID());
+            Exame exame = new Exame(exameId, "Hemograma completo");
+
+            assertThat(exameId.equals(exame)).isEqualTo(false);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0013 - deve lançar exceção ExameNaoEncontradoException ao tentar registrar resultado de um exame que não existe")
+        void deveLancarExcecaoExameNaoEncontradoExceptionAoTentarRegistrarResultadoDeUmExameQueNaoExiste() {
+            AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                    2026,
+                    Month.OCTOBER,
+                    7,
+                    9,
+                    1)
+            );
+
+            Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+            Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+            String resultado = "Tudo certo";
+
+            ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                    2026,
+                    Month.OCTOBER,
+                    8,
+                    9,
+                    0)
+            );
+
+            assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(ExameNaoEncontradoException.class);
+        }
     }
 
     @Nested
+    @DisplayName("Mutation Tests")
     class AtendimentoMutationTest {
 
         private Atendimento atendimento;
