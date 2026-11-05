@@ -1770,6 +1770,18 @@ class AtendimentoServiceTest {
             assertThat(exame.getNome()).isEqualTo(nomeExame);
         }
 
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0009 - equals e hashCode de Exame")
+        void equalsEHashCodeDeExame() {
+            ExameId exameId =  ExameId.of(UUID.randomUUID());
+            Exame exame = new Exame(exameId, "Hemograma completo");
+
+            assertThat(exame.equals(exameId)).isEqualTo(false);
+            assertThat(exame.equals(null)).isEqualTo(false);
+            assertThat(exame.hashCode()).isEqualTo(exame.hashCode());
+        }
     }
 
     @Nested
