@@ -2021,7 +2021,7 @@ class AtendimentoServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("Mutation")
-        @DisplayName("M0009 - deve consideraar exames com mesmo id como iguais")
+        @DisplayName("M0009 - deve considerar exames com mesmo id como iguais")
         void deveConsiderarExamesComMesmoIdComoIguais() {
             ExameId exameId = ExameId.of(UUID.randomUUID());
 
@@ -2029,6 +2029,17 @@ class AtendimentoServiceTest {
             Exame exame2 = new Exame(exameId, "Creatinina");
 
             assertThat(exame1.equals(exame2)).isEqualTo(true);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0010 - deve considerar exames com ids diferentes como diferentes")
+        void deveConsiderarExamesComIdsDiferentesComoDiferentes() {
+            Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+            Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Creatinina");
+
+            assertThat(exame1.equals(exame2)).isEqualTo(false);
         }
     }
 }
