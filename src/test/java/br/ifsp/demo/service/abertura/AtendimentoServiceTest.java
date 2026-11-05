@@ -2041,6 +2041,17 @@ class AtendimentoServiceTest {
 
             assertThat(exame1.equals(exame2)).isEqualTo(false);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0011 - deve retornar hashCode baseado no id")
+        void deveRetornarHashCodeBaseadoNoId() {
+            ExameId exameId = ExameId.of(UUID.randomUUID());
+            Exame exame = new Exame(exameId, "Hemograma");
+
+            assertThat(exameId.hashCode()).isEqualTo(exame.hashCode());
+        }
     }
 }
 
