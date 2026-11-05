@@ -1814,6 +1814,35 @@ class AtendimentoServiceTest {
 
             assertThat(exameId.equals(exame)).isEqualTo(false);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0013 - deve lançar exceção ExameNaoEncontradoException ao tentar registrar resultado de um exame que não existe")
+        void deveLancarExcecaoExameNaoEncontradoExceptionAoTentarRegistrarResultadoDeUmExameQueNaoExiste() {
+            AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                    2026,
+                    Month.OCTOBER,
+                    7,
+                    9,
+                    1)
+            );
+
+            Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+            Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+            String resultado = "Tudo certo";
+
+            ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                    2026,
+                    Month.OCTOBER,
+                    8,
+                    9,
+                    0)
+            );
+
+            assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(ExameNaoEncontradoException.class);
+        }
     }
 
     @Nested
