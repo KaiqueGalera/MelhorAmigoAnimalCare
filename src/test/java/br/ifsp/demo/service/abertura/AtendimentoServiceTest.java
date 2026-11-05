@@ -1757,6 +1757,19 @@ class AtendimentoServiceTest {
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("Emissão rejeitada");
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0008 - método getNome de Exame")
+        void metodoGetNomeDeExame() {
+            String nomeExame = "Hemograma completo";
+
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), nomeExame);
+
+            assertThat(exame.getNome()).isEqualTo(nomeExame);
+        }
+
     }
 
     @Nested
