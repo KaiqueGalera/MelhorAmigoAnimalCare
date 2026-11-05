@@ -1782,6 +1782,19 @@ class AtendimentoServiceTest {
             assertThat(exame.equals(null)).isEqualTo(false);
             assertThat(exame.hashCode()).isEqualTo(exame.hashCode());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0010 - equals e hashCode de ExameSolicitado")
+        void equalsEHashCodeDeExameSolicitado() {
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma completo");
+            ExameSolicitado exameSolicitado = new ExameSolicitado(exame, LocalDateTime.of(2026, Month.NOVEMBER, 4, 9, 0));
+
+            assertThat(exameSolicitado.equals(exame)).isEqualTo(false);
+            assertThat(exameSolicitado.equals(null)).isEqualTo(false);
+            assertThat(exameSolicitado.hashCode()).isEqualTo(exameSolicitado.hashCode());
+        }
     }
 
     @Nested
