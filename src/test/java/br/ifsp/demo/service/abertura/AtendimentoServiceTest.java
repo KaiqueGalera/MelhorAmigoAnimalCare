@@ -1803,6 +1803,17 @@ class AtendimentoServiceTest {
         void deveLancarExcecaoAoReceberUmValorNuloNoMetodoOfDeExameId() {
             assertThatThrownBy(() -> ExameId.of(null)).isInstanceOf(IllegalArgumentException.class);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0012 - equals de ExameId")
+        void equalsDeExameId() {
+            ExameId exameId = ExameId.of(UUID.randomUUID());
+            Exame exame = new Exame(exameId, "Hemograma completo");
+
+            assertThat(exameId.equals(exame)).isEqualTo(false);
+        }
     }
 
     @Nested
