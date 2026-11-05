@@ -103,10 +103,12 @@ public class Atendimento {
     }
 
     public void reabrir(LocalDateTime agora) {
-        Duration decorrido = Duration.between(dataHoraConclusao, agora);
         if (status != StatusAtendimento.CONCLUIDO) {
             throw new AtendimentoNaoConcluidoException("Somente atendimentos concluídos podem ser reabertos");
         }
+
+        Duration decorrido = Duration.between(dataHoraConclusao, agora);
+
         if (decorrido.isNegative()) {
             throw new InstanteReaberturaInvalidoException(id);
         }
