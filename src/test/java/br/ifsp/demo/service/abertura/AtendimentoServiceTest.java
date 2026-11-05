@@ -231,6 +231,19 @@ class AtendimentoServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("TDD")
+        @DisplayName("B001 - Não devo reabrir atendimento em andamento que nunca foi concluído")
+        void naoDevoReabrirAtendimentoEmAndamento() {
+            AnimalId animalId = AnimalId.of(UUID.randomUUID());
+            Atendimento atendimento = service.abrirProntoAtendimento(animalId);
+
+            assertThrows(AtendimentoNaoConcluidoException.class,
+                    () -> service.reabrirAtendimento(atendimento.getId(), LocalDateTime.now()));
+            assertThat(atendimento.getStatus()).isEqualTo(StatusAtendimento.EM_ANDAMENTO);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
         @DisplayName("C0405 - deve permitir conclusao de atendimento com prescricao cancelada")
         void devePermitirConclusaoDeAtendimentoComPrescricaoCancelada() {
             Atendimento atendimento = Atendimento.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
