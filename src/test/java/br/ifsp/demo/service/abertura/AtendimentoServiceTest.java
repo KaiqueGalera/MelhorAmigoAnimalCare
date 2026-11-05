@@ -2052,6 +2052,17 @@ class AtendimentoServiceTest {
 
             assertThat(exameId.hashCode()).isEqualTo(exame.hashCode());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0012 - deve retornar hashCode baseado no value")
+        void deveRetornarHashCodeBaseadoNoValue() {
+            UUID value = UUID.randomUUID();
+            ExameId exameId = ExameId.of(value);
+
+            assertThat(exameId.hashCode()).isEqualTo(value.hashCode());
+        }
     }
 }
 
