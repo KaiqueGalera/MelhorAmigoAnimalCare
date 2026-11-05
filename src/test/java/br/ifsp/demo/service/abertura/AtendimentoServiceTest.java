@@ -1912,6 +1912,24 @@ class AtendimentoServiceTest {
 
             assertThat(repo.salvamentos()).isEqualTo(antes + 1);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0008 reabrirAtendimento deve salvar o atendimento")
+        void reabrirAtendimentoDeveSalvar() {
+            RepositorioContador repo = new RepositorioContador();
+            AtendimentoService svc = new AtendimentoService(repo);
+            Atendimento atendimento = svc.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+            atendimento.registrarSinaisVitais(new SinaisVitais(38.5, 100, 12.0));
+            atendimento.registrarDiagnostico(new Diagnostico("D001", "Diarréia", TipoDiagnostico.EMPIRICO));
+            svc.concluirAtendimento(atendimento.getId());
+            int antes = repo.salvamentos();
+
+            svc.reabrirAtendimento(atendimento.getId(), LocalDateTime.now());
+
+            assertThat(repo.salvamentos()).isEqualTo(antes + 1);
+        }
     }
 }
 
