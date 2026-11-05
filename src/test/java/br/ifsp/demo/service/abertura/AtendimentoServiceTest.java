@@ -1760,6 +1760,7 @@ class AtendimentoServiceTest {
     }
 
     @Nested
+    @DisplayName("Mutation Tests")
     class AtendimentoMutationTest {
 
         private Atendimento atendimento;
