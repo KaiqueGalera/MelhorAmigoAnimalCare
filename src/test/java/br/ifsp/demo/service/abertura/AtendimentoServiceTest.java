@@ -2076,6 +2076,19 @@ class AtendimentoServiceTest {
 
             assertThat(exameId1.equals(exameId2)).isEqualTo(true);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0014 - deve retornar hashCode baseado no exame e na data")
+        void deveRetornarHashCodeBaseadoNoExameENaData() {
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+            LocalDateTime data = LocalDateTime.of(2026, Month.NOVEMBER, 5, 19, 0);
+
+            ExameSolicitado exameSolicitado = new ExameSolicitado(exame, data);
+
+            assertThat(Objects.hash(exame, data)).isEqualTo(exameSolicitado.hashCode());
+        }
     }
 }
 
