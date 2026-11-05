@@ -335,7 +335,7 @@ class AtendimentoServiceTest {
                     atendimento.getId(),
                     List.of(exameSolicitado1, exameSolicitado2)
             ))
-                    .isInstanceOf(AtendimentoNaoEncontradoException.class);
+                    .isInstanceOf(AtendimentoNaoEncontradoException.class).hasMessage("Atendimento não encontrado: " + atendimento.getId());
         }
 
         @Test
@@ -1801,7 +1801,7 @@ class AtendimentoServiceTest {
         @Tag("Structural")
         @DisplayName("S0011 - deve lançar exceção ao receber um valor nulo no método of de ExameId")
         void deveLancarExcecaoAoReceberUmValorNuloNoMetodoOfDeExameId() {
-            assertThatThrownBy(() -> ExameId.of(null)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> ExameId.of(null)).isInstanceOf(IllegalArgumentException.class).hasMessage("Id não pode ser nulo.");
         }
 
         @Test
@@ -1841,7 +1841,7 @@ class AtendimentoServiceTest {
                     0)
             );
 
-            assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(ExameNaoEncontradoException.class);
+            assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(ExameNaoEncontradoException.class).hasMessage("Exame não encontrado!");
         }
     }
 
