@@ -2017,6 +2017,19 @@ class AtendimentoServiceTest {
 
             assertThat(repo.salvamentos()).isEqualTo(antes + 1);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0009 - deve consideraar exames com mesmo id como iguais")
+        void deveConsiderarExamesComMesmoIdComoIguais() {
+            ExameId exameId = ExameId.of(UUID.randomUUID());
+
+            Exame exame1 = new Exame(exameId, "Hemograma");
+            Exame exame2 = new Exame(exameId, "Creatinina");
+
+            assertThat(exame1.equals(exame2)).isEqualTo(true);
+        }
     }
 }
 
