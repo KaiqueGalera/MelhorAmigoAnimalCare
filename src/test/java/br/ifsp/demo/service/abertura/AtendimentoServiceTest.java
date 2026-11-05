@@ -1795,6 +1795,14 @@ class AtendimentoServiceTest {
             assertThat(exameSolicitado.equals(null)).isEqualTo(false);
             assertThat(exameSolicitado.hashCode()).isEqualTo(exameSolicitado.hashCode());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("S0011 - deve lançar exceção ao receber um valor nulo no método of de ExameId")
+        void deveLancarExcecaoAoReceberUmValorNuloNoMetodoOfDeExameId() {
+            assertThatThrownBy(() -> ExameId.of(null)).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Nested
