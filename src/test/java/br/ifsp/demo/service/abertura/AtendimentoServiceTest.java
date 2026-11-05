@@ -1770,5 +1770,15 @@ class AtendimentoServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Emissão rejeitada");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("Deve expor o UUID encapsulado em ExameId")
+    void deveExporOUuidEncapsulado() {
+        UUID uuid = new UUID(1L, 2L);
+
+        Assertions.assertThat(ExameId.of(uuid).getValue()).isEqualTo(uuid);
+    }
 }
 
