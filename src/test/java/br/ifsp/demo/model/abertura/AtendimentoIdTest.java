@@ -27,7 +27,6 @@ public class AtendimentoIdTest {
 
     }
 
-
     @Test
     @Tag("UnitTest")
     @Tag("Structural")
