@@ -17,4 +17,14 @@ public class DiagnosticoTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("O código do diagnóstico é obrigatório.");
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("Diagnóstico deve rejeitar código vazio")
+    void diagnosticoDeveRejeitarCodigoNVazio() {
+        assertThatThrownBy(() -> new Diagnostico("", "Fungo na orelha", TipoDiagnostico.PRESUNTIVO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("O código do diagnóstico é obrigatório.");
+    }
 }
