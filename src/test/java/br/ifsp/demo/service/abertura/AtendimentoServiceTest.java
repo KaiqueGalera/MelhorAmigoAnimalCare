@@ -2167,6 +2167,53 @@ class AtendimentoServiceTest {
 
             assertThat(exameSolicitado).isEqualTo(resultado);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0018 - deve lançar ExameNaoEncontradoException quando id do exame não existe no atendimento")
+        void deveLancarExameNaoEncontradoExceptionQuandoIdDoExameNaoExisteNoAtendimento() {
+            AtendimentoService serviceLocal = new AtendimentoService(repository, LocalDateTime.of(
+                    2026,
+                    Month.OCTOBER,
+                    7,
+                    9,
+                    1)
+            );
+
+            Atendimento atendimento = serviceLocal.abrirProntoAtendimento(AnimalId.of(UUID.randomUUID()));
+
+            Exame exame1 = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+            Exame exame2 = new Exame(ExameId.of(UUID.randomUUID()), "Glicemia");
+
+            ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame1, LocalDateTime.of(
+                    2026,
+                    Month.OCTOBER,
+                    8,
+                    9,
+                    0)
+            );
+            ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, LocalDateTime.of(
+                    2026,
+                    Month.DECEMBER,
+                    9,
+                    9,
+                    0)
+            );
+            ExameSolicitado exameSolicitado3 = new ExameSolicitado(exame2, LocalDateTime.of(
+                    2026,
+                    Month.DECEMBER,
+                    4,
+                    9,
+                    0)
+            );
+
+            serviceLocal.solicitarExames(atendimento.getId(), List.of(exameSolicitado1, exameSolicitado2, exameSolicitado3));
+
+            assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), ExameId.of(UUID.randomUUID()), "Tudo certo!"))
+                    .isInstanceOf(ExameNaoEncontradoException.class)
+                    .hasMessage("Exame não encontrado!");
+        }
     }
 
     @Test
