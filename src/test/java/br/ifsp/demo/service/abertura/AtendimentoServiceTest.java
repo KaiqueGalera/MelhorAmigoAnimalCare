@@ -2267,6 +2267,26 @@ class AtendimentoServiceTest {
             Atendimento atendimento = mock(Atendimento.class);
             when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
 
+            Anamnese anamnese = new Anamnese("Dor de orelha", "Nenhum");
+
+            service.registrarAnamnese(atendimentoId, anamnese);
+
+            verify(atendimento).registrarAnamnese(anamnese);
+            verify(repository, times(1)).salvar(atendimento);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0021 - deve salvar atendimento uma vez ao registrar diagnóstico")
+        void deveSalvarAtendimentoUmaVezAoRegistrarDiagnostico() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            AtendimentoService service = new AtendimentoService(repository);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+
             Diagnostico diag = new Diagnostico("A1", "Fungo na orelha", TipoDiagnostico.EMPIRICO);
 
             service.registrarDiagnostico(atendimentoId, diag);
