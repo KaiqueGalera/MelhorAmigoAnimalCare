@@ -13,6 +13,7 @@ import br.ifsp.demo.model.exame.ExameStatus;
 import br.ifsp.demo.model.prescricao.ItemPrescricao;
 import br.ifsp.demo.model.prescricao.Prescricao;
 import br.ifsp.demo.model.prescricao.PrescricaoId;
+import br.ifsp.demo.repository.AtendimentoRepository;
 import br.ifsp.demo.repository.InMemoryAtendimentoRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 class AtendimentoServiceTest {
     private InMemoryAtendimentoRepository repository;
@@ -2104,6 +2106,27 @@ class AtendimentoServiceTest {
             ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame2, data);
 
             assertThat(exameSolicitado1.equals(exameSolicitado2)).isEqualTo(false);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0016 - deve salvar atendimento uma vez ao solicitar exames")
+        void deveSalvarAtendimentoUmaVezAoSolicitarExames() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            LocalDateTime agora = LocalDateTime.of(2026, 11, 5, 8, 0);
+            AtendimentoService service = new AtendimentoService(repository, agora);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+
+            ExameSolicitado exame = mock(ExameSolicitado.class);
+            when(exame.getData()).thenReturn(LocalDateTime.of(2026, 11, 6, 10, 0));
+
+            service.solicitarExames(atendimentoId, List.of(exame));
+
+            verify(repository, times(1)).salvar(atendimento);
         }
     }
 }
