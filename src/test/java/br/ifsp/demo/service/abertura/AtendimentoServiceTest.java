@@ -1865,6 +1865,19 @@ class AtendimentoServiceTest {
 
             assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(ExameNaoEncontradoException.class).hasMessage("Exame não encontrado!");
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("ExameSolicitado com mesmo exame e datas diferentes não deve ser igual")
+        void exameSolicitadoComMesmoExameEDatasDiferentesNaoDeveSerIgual(){
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+
+            ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame, LocalDateTime.of(2026, 10, 8, 10, 0));
+            ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame, LocalDateTime.of(2026, 10, 9, 10, 0));
+
+            assertThat(exameSolicitado1).isNotEqualTo(exameSolicitado2);
+        }
     }
 
     @Nested
