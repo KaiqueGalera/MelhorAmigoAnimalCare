@@ -38,4 +38,14 @@ public class AnamneseTest {
                 .hasMessage("O histórico clínico da anamnese é obrigatório.");
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("Anamnese deve rejeitar histórico clínico vazio")
+    void anamneseDeveRejeitarHistoricoClinicoVazio() {
+        assertThatThrownBy(() -> new Anamnese("", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("A queixa principal da anamnese é obrigatória.");
+    }
+
 }
