@@ -2141,6 +2141,32 @@ class AtendimentoServiceTest {
 
             verify(repository, times(1)).salvar(atendimento);
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0017 - deve salvar atendimento uma vez ao registrar resultado exame")
+        void deveSalvarAtendimentoUmaVezAoRegistrarResultadoExame() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            AtendimentoService service = new AtendimentoService(repository);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            ExameId exameId = mock(ExameId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+
+            ExameSolicitado exameSolicitado = mock(ExameSolicitado.class, RETURNS_DEEP_STUBS);
+            when(exameSolicitado.getExame().getId()).thenReturn(exameId);
+
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+            when(atendimento.getExames()).thenReturn(List.of(exameSolicitado));
+
+            ExameSolicitado resultado = service.registrarResultadoExame(atendimentoId, exameId, "Tudo certo!");
+
+            verify(exameSolicitado).setResultado("Tudo certo!");
+            verify(repository, times(1)).salvar(atendimento);
+
+            assertThat(exameSolicitado).isEqualTo(resultado);
+        }
     }
 
     @Test
