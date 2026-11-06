@@ -979,6 +979,8 @@ class AtendimentoServiceTest {
         // =================================================================
 
         @ParameterizedTest(name = "justificativa inválida: \"{0}\"")
+        @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("#PE01 Não devo cancelar atendimento com justificativa inválida (nula, vazia ou em branco)")
         @NullAndEmptySource
         @ValueSource(strings = {"   ", "\t", "\n"})
@@ -1131,7 +1133,8 @@ class AtendimentoServiceTest {
         // =================================================================
 
         @ParameterizedTest(name = "reabertura {0} antes da conclusão")
-        @Tag("Funcional")
+        @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("ValorLimite")
         @DisplayName("#VL02 Não devo reabrir atendimento com instante anterior ao da conclusão")
         @MethodSource("instantesAnterioresAConclusao")
@@ -1162,7 +1165,8 @@ class AtendimentoServiceTest {
         // =================================================================
 
         @ParameterizedTest(name = "queixaPrincipal com {0} caracteres -> deve aceitar = {1}")
-        @Tag("Funcional")
+        @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("ValorLimite")
         @DisplayName("#VL03 Valor limite do tamanho da queixa principal da anamnese")
         @CsvSource({
@@ -1190,7 +1194,8 @@ class AtendimentoServiceTest {
         // =================================================================
 
         @ParameterizedTest(name = "historicoClinico com {0} caracteres -> deve aceitar = {1}")
-        @Tag("Funcional")
+        @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("ValorLimite")
         @DisplayName("#VL04 Valor limite do tamanho do histórico clínico da anamnese")
         @CsvSource({
@@ -1218,7 +1223,8 @@ class AtendimentoServiceTest {
         // =================================================================
 
         @ParameterizedTest(name = "codigo com {0} caracteres -> deve aceitar = {1}")
-        @Tag("Funcional")
+        @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("ValorLimite")
         @DisplayName("#VL05 Valor limite do tamanho do código do diagnóstico")
         @CsvSource({
@@ -1247,7 +1253,8 @@ class AtendimentoServiceTest {
         // =================================================================
 
         @ParameterizedTest(name = "descricao com {0} caracteres -> deveAceitar={1}")
-        @Tag("Funcional")
+        @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("ValorLimite")
         @DisplayName("#VL06 Valor limite do tamanho da descrição do diagnóstico")
         @CsvSource({
