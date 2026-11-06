@@ -37,5 +37,18 @@ public class AtendimentoTest {
         assertThat(atendimento.getDataHoraConclusao()).isBetween(antes, depois);
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("getDataHoraAtendimento deve retornar instante que atendimento foi aberto")
+    void getDataHoraAtendimentoDeveRetornarInstanteQueAtendimentoFoiAberto() {
+
+        LocalDateTime antes = LocalDateTime.now();
+        Atendimento atendimento = new Atendimento(AGENDAMENTO_ID, ANIMAL_ID);
+        LocalDateTime depois = LocalDateTime.now();
+
+        assertThat(atendimento.getDataHoraAtendimento()).isBetween(antes, depois);
+    }
+
 
 }
