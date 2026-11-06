@@ -17,6 +17,8 @@ public class ExameId {
         return new ExameId(value);
     }
 
+    public UUID getValue() { return value; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -118,7 +118,7 @@ public class SqliteAtendimentoRepository implements AtendimentoRepository {
                                           data_hora, resultado, status)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-                    id, i, e.getExame().getId().toString(), e.getExame().getNome(),
+                    id, i, e.getExame().getId().getValue().toString(), e.getExame().getNome(),
                     e.getData().toString(), e.getResultado(), e.getStatus().name());
         }
 
