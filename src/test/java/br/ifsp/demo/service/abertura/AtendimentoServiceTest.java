@@ -2234,6 +2234,26 @@ class AtendimentoServiceTest {
                     .isInstanceOf(ExameNaoEncontradoException.class)
                     .hasMessage("Exame não encontrado!");
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0019 - deve salvar atendimento uma vez ao registrar sinais vitais")
+        void deveSalvarAtendimentoUmaVezAoRegistrarSinaisVitais() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            AtendimentoService service = new AtendimentoService(repository);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+
+            SinaisVitais sinais = new SinaisVitais(38.5, 100, 12.0);
+
+            service.registrarSinaisVitais(atendimentoId, sinais);
+
+            verify(atendimento).registrarSinaisVitais(sinais);
+            verify(repository, times(1)).salvar(atendimento);
+        }
     }
 
     @Test
