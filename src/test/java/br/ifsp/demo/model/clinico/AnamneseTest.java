@@ -25,7 +25,7 @@ public class AnamneseTest {
     void anamneseDeveRejeitarQueixaPrincipalVazia() {
         assertThatThrownBy(() -> new Anamnese("", "Vacinas em dia"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("A queixa principal da anamnese não pode ser vazia.");
+                .hasMessage("A queixa principal da anamnese é obrigatória.");
     }
 
     @Test
@@ -43,9 +43,9 @@ public class AnamneseTest {
     @Tag("Structural")
     @DisplayName("Anamnese deve rejeitar histórico clínico vazio")
     void anamneseDeveRejeitarHistoricoClinicoVazio() {
-        assertThatThrownBy(() -> new Anamnese("", null))
+        assertThatThrownBy(() -> new Anamnese("Dor de dente", ""))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("A queixa principal da anamnese é obrigatória.");
+                .hasMessage("O histórico clínico da anamnese é obrigatório.");
     }
 
 }
