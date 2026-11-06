@@ -23,5 +23,19 @@ public class AtendimentoTest {
         assertThat(atendimento.getDataHoraConclusao()).isNull();
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @DisplayName("getDataHoraConclusao deve ser preenchida ao cancelar atendimento")
+    void getDataHoraConclusaoDeveSerPreenchidaAoCancelarAtendimento() {
+        Atendimento atendimento = new Atendimento(AGENDAMENTO_ID, ANIMAL_ID);
+
+        LocalDateTime antes = LocalDateTime.now();
+        atendimento.cancelar("Tutor desistiu do atendimento");
+        LocalDateTime depois = LocalDateTime.now();
+
+        assertThat(atendimento.getDataHoraConclusao()).isBetween(antes, depois);
+    }
+
 
 }
