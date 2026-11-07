@@ -1865,6 +1865,19 @@ class AtendimentoServiceTest {
 
             assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), exameSolicitado1.getExame().getId(), resultado)).isInstanceOf(ExameNaoEncontradoException.class).hasMessage("Exame não encontrado!");
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("ExameSolicitado com mesmo exame e datas diferentes não deve ser igual")
+        void exameSolicitadoComMesmoExameEDatasDiferentesNaoDeveSerIgual(){
+            Exame exame = new Exame(ExameId.of(UUID.randomUUID()), "Hemograma");
+
+            ExameSolicitado exameSolicitado1 = new ExameSolicitado(exame, LocalDateTime.of(2026, 10, 8, 10, 0));
+            ExameSolicitado exameSolicitado2 = new ExameSolicitado(exame, LocalDateTime.of(2026, 10, 9, 10, 0));
+
+            assertThat(exameSolicitado1).isNotEqualTo(exameSolicitado2);
+        }
     }
 
     @Nested
@@ -2220,6 +2233,66 @@ class AtendimentoServiceTest {
             assertThatThrownBy(() -> serviceLocal.registrarResultadoExame(atendimento.getId(), ExameId.of(UUID.randomUUID()), "Tudo certo!"))
                     .isInstanceOf(ExameNaoEncontradoException.class)
                     .hasMessage("Exame não encontrado!");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0019 - deve salvar atendimento uma vez ao registrar sinais vitais")
+        void deveSalvarAtendimentoUmaVezAoRegistrarSinaisVitais() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            AtendimentoService service = new AtendimentoService(repository);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+
+            SinaisVitais sinais = new SinaisVitais(38.5, 100, 12.0);
+
+            service.registrarSinaisVitais(atendimentoId, sinais);
+
+            verify(atendimento).registrarSinaisVitais(sinais);
+            verify(repository, times(1)).salvar(atendimento);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0020 - deve salvar atendimento uma vez ao registrar anamnese")
+        void deveSalvarAtendimentoUmaVezAoRegistrarAnamnese() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            AtendimentoService service = new AtendimentoService(repository);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+
+            Anamnese anamnese = new Anamnese("Dor de orelha", "Nenhum");
+
+            service.registrarAnamnese(atendimentoId, anamnese);
+
+            verify(atendimento).registrarAnamnese(anamnese);
+            verify(repository, times(1)).salvar(atendimento);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("M0021 - deve salvar atendimento uma vez ao registrar diagnóstico")
+        void deveSalvarAtendimentoUmaVezAoRegistrarDiagnostico() {
+            AtendimentoRepository repository = mock(AtendimentoRepository.class);
+            AtendimentoService service = new AtendimentoService(repository);
+
+            AtendimentoId atendimentoId = mock(AtendimentoId.class);
+            Atendimento atendimento = mock(Atendimento.class);
+            when(repository.buscarUmPorAtendimentoId(atendimentoId)).thenReturn(atendimento);
+
+            Diagnostico diag = new Diagnostico("A1", "Fungo na orelha", TipoDiagnostico.EMPIRICO);
+
+            service.registrarDiagnostico(atendimentoId, diag);
+
+            verify(atendimento).registrarDiagnostico(diag);
+            verify(repository, times(1)).salvar(atendimento);
         }
     }
 
