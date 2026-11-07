@@ -49,6 +49,20 @@ Detalhes em [`frontend/README.md`](frontend/README.md).
 4. Registre os dados clínicos, prescrições e exames. A conclusão exige sinais vitais, pelo menos um diagnóstico
    e nenhuma prescrição em aberto.
 
+## Versão hospedada (front-end)
+
+O front-end está publicado em **https://melhor-amigo-animal-care.vercel.app**.
+
+O back-end **não** está hospedado. O site chama a API em `http://localhost:8080`, ou seja, na máquina de quem
+abre o link. Para usar:
+
+1. Rode o back-end localmente, como no passo 1 de [Como executar](#como-executar).
+2. Abra o link acima no **Chrome**.
+3. Na primeira vez, o Chrome pode pedir permissão para acessar a rede local. Clique em **Permitir**.
+4. Siga os passos de [Uso](#3-uso), a partir do cadastro.
+
+Cada push na branch `main` gera um novo deploy automaticamente.
+
 ## Testes
 
 ```bash
