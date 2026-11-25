@@ -33,3 +33,6 @@ build/
 .vscode/
 
 *.db
+.DS_Store
+.mvn/maven.config.bak
+C:/
